@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { SignupPage } from "@/components/templates/signup-page";
+import { AuthPage } from "@/components/templates/auth-page";
 
 export const metadata: Metadata = {
-  title: "Sign Up | MenuAI",
+  title: "Register | Plate",
 };
 
 export default function Signup() {
-  return <SignupPage />;
+  return <AuthPage mode="register" />;
 }

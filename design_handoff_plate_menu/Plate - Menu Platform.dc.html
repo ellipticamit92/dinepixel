@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: oklch(0.84 0.015 78); border-radius: 8px; }
+  a { color: oklch(0.62 0.17 42); text-decoration: none; }
+  a:hover { color: oklch(0.55 0.17 42); }
+  @keyframes plScan { 0% { top:0; } 100% { top:100%; } }
+  @keyframes plPop { from { opacity:0; transform:translateY(8px);} to { opacity:1; transform:translateY(0);} }
+  @keyframes plPulse { 0%,100% { opacity:0.5;} 50% { opacity:1;} }
+  @keyframes plFloat { 0%,100% { transform:translateY(0);} 50% { transform:translateY(-10px);} }
+</style>
+</helmet>
+<div style="min-height:100%; background:oklch(0.93 0.014 82); font-family:'Barlow',sans-serif; color:oklch(0.28 0.02 60);">
+
+  <!-- top bar -->
+  <header style="display:flex; align-items:center; justify-content:space-between; padding:16px 40px; position:sticky; top:0; z-index:20; background:oklch(0.93 0.014 82);">
+    <div onClick="{{ goHome }}" style="display:flex; align-items:center; gap:11px; cursor:pointer;">
+      <div style="width:42px; height:42px; border-radius:13px; background:oklch(0.93 0.014 82); display:flex; align-items:center; justify-content:center; color:oklch(0.62 0.17 42); font-family:'Anton',sans-serif; font-size:21px; transform:rotate(-4deg); box-shadow:5px 5px 11px oklch(0.85 0.02 72), -5px -5px 11px oklch(0.99 0.008 88);">P</div>
+      <div>
+        <div style="font-family:'Anton',sans-serif; font-size:22px; letter-spacing:0.4px; line-height:0.9; color:oklch(0.26 0.02 60);">Plate</div>
+        <div style="font-size:10.5px; font-weight:600; letter-spacing:1.4px; text-transform:uppercase; color:oklch(0.58 0.03 60);">Upload once · serve everywhere</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button onClick="{{ goHome }}" style="padding:9px 16px; border:none; border-radius:11px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; color:{{ homeFg }}; cursor:pointer; box-shadow:{{ homeShadow }};">Home</button>
+      <button onClick="{{ goApp }}" style="padding:9px 16px; border:none; border-radius:11px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; color:{{ builderFg }}; cursor:pointer; box-shadow:{{ builderShadow }};">Builder</button>
+      <button onClick="{{ goLogin }}" style="padding:9px 16px; border:none; border-radius:11px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; color:{{ authFg }}; cursor:pointer; box-shadow:{{ authShadow }};">Sign in</button>
+      <button onClick="{{ goRegister }}" style="margin-left:6px; padding:10px 20px; border:none; border-radius:11px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:5px 5px 12px oklch(0.62 0.17 42 / 0.35), -3px -3px 10px oklch(0.99 0.008 88);">Get started free</button>
+    </div>
+  </header>
+
+  <!-- ================= LANDING ================= -->
+  <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <!-- hero -->
+      <section style="max-width:1120px; margin:0 auto; padding:40px 40px 20px; display:grid; grid-template-columns:1fr 360px; gap:40px; align-items:center;">
+        <div>
+          <div style="display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:999px; background:oklch(0.93 0.014 82); font-size:12.5px; font-weight:700; letter-spacing:0.4px; color:oklch(0.5 0.14 45); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+            <span style="width:8px; height:8px; border-radius:50%; background:oklch(0.62 0.17 42);"></span>AI-powered · no typing required
+          </div>
+          <h1 style="margin:20px 0 0; font-family:'Anton',sans-serif; font-size:60px; line-height:0.98; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Your paper menu,<br>online in <span style="color:oklch(0.62 0.17 42);">20 seconds.</span></h1>
+          <p style="margin:20px 0 0; font-size:18px; line-height:1.55; max-width:500px; color:oklch(0.46 0.02 60); text-wrap:pretty;">Snap a photo or drop a PDF. Plate's AI reads every dish and price, auto-sorts <strong style="color:oklch(0.5 0.14 150);">Veg</strong> &amp; <strong style="color:oklch(0.55 0.19 25);">Non-Veg</strong>, and hands you a live menu page with a QR code and shareable link.</p>
+          <div style="display:flex; align-items:center; gap:16px; margin-top:30px;">
+            <button onClick="{{ goApp }}" style="display:flex; align-items:center; gap:10px; padding:16px 28px; border:none; border-radius:16px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:18px; font-weight:700; letter-spacing:0.4px; cursor:pointer; box-shadow:7px 7px 16px oklch(0.62 0.17 42 / 0.4), -4px -4px 12px oklch(0.99 0.008 88);">
+              <span style="width:12px; height:12px; background:oklch(0.99 0.01 85); transform:rotate(45deg); display:inline-block;"></span>Build my menu
+            </button>
+            <div style="font-size:13.5px; font-weight:600; color:oklch(0.5 0.03 60); line-height:1.4;">Free to start<br>No card needed</div>
+          </div>
+          <div style="display:flex; gap:26px; margin-top:38px;">
+            <sc-for list="{{ stats }}" as="st" hint-placeholder-count="3">
+              <div>
+                <div style="font-family:'Anton',sans-serif; font-size:30px; color:oklch(0.26 0.02 60);">{{ st.num }}</div>
+                <div style="font-size:12.5px; font-weight:600; color:oklch(0.55 0.03 60); letter-spacing:0.3px;">{{ st.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- floating phone -->
+        <div style="display:flex; justify-content:center; animation:plFloat 5s ease-in-out infinite;">
+          <div style="width:290px; background:oklch(0.93 0.014 82); border-radius:42px; padding:12px; box-shadow:14px 14px 34px oklch(0.83 0.025 72), -14px -14px 34px oklch(0.99 0.008 88);">
+            <div style="border-radius:32px; overflow:hidden; background:oklch(0.94 0.014 82); height:604px; display:flex; flex-direction:column; box-shadow:inset 3px 3px 8px oklch(0.86 0.02 74), inset -2px -2px 6px oklch(0.99 0.008 88);">
+              <!-- hero image -->
+              <div style="padding:9px 9px 0;">
+                <div style="position:relative; height:130px; border-radius:20px; overflow:hidden; box-shadow:5px 5px 12px oklch(0.85 0.02 72), -5px -5px 12px oklch(0.99 0.008 88);">
+                  <image-slot id="cafe-banner" shape="rect" placeholder="Cafe banner"></image-slot>
+                  <div style="position:absolute; inset:0; background:linear-gradient(to top, oklch(0.14 0.02 55 / 0.8) 6%, transparent 60%); pointer-events:none;"></div>
+                  <div style="position:absolute; top:9px; right:9px; display:flex; gap:6px;">
+                    <div style="width:26px; height:26px; border-radius:9px; background:oklch(0.95 0.012 84 / 0.32); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; color:oklch(0.99 0.01 85); font-size:11px; border:1px solid oklch(1 0 0 / 0.25);">♡</div>
+                    <div style="width:26px; height:26px; border-radius:9px; background:oklch(0.95 0.012 84 / 0.32); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; color:oklch(0.99 0.01 85); font-size:11px; border:1px solid oklch(1 0 0 / 0.25);">⤴</div>
+                  </div>
+                  <div style="position:absolute; bottom:10px; left:13px; right:13px; pointer-events:none;">
+                    <div style="font-family:'Anton',sans-serif; font-size:20px; color:oklch(0.99 0.01 85); letter-spacing:0.3px; line-height:1;">Bloom Cafe</div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:5px; font-size:9.5px; font-weight:600; color:oklch(0.92 0.01 85);">
+                      <span>◉ Downtown District</span>
+                      <span style="padding:2px 7px; border-radius:999px; background:oklch(0.95 0.012 84 / 0.28); backdrop-filter:blur(5px);">★ 4.9 (2k+)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- section heading -->
+              <div style="padding:11px 13px 6px; font-family:'Anton',sans-serif; font-size:15px; letter-spacing:0.3px; color:oklch(0.3 0.02 60);">{{ landingHeading }}</div>
+              <!-- menu body -->
+              <div style="flex:1; overflow:hidden; padding:0 12px; display:flex; flex-direction:column; gap:9px;">
+                <!-- featured -->
+                <div style="border-radius:14px; overflow:hidden; background:oklch(0.94 0.014 82); box-shadow:4px 4px 10px oklch(0.85 0.02 73), -4px -4px 10px oklch(0.99 0.008 88);">
+                  <div style="position:relative; height:82px;">
+                    <image-slot id="lp-featured" shape="rect" placeholder="Featured dish"></image-slot>
+                    <div style="position:absolute; top:6px; left:6px; padding:2px 8px; border-radius:999px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-size:6.5px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase;">★ Popular this week</div>
+                  </div>
+                  <div style="padding:8px 10px 10px;">
+                    <div style="display:flex; justify-content:space-between; gap:6px; align-items:flex-start;">
+                      <div style="display:flex; align-items:center; gap:6px; min-width:0;">
+                        <span style="flex:0 0 auto; width:12px; height:12px; border:1.5px solid {{ landingFeatured.mark }}; border-radius:2px; display:flex; align-items:center; justify-content:center;"><span style="width:5px; height:5px; border-radius:50%; background:{{ landingFeatured.mark }};"></span></span>
+                        <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:12.5px; font-weight:700; color:oklch(0.26 0.02 60);">{{ landingFeatured.name }}</span>
+                      </div>
+                      <span style="font-size:12px; font-weight:700; color:oklch(0.62 0.17 42); white-space:nowrap;">{{ landingFeatured.priceStr }}</span>
+                    </div>
+                    <div style="margin-top:4px; font-size:9.5px; line-height:1.35; color:oklch(0.52 0.02 60);">{{ landingFeatured.desc }}</div>
+                    <div style="margin-top:7px; padding:7px; border-radius:9px; text-align:center; font-family:'Barlow Semi Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.3px; color:oklch(0.5 0.14 45); box-shadow:inset 2px 2px 5px oklch(0.86 0.02 74), inset -2px -2px 5px oklch(0.99 0.008 88);">＋ Add to Order</div>
+                  </div>
+                </div>
+                <!-- rows -->
+                <sc-for list="{{ landingRest }}" as="r" hint-placeholder-count="2">
+                  <div style="display:flex; gap:10px; padding:9px; border-radius:14px; background:oklch(0.94 0.014 82); box-shadow:4px 4px 10px oklch(0.86 0.02 74), -4px -4px 10px oklch(0.99 0.008 88);">
+                    <div style="position:relative; flex:0 0 auto; width:52px; height:52px; border-radius:11px; overflow:hidden;">
+                      <image-slot id="{{ r.slot }}" shape="rect" placeholder="{{ r.name }}"></image-slot>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                      <div style="display:flex; justify-content:space-between; gap:6px;">
+                        <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:12px; font-weight:700; color:oklch(0.26 0.02 60); line-height:1.05;">{{ r.name }}</span>
+                        <span style="font-size:11.5px; font-weight:700; color:oklch(0.62 0.17 42); white-space:nowrap;">{{ r.priceStr }}</span>
+                      </div>
+                      <div style="margin-top:3px; font-size:9px; line-height:1.35; color:oklch(0.52 0.02 60);">{{ r.desc }}</div>
+                      <div style="display:flex; align-items:center; gap:5px; margin-top:6px;">
+                        <span style="width:11px; height:11px; border:1.5px solid {{ r.mark }}; border-radius:2px; display:flex; align-items:center; justify-content:center;"><span style="width:5px; height:5px; border-radius:50%; background:{{ r.mark }};"></span></span>
+                        <span style="flex:1;"></span>
+                        <span style="width:22px; height:22px; border-radius:8px; background:oklch(0.94 0.014 82); color:oklch(0.5 0.14 45); font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center; box-shadow:2px 2px 5px oklch(0.87 0.02 74), -2px -2px 5px oklch(0.99 0.008 88);">+</span>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <!-- pinned Veg / Non-Veg toggle -->
+              <div style="padding:9px 12px 12px;">
+                <div style="display:flex; gap:7px; padding:6px; border-radius:15px; background:oklch(0.94 0.014 82); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+                  <button onClick="{{ setLandingVeg }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px; border:none; border-radius:11px; background:oklch(0.94 0.014 82); color:{{ lVegFg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:{{ lVegShadow }};">
+                    <span style="width:11px; height:11px; border:1.5px solid {{ lVegFg }}; border-radius:2px; display:flex; align-items:center; justify-content:center;"><span style="width:5px; height:5px; border-radius:50%; background:{{ lVegFg }};"></span></span>Veg
+                  </button>
+                  <button onClick="{{ setLandingNonveg }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px; border:none; border-radius:11px; background:oklch(0.94 0.014 82); color:{{ lNvFg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:{{ lNvShadow }};">
+                    <span style="width:11px; height:11px; border:1.5px solid {{ lNvFg }}; border-radius:50%; display:flex; align-items:center; justify-content:center;"><span style="width:5px; height:5px; border-radius:50%; background:{{ lNvFg }};"></span></span>Non-Veg
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- how it works -->
+      <section style="max-width:1120px; margin:0 auto; padding:50px 40px 20px;">
+        <div style="text-align:center;">
+          <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:oklch(0.62 0.17 42);">How it works</div>
+          <h2 style="margin:8px 0 0; font-family:'Anton',sans-serif; font-size:38px; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Three steps. No tech skills.</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:36px;">
+          <sc-for list="{{ how }}" as="h" hint-placeholder-count="3">
+            <div style="padding:28px; border-radius:22px; background:oklch(0.93 0.014 82); box-shadow:8px 8px 18px oklch(0.84 0.022 72), -8px -8px 18px oklch(0.99 0.008 88);">
+              <div style="width:52px; height:52px; border-radius:15px; background:oklch(0.93 0.014 82); display:flex; align-items:center; justify-content:center; font-family:'Anton',sans-serif; font-size:24px; color:oklch(0.62 0.17 42); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">{{ h.n }}</div>
+              <div style="margin-top:18px; font-family:'Barlow Semi Condensed',sans-serif; font-size:20px; font-weight:700; color:oklch(0.26 0.02 60);">{{ h.title }}</div>
+              <div style="margin-top:7px; font-size:14.5px; line-height:1.5; color:oklch(0.48 0.02 60); text-wrap:pretty;">{{ h.body }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- features -->
+      <section style="max-width:1120px; margin:0 auto; padding:50px 40px 20px;">
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:22px;">
+          <sc-for list="{{ features }}" as="f" hint-placeholder-count="4">
+            <div style="display:flex; gap:18px; padding:26px; border-radius:22px; background:oklch(0.93 0.014 82); box-shadow:8px 8px 18px oklch(0.84 0.022 72), -8px -8px 18px oklch(0.99 0.008 88);">
+              <div style="flex:0 0 auto; width:46px; height:46px; border-radius:14px; background:{{ f.tint }}; display:flex; align-items:center; justify-content:center;">
+                <span style="width:16px; height:16px; background:{{ f.mark }}; border-radius:{{ f.round }};"></span>
+              </div>
+              <div>
+                <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:19px; font-weight:700; color:oklch(0.26 0.02 60);">{{ f.title }}</div>
+                <div style="margin-top:5px; font-size:14px; line-height:1.5; color:oklch(0.48 0.02 60); text-wrap:pretty;">{{ f.body }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- pricing -->
+      <section style="max-width:1120px; margin:0 auto; padding:50px 40px 20px;">
+        <div style="text-align:center;">
+          <div style="font-size:13px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:oklch(0.62 0.17 42);">Pricing</div>
+          <h2 style="margin:8px 0 0; font-family:'Anton',sans-serif; font-size:38px; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Simple, honest plans.</h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:36px; align-items:start;">
+          <sc-for list="{{ plans }}" as="pl" hint-placeholder-count="3">
+            <div style="padding:30px; border-radius:24px; background:oklch(0.93 0.014 82); box-shadow:{{ pl.shadow }};">
+              <sc-if value="{{ pl.popular }}" hint-placeholder-val="{{ false }}">
+                <div style="display:inline-block; padding:5px 12px; border-radius:999px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-size:11px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; margin-bottom:14px;">Most popular</div>
+              </sc-if>
+              <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:18px; font-weight:700; color:oklch(0.5 0.03 60); letter-spacing:0.3px;">{{ pl.name }}</div>
+              <div style="display:flex; align-items:baseline; gap:4px; margin-top:6px;">
+                <span style="font-family:'Anton',sans-serif; font-size:44px; color:oklch(0.24 0.02 60);">{{ pl.price }}</span>
+                <span style="font-size:14px; font-weight:600; color:oklch(0.55 0.03 60);">{{ pl.per }}</span>
+              </div>
+              <div style="margin-top:18px; display:flex; flex-direction:column; gap:11px;">
+                <sc-for list="{{ pl.feats }}" as="ft" hint-placeholder-count="3">
+                  <div style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight:500; color:oklch(0.4 0.02 60);">
+                    <span style="width:18px; height:18px; border-radius:50%; background:oklch(0.62 0.14 150 / 0.16); display:flex; align-items:center; justify-content:center; color:oklch(0.45 0.13 150); font-size:11px; font-weight:800;">✓</span>{{ ft }}
+                  </div>
+                </sc-for>
+              </div>
+              <button onClick="{{ goApp }}" style="margin-top:24px; width:100%; padding:14px; border:none; border-radius:14px; background:{{ pl.btnBg }}; color:{{ pl.btnFg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:{{ pl.btnShadow }};">{{ pl.cta }}</button>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <!-- final CTA -->
+      <section style="max-width:1120px; margin:0 auto; padding:50px 40px 60px;">
+        <div style="padding:48px; border-radius:28px; background:oklch(0.93 0.014 82); text-align:center; box-shadow:inset 6px 6px 16px oklch(0.85 0.02 72), inset -6px -6px 16px oklch(0.99 0.008 88);">
+          <h2 style="margin:0; font-family:'Anton',sans-serif; font-size:42px; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Ready to ditch the paper?</h2>
+          <p style="margin:14px 0 0; font-size:16px; color:oklch(0.48 0.02 60);">Upload your menu and see it come alive — free, in under a minute.</p>
+          <button onClick="{{ goApp }}" style="margin-top:26px; padding:16px 34px; border:none; border-radius:16px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:18px; font-weight:700; letter-spacing:0.4px; cursor:pointer; box-shadow:7px 7px 16px oklch(0.62 0.17 42 / 0.4), -4px -4px 12px oklch(0.99 0.008 88);">Build my menu now</button>
+        </div>
+        <div style="margin-top:34px; display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:600; color:oklch(0.55 0.03 60);">
+          <span>© 2026 Plate</span>
+          <span style="display:flex; gap:20px;"><span>Privacy</span><span>Terms</span><span>Contact</span></span>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <!-- ================= AUTH ================= -->
+  <sc-if value="{{ isAuth }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; min-height:calc(100% - 74px);">
+      <!-- left brand panel -->
+      <div style="display:flex; flex-direction:column; justify-content:center; padding:60px 56px; gap:26px;">
+        <div>
+          <div style="display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:999px; background:oklch(0.93 0.014 82); font-size:12.5px; font-weight:700; letter-spacing:0.4px; color:oklch(0.5 0.14 45); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+            <span style="width:8px; height:8px; border-radius:50%; background:oklch(0.62 0.17 42);"></span>{{ authBadge }}
+          </div>
+          <h1 style="margin:20px 0 0; font-family:'Anton',sans-serif; font-size:46px; line-height:1; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">{{ authHeadline }}</h1>
+          <p style="margin:16px 0 0; font-size:16px; line-height:1.5; max-width:400px; color:oklch(0.46 0.02 60); text-wrap:pretty;">{{ authSub }}</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <sc-for list="{{ authPerks }}" as="p" hint-placeholder-count="3">
+            <div style="display:flex; align-items:center; gap:13px;">
+              <div style="width:34px; height:34px; border-radius:10px; background:oklch(0.93 0.014 82); display:flex; align-items:center; justify-content:center; color:oklch(0.45 0.13 150); font-size:14px; font-weight:800; box-shadow:4px 4px 9px oklch(0.86 0.02 74), -4px -4px 9px oklch(0.99 0.008 88);">✓</div>
+              <span style="font-size:14.5px; font-weight:600; color:oklch(0.4 0.02 60);">{{ p }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- right form card -->
+      <div style="display:flex; align-items:center; justify-content:center; padding:40px 56px 56px;">
+        <div style="width:100%; max-width:400px; padding:34px; border-radius:26px; background:oklch(0.93 0.014 82); box-shadow:10px 10px 26px oklch(0.83 0.025 72), -10px -10px 26px oklch(0.99 0.008 88);">
+          <!-- tab toggle -->
+          <div style="display:flex; gap:8px; padding:6px; border-radius:15px; background:oklch(0.93 0.014 82); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+            <button onClick="{{ goLogin }}" style="flex:1; padding:11px; border:none; border-radius:11px; background:oklch(0.93 0.014 82); color:{{ loginTabFg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:14.5px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:{{ loginTabShadow }};">Sign in</button>
+            <button onClick="{{ goRegister }}" style="flex:1; padding:11px; border:none; border-radius:11px; background:oklch(0.93 0.014 82); color:{{ registerTabFg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:14.5px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:{{ registerTabShadow }};">Register</button>
+          </div>
+
+          <div style="margin-top:24px; display:flex; flex-direction:column; gap:16px;">
+            <sc-if value="{{ isRegister }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <label style="display:block; font-size:11px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.56 0.03 60); margin-bottom:8px;">Cafe / Restaurant name</label>
+                <div style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:13px; background:oklch(0.93 0.014 82); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+                  <span style="font-size:14px; color:oklch(0.6 0.04 60);">⌂</span>
+                  <input placeholder="Bloom Cafe" style="flex:1; border:none; outline:none; background:transparent; font-family:'Barlow',sans-serif; font-size:15px; font-weight:600; color:oklch(0.26 0.02 60);" />
+                </div>
+              </div>
+            </sc-if>
+
+            <div>
+              <label style="display:block; font-size:11px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.56 0.03 60); margin-bottom:8px;">Email</label>
+              <div style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:13px; background:oklch(0.93 0.014 82); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+                <span style="font-size:14px; color:oklch(0.6 0.04 60);">✉</span>
+                <input type="email" placeholder="you@cafe.com" style="flex:1; border:none; outline:none; background:transparent; font-family:'Barlow',sans-serif; font-size:15px; font-weight:600; color:oklch(0.26 0.02 60);" />
+              </div>
+            </div>
+
+            <div>
+              <label style="display:block; font-size:11px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.56 0.03 60); margin-bottom:8px;">Password</label>
+              <div style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:13px; background:oklch(0.93 0.014 82); box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+                <span style="font-size:14px; color:oklch(0.6 0.04 60);">🔒</span>
+                <input type="password" placeholder="••••••••" style="flex:1; border:none; outline:none; background:transparent; font-family:'Barlow',sans-serif; font-size:15px; font-weight:600; color:oklch(0.26 0.02 60);" />
+              </div>
+            </div>
+
+            <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+                <label style="display:flex; align-items:center; gap:8px; font-weight:600; color:oklch(0.48 0.02 60); cursor:pointer;">
+                  <span style="width:18px; height:18px; border-radius:6px; background:oklch(0.93 0.014 82); box-shadow:inset 2px 2px 4px oklch(0.85 0.02 72), inset -2px -2px 4px oklch(0.99 0.008 88);"></span>Remember me
+                </label>
+                <span style="font-weight:700; color:oklch(0.5 0.14 45); cursor:pointer;">Forgot password?</span>
+              </div>
+            </sc-if>
+
+            <button onClick="{{ goApp }}" style="margin-top:4px; width:100%; padding:15px; border:none; border-radius:14px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.4px; cursor:pointer; box-shadow:6px 6px 14px oklch(0.62 0.17 42 / 0.38), -4px -4px 12px oklch(0.99 0.008 88);">{{ authCta }}</button>
+
+            <div style="display:flex; align-items:center; gap:12px; margin:2px 0;">
+              <span style="flex:1; height:1px; background:oklch(0.86 0.02 74);"></span>
+              <span style="font-size:12px; font-weight:600; color:oklch(0.6 0.03 60);">or continue with</span>
+              <span style="flex:1; height:1px; background:oklch(0.86 0.02 74);"></span>
+            </div>
+            <div style="display:flex; gap:12px;">
+              <sc-for list="{{ socials }}" as="s" hint-placeholder-count="2">
+                <button style="flex:1; display:flex; align-items:center; justify-content:center; gap:9px; padding:13px; border:none; border-radius:13px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; color:oklch(0.4 0.02 60); cursor:pointer; box-shadow:4px 4px 10px oklch(0.86 0.02 74), -4px -4px 10px oklch(0.99 0.008 88);"><span style="font-size:15px;">{{ s.g }}</span>{{ s.name }}</button>
+              </sc-for>
+            </div>
+
+            <div style="text-align:center; font-size:13.5px; font-weight:600; color:oklch(0.5 0.02 60);">
+              {{ authSwitchText }} <span onClick="{{ authSwitchAction }}" style="font-weight:700; color:oklch(0.5 0.14 45); cursor:pointer;">{{ authSwitchLink }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ================= APP / BUILDER ================= -->
+  <sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <!-- step indicator -->
+      <div style="display:flex; justify-content:center; gap:12px; padding:22px 40px 4px; flex-wrap:wrap;">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex; align-items:center; gap:9px; padding:9px 17px; border-radius:999px; background:oklch(0.93 0.014 82); box-shadow:{{ s.shadow }};">
+            <span style="width:22px; height:22px; border-radius:50%; background:{{ s.dotBg }}; color:{{ s.dotFg }}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">{{ s.n }}</span>
+            <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; color:{{ s.fg }};">{{ s.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 380px; gap:32px; max-width:1180px; margin:0 auto; padding:24px 40px 60px; align-items:start;">
+        <div>
+          <!-- UPLOAD -->
+          <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <h1 style="margin:0; font-family:'Anton',sans-serif; font-size:42px; line-height:1.02; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Turn your paper menu<br>into a live digital one.</h1>
+              <p style="margin:16px 0 0; font-size:16px; line-height:1.5; max-width:520px; color:oklch(0.46 0.02 60); text-wrap:pretty;">Snap a photo of your existing menu or drop a PDF. Our AI reads every dish, price and detail, then sorts it into <strong style="color:oklch(0.5 0.14 150);">Veg</strong> and <strong style="color:oklch(0.55 0.19 25);">Non-Veg</strong> — no typing required.</p>
+
+              <div style="margin-top:26px; height:280px; border-radius:24px; background:oklch(0.93 0.014 82); overflow:hidden; position:relative; box-shadow:inset 6px 6px 15px oklch(0.85 0.02 72), inset -6px -6px 15px oklch(0.99 0.008 88);">
+                <image-slot id="upload-menu" shape="rect" placeholder="Drop your menu photo or PDF here"></image-slot>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:14px; margin-top:22px;">
+                <button onClick="{{ generate }}" style="display:flex; align-items:center; gap:10px; padding:15px 26px; border:none; border-radius:15px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:17px; font-weight:700; letter-spacing:0.4px; cursor:pointer; box-shadow:7px 7px 16px oklch(0.62 0.17 42 / 0.4), -4px -4px 12px oklch(0.99 0.008 88);">
+                  <span style="width:12px; height:12px; background:oklch(0.99 0.01 85); transform:rotate(45deg); display:inline-block;"></span>Generate my menu with AI
+                </button>
+                <span style="font-size:13px; font-weight:600; color:oklch(0.55 0.03 60);">Takes about 20 seconds</span>
+              </div>
+
+              <div style="display:flex; gap:16px; margin-top:34px;">
+                <sc-for list="{{ valueProps }}" as="v" hint-placeholder-count="3">
+                  <div style="flex:1; padding:18px; border-radius:18px; background:oklch(0.93 0.014 82); box-shadow:6px 6px 14px oklch(0.85 0.02 72), -6px -6px 14px oklch(0.99 0.008 88);">
+                    <div style="width:34px; height:34px; border-radius:10px; background:{{ v.tint }}; display:flex; align-items:center; justify-content:center;">
+                      <span style="width:12px; height:12px; background:{{ v.mark }}; border-radius:{{ v.round }};"></span>
+                    </div>
+                    <div style="margin-top:12px; font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; color:oklch(0.26 0.02 60);">{{ v.title }}</div>
+                    <div style="margin-top:3px; font-size:13px; line-height:1.4; color:oklch(0.5 0.02 60);">{{ v.body }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- PROCESSING -->
+          <sc-if value="{{ isProcessing }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <h1 style="margin:0; font-family:'Anton',sans-serif; font-size:38px; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Reading your menu…</h1>
+              <p style="margin:12px 0 24px; font-size:15px; color:oklch(0.46 0.02 60);">AI is extracting dishes, prices and tagging Veg / Non-Veg.</p>
+              <div style="position:relative; height:300px; border-radius:24px; overflow:hidden; background:oklch(0.93 0.014 82); box-shadow:inset 6px 6px 15px oklch(0.85 0.02 72), inset -6px -6px 15px oklch(0.99 0.008 88);">
+                <image-slot id="upload-menu" shape="rect" placeholder="Your menu"></image-slot>
+                <div style="position:absolute; inset:0; background:oklch(0.62 0.17 42 / 0.06);"></div>
+                <div style="position:absolute; left:0; right:0; height:3px; background:oklch(0.62 0.17 42); box-shadow:0 0 22px 6px oklch(0.62 0.17 42 / 0.6); animation:plScan 1.6s ease-in-out infinite alternate;"></div>
+              </div>
+              <div style="margin-top:20px; display:flex; flex-direction:column; gap:9px;">
+                <sc-for list="{{ detected }}" as="d" hint-placeholder-count="4">
+                  <div style="display:flex; align-items:center; gap:11px; padding:12px 15px; border-radius:13px; background:oklch(0.93 0.014 82); box-shadow:4px 4px 10px oklch(0.86 0.02 74), -4px -4px 10px oklch(0.99 0.008 88); animation:plPop 0.4s ease both; animation-delay:{{ d.delay }};">
+                    <span style="width:9px; height:9px; border-radius:50%; background:{{ d.dot }};"></span>
+                    <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; flex:1; color:oklch(0.26 0.02 60);">{{ d.name }}</span>
+                    <span style="font-size:13px; font-weight:700; color:{{ d.dot }};">{{ d.tag }}</span>
+                    <span style="font-size:14px; font-weight:600; color:oklch(0.5 0.02 60);">{{ d.priceStr }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- REVIEW -->
+          <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div>
+                  <h1 style="margin:0; font-family:'Anton',sans-serif; font-size:34px; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Review &amp; tweak</h1>
+                  <p style="margin:8px 0 0; font-size:14.5px; color:oklch(0.46 0.02 60);">AI found <strong>{{ totalCount }} dishes</strong>. Tap the mark to flip Veg / Non-Veg, or <strong>Edit</strong> to change price &amp; ingredients.</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                  <span style="display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:oklch(0.5 0.14 150);"><span style="width:14px; height:14px; border:1.5px solid oklch(0.5 0.14 150); border-radius:3px; display:flex; align-items:center; justify-content:center;"><span style="width:6px; height:6px; border-radius:50%; background:oklch(0.5 0.14 150);"></span></span>{{ vegCount }} Veg</span>
+                  <span style="display:flex; align-items:center; gap:7px; font-size:13px; font-weight:700; color:oklch(0.55 0.19 25);"><span style="width:14px; height:14px; border:1.5px solid oklch(0.55 0.19 25); border-radius:3px; display:flex; align-items:center; justify-content:center;"><span style="width:6px; height:6px; border-radius:50%; background:oklch(0.55 0.19 25);"></span></span>{{ nonvegCount }} Non-Veg</span>
+                </div>
+              </div>
+
+              <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px; max-height:460px; overflow-y:auto; padding:4px 6px 4px 4px;">
+                <sc-for list="{{ items }}" as="it" hint-placeholder-count="6">
+                  <div style="flex:0 0 auto; border-radius:16px; background:oklch(0.93 0.014 82); overflow:hidden; box-shadow:{{ it.rowShadow }};">
+                    <div style="display:flex; align-items:center; gap:13px; padding:14px 16px;">
+                      <button onClick="{{ it.flip }}" title="Flip Veg / Non-Veg" style="flex:0 0 auto; width:28px; height:28px; border:2px solid {{ it.mark }}; border-radius:7px; background:oklch(0.93 0.014 82); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:2px 2px 5px oklch(0.86 0.02 74), -2px -2px 5px oklch(0.99 0.008 88);">
+                        <span style="width:11px; height:11px; border-radius:50%; background:{{ it.mark }};"></span>
+                      </button>
+                      <div style="flex:1; min-width:0;">
+                        <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:16px; font-weight:700; color:oklch(0.26 0.02 60);">{{ it.name }}</div>
+                        <div style="font-size:12px; font-weight:600; color:oklch(0.56 0.03 60); text-transform:uppercase; letter-spacing:0.6px;">{{ it.ingredientSummary }}</div>
+                      </div>
+                      <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:16px; font-weight:700; color:oklch(0.42 0.02 60);">{{ it.priceStr }}</div>
+                      <button onClick="{{ it.toggleEdit }}" style="flex:0 0 auto; padding:8px 15px; border:none; border-radius:10px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:13px; font-weight:700; color:{{ it.editFg }}; cursor:pointer; box-shadow:{{ it.editShadow }};">{{ it.editLabel }}</button>
+                    </div>
+
+                    <sc-if value="{{ it.editing }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:2px 16px 18px;">
+                        <div style="display:flex; gap:18px; margin-top:6px; flex-wrap:wrap;">
+                          <div>
+                            <label style="display:block; font-size:11px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.56 0.03 60); margin-bottom:7px;">Price (₹)</label>
+                            <div style="display:flex; align-items:center; gap:8px; padding:9px 13px; border-radius:11px; background:oklch(0.93 0.014 82); box-shadow:inset 3px 3px 6px oklch(0.86 0.02 74), inset -3px -3px 6px oklch(0.99 0.008 88);">
+                              <span style="font-size:15px; font-weight:700; color:oklch(0.55 0.03 60);">₹</span>
+                              <input type="number" value="{{ it.price }}" onInput="{{ it.setPrice }}" style="width:78px; border:none; outline:none; background:transparent; font-family:'Barlow Semi Condensed',sans-serif; font-size:16px; font-weight:700; color:oklch(0.24 0.02 60);" />
+                            </div>
+                          </div>
+                          <div style="flex:1; min-width:200px;">
+                            <label style="display:block; font-size:11px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.56 0.03 60); margin-bottom:7px;">Ingredients</label>
+                            <div style="display:flex; flex-wrap:wrap; gap:7px; align-items:center;">
+                              <sc-for list="{{ it.ingredients }}" as="ing" hint-placeholder-count="3">
+                                <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 8px 6px 12px; border-radius:999px; background:oklch(0.93 0.014 82); font-size:13px; font-weight:600; color:oklch(0.32 0.02 60); box-shadow:3px 3px 6px oklch(0.87 0.02 74), -3px -3px 6px oklch(0.99 0.008 88);">
+                                  {{ ing.name }}
+                                  <button onClick="{{ ing.remove }}" title="Remove" style="width:17px; height:17px; border:none; border-radius:50%; background:oklch(0.62 0.17 42 / 0.14); color:oklch(0.52 0.15 42); font-size:12px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;">×</button>
+                                </span>
+                              </sc-for>
+                              <div style="display:flex; align-items:center; gap:7px;">
+                                <input value="{{ it.draft }}" onInput="{{ it.setDraft }}" onKeyDown="{{ it.draftKey }}" placeholder="Add ingredient" style="width:130px; padding:8px 12px; border:none; border-radius:999px; outline:none; background:oklch(0.93 0.014 82); font-size:13px; font-weight:600; color:oklch(0.32 0.02 60); box-shadow:inset 2px 2px 5px oklch(0.86 0.02 74), inset -2px -2px 5px oklch(0.99 0.008 88);" />
+                                <button onClick="{{ it.addIng }}" style="width:32px; height:32px; border:none; border-radius:50%; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-size:18px; line-height:1; cursor:pointer; box-shadow:3px 3px 7px oklch(0.62 0.17 42 / 0.35), -2px -2px 6px oklch(0.99 0.008 88);">+</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <button onClick="{{ it.toggleEdit }}" style="margin-top:16px; padding:10px 20px; border:none; border-radius:11px; background:oklch(0.62 0.14 150); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:13.5px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:4px 4px 10px oklch(0.62 0.14 150 / 0.35), -3px -3px 8px oklch(0.99 0.008 88);">Done</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:14px; margin-top:22px;">
+                <button onClick="{{ publish }}" style="padding:15px 26px; border:none; border-radius:15px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:17px; font-weight:700; letter-spacing:0.4px; cursor:pointer; box-shadow:7px 7px 16px oklch(0.62 0.17 42 / 0.4), -4px -4px 12px oklch(0.99 0.008 88);">Publish my menu</button>
+                <button onClick="{{ reset }}" style="padding:15px 20px; border:none; border-radius:15px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; color:oklch(0.46 0.02 60); cursor:pointer; box-shadow:5px 5px 12px oklch(0.86 0.02 74), -5px -5px 12px oklch(0.99 0.008 88);">Start over</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- PUBLISHED -->
+          <sc-if value="{{ isPublished }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="display:inline-flex; align-items:center; gap:9px; padding:9px 16px; border-radius:999px; background:oklch(0.93 0.014 82); color:oklch(0.42 0.12 150); font-size:13px; font-weight:700; letter-spacing:0.4px; box-shadow:inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88);">
+                <span style="width:9px; height:9px; border-radius:50%; background:oklch(0.5 0.14 150);"></span>Live &amp; published
+              </div>
+              <h1 style="margin:14px 0 0; font-family:'Anton',sans-serif; font-size:38px; letter-spacing:0.3px; color:oklch(0.24 0.02 60);">Your menu is live.</h1>
+              <p style="margin:10px 0 0; font-size:15px; color:oklch(0.46 0.02 60); max-width:460px;">Print the QR for your tables and share the link on WhatsApp. Edits update instantly — no reprinting.</p>
+
+              <div style="display:flex; gap:22px; margin-top:26px; flex-wrap:wrap;">
+                <div style="padding:22px; border-radius:22px; background:oklch(0.93 0.014 82); text-align:center; box-shadow:8px 8px 18px oklch(0.84 0.022 72), -8px -8px 18px oklch(0.99 0.008 88);">
+                  <div style="display:grid; grid-template-columns:repeat(23, 1fr); width:161px; height:161px; padding:11px; background:oklch(0.95 0.012 84); border-radius:12px; box-shadow:inset 3px 3px 7px oklch(0.86 0.02 74), inset -3px -3px 7px oklch(0.99 0.008 88);">
+                    <sc-for list="{{ qr }}" as="cell" hint-placeholder-count="120">
+                      <span style="background:{{ cell.c }};"></span>
+                    </sc-for>
+                  </div>
+                  <div style="margin-top:14px; font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:oklch(0.55 0.03 60);">Scan at the table</div>
+                  <button style="margin-top:11px; width:100%; padding:11px; border:none; border-radius:12px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; color:oklch(0.35 0.02 60); cursor:pointer; box-shadow:4px 4px 10px oklch(0.86 0.02 74), -4px -4px 10px oklch(0.99 0.008 88);">Download QR</button>
+                </div>
+
+                <div style="flex:1; min-width:240px; display:flex; flex-direction:column; gap:14px;">
+                  <div style="padding:18px; border-radius:18px; background:oklch(0.93 0.014 82); box-shadow:6px 6px 14px oklch(0.85 0.02 72), -6px -6px 14px oklch(0.99 0.008 88);">
+                    <div style="font-size:12px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.56 0.03 60);">Shareable link</div>
+                    <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
+                      <div style="flex:1; padding:12px 14px; border-radius:11px; background:oklch(0.93 0.014 82); font-size:14px; font-weight:600; color:oklch(0.32 0.02 60); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; box-shadow:inset 3px 3px 6px oklch(0.86 0.02 74), inset -3px -3px 6px oklch(0.99 0.008 88);">{{ link }}</div>
+                      <button style="padding:12px 17px; border:none; border-radius:11px; background:oklch(0.28 0.02 60); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; cursor:pointer;">Copy</button>
+                    </div>
+                  </div>
+                  <button style="display:flex; align-items:center; justify-content:center; gap:9px; padding:16px; border:none; border-radius:15px; background:oklch(0.62 0.14 150); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:6px 6px 14px oklch(0.62 0.14 150 / 0.35), -4px -4px 12px oklch(0.99 0.008 88);">
+                    <span style="width:9px; height:9px; border-radius:50%; background:oklch(0.99 0.01 85);"></span>Share on WhatsApp
+                  </button>
+                  <button onClick="{{ backToReview }}" style="padding:15px; border:none; border-radius:15px; background:oklch(0.93 0.014 82); font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; color:oklch(0.46 0.02 60); cursor:pointer; box-shadow:5px 5px 12px oklch(0.86 0.02 74), -5px -5px 12px oklch(0.99 0.008 88);">Edit menu items</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- RIGHT: live phone preview -->
+        <div style="position:sticky; top:92px;">
+          <div style="font-size:12px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; color:oklch(0.56 0.03 60); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            <span style="width:7px; height:7px; border-radius:50%; background:oklch(0.62 0.17 42); animation:plPulse 1.8s ease infinite;"></span>Live preview
+          </div>
+          <div style="width:100%; max-width:340px; margin:0 auto; background:oklch(0.93 0.014 82); border-radius:40px; padding:12px; box-shadow:14px 14px 34px oklch(0.83 0.025 72), -14px -14px 34px oklch(0.99 0.008 88);">
+            <div style="border-radius:30px; overflow:hidden; background:oklch(0.95 0.012 84); height:600px; display:flex; flex-direction:column; box-shadow:inset 3px 3px 8px oklch(0.86 0.02 74), inset -2px -2px 6px oklch(0.99 0.008 88);">
+              <div style="padding:10px 12px 0;">
+                <div style="position:relative; height:128px; border-radius:20px; overflow:hidden; box-shadow:5px 5px 12px oklch(0.85 0.02 72), -5px -5px 12px oklch(0.99 0.008 88);">
+                  <image-slot id="cafe-banner" shape="rect" placeholder="Cafe banner"></image-slot>
+                  <div style="position:absolute; inset:0; background:linear-gradient(to top, oklch(0.14 0.02 55 / 0.8) 6%, transparent 60%); pointer-events:none;"></div>
+                  <div style="position:absolute; top:10px; right:10px; display:flex; gap:7px;">
+                    <div style="width:28px; height:28px; border-radius:9px; background:oklch(0.95 0.012 84 / 0.32); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; color:oklch(0.99 0.01 85); font-size:12px; border:1px solid oklch(1 0 0 / 0.25);">♡</div>
+                    <div style="width:28px; height:28px; border-radius:9px; background:oklch(0.95 0.012 84 / 0.32); backdrop-filter:blur(5px); display:flex; align-items:center; justify-content:center; color:oklch(0.99 0.01 85); font-size:12px; border:1px solid oklch(1 0 0 / 0.25);">⤴</div>
+                  </div>
+                  <div style="position:absolute; bottom:11px; left:14px; right:14px; pointer-events:none;">
+                    <div style="font-family:'Anton',sans-serif; font-size:22px; color:oklch(0.99 0.01 85); letter-spacing:0.3px; line-height:1;">Bloom Cafe</div>
+                    <div style="display:flex; align-items:center; gap:9px; margin-top:6px; font-size:10px; font-weight:600; color:oklch(0.92 0.01 85);">
+                      <span>◉ Downtown District</span>
+                      <span style="padding:2px 8px; border-radius:999px; background:oklch(0.95 0.012 84 / 0.28); backdrop-filter:blur(5px);">★ 4.9 (2k+)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <sc-if value="{{ hasItems }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; gap:8px; padding:12px 14px 8px;">
+                  <button onClick="{{ setVeg }}" style="flex:1; padding:10px; border:none; border-radius:12px; background:oklch(0.95 0.012 84); color:{{ vegTabFg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:{{ vegTabShadow }};">Veg</button>
+                  <button onClick="{{ setNonveg }}" style="flex:1; padding:10px; border:none; border-radius:12px; background:oklch(0.95 0.012 84); color:{{ nvTabFg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:{{ nvTabShadow }};">Non-Veg</button>
+                </div>
+                <div style="flex:1; overflow-y:auto; padding:2px 14px 18px; display:flex; flex-direction:column; gap:10px;">
+                  <!-- featured -->
+                  <sc-if value="{{ hasFeatured }}" hint-placeholder-val="{{ false }}">
+                    <div style="border-radius:15px; overflow:hidden; background:oklch(0.95 0.012 84); box-shadow:4px 4px 11px oklch(0.86 0.02 73), -4px -4px 11px oklch(0.99 0.008 88);">
+                      <div style="position:relative; height:96px;">
+                        <image-slot id="preview-featured" shape="rect" placeholder="Featured dish"></image-slot>
+                        <div style="position:absolute; top:7px; left:7px; padding:3px 9px; border-radius:999px; background:oklch(0.62 0.17 42); color:oklch(0.99 0.01 85); font-size:8px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase;">★ Popular this week</div>
+                      </div>
+                      <div style="padding:10px 12px 12px;">
+                        <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+                          <div style="display:flex; align-items:center; gap:7px; min-width:0;">
+                            <span style="flex:0 0 auto; width:14px; height:14px; border:1.5px solid {{ previewFeatured.mark }}; border-radius:3px; display:flex; align-items:center; justify-content:center;"><span style="width:6px; height:6px; border-radius:50%; background:{{ previewFeatured.mark }};"></span></span>
+                            <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; color:oklch(0.26 0.02 60);">{{ previewFeatured.name }}</span>
+                          </div>
+                          <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; color:oklch(0.62 0.17 42); white-space:nowrap;">{{ previewFeatured.priceStr }}</span>
+                        </div>
+                        <div style="margin-top:5px; font-size:10.5px; line-height:1.4; color:oklch(0.52 0.02 60);">{{ previewFeatured.ingredientSummary }}</div>
+                        <div style="margin-top:9px; padding:8px; border-radius:10px; text-align:center; font-family:'Barlow Semi Condensed',sans-serif; font-size:11.5px; font-weight:700; letter-spacing:0.3px; color:oklch(0.5 0.14 45); box-shadow:inset 2px 2px 5px oklch(0.86 0.02 74), inset -2px -2px 5px oklch(0.99 0.008 88);">＋ Add to Order</div>
+                      </div>
+                    </div>
+                  </sc-if>
+                  <!-- remaining rows -->
+                  <sc-for list="{{ previewRest }}" as="p" hint-placeholder-count="4">
+                    <div style="display:flex; align-items:center; gap:11px; padding:12px; border-radius:13px; background:oklch(0.95 0.012 84); box-shadow:3px 3px 7px oklch(0.87 0.02 74), -3px -3px 7px oklch(0.99 0.008 88);">
+                      <span style="flex:0 0 auto; width:16px; height:16px; border:1.5px solid {{ p.mark }}; border-radius:3px; display:flex; align-items:center; justify-content:center;"><span style="width:7px; height:7px; border-radius:50%; background:{{ p.mark }};"></span></span>
+                      <div style="flex:1; min-width:0;">
+                        <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:14.5px; font-weight:700; color:oklch(0.26 0.02 60);">{{ p.name }}</div>
+                        <div style="font-size:10.5px; font-weight:600; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.6 0.03 60);">{{ p.ingredientSummary }}</div>
+                      </div>
+                      <div style="font-family:'Barlow Semi Condensed',sans-serif; font-size:14.5px; font-weight:700; color:oklch(0.62 0.17 42);">{{ p.priceStr }}</div>
+                      <span style="flex:0 0 auto; width:26px; height:26px; border-radius:9px; background:oklch(0.95 0.012 84); color:oklch(0.5 0.14 45); font-size:16px; line-height:1; display:flex; align-items:center; justify-content:center; box-shadow:3px 3px 6px oklch(0.87 0.02 74), -3px -3px 6px oklch(0.99 0.008 88);">+</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ emptyPreview }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; gap:14px;">
+                  <div style="width:52px; height:52px; border-radius:15px; background:oklch(0.95 0.012 84); box-shadow:inset 3px 3px 7px oklch(0.86 0.02 74), inset -3px -3px 7px oklch(0.99 0.008 88);"></div>
+                  <div style="font-size:13.5px; font-weight:600; color:oklch(0.55 0.03 60); line-height:1.4;">Your live menu will appear here once AI reads your upload.</div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  seed() {
+    return [
+      { id:'avotoast', name:'Avocado Toast', type:'Brunch', cat:'veg', price:220, ingredients:['Sourdough','Avocado','Chilli flakes','Lime'] },
+      { id:'margpanini', name:'Margherita Panini', type:'Sandwich', cat:'veg', price:190, ingredients:['Mozzarella','Tomato','Basil','Pesto'] },
+      { id:'paneerwrap', name:'Paneer Tikka Wrap', type:'Wrap', cat:'veg', price:210, ingredients:['Paneer','Onion','Mint chutney','Roomali'] },
+      { id:'chai', name:'Masala Chai', type:'Beverage', cat:'veg', price:90, ingredients:['Assam tea','Milk','Ginger','Cardamom'] },
+      { id:'capp', name:'Cappuccino', type:'Coffee', cat:'veg', price:150, ingredients:['Espresso','Steamed milk','Foam'] },
+      { id:'coldbrew', name:'Cold Brew', type:'Coffee', cat:'veg', price:170, ingredients:['Cold brew concentrate','Ice','Water'] },
+      { id:'muffin', name:'Blueberry Muffin', type:'Bakery', cat:'veg', price:120, ingredients:['Flour','Blueberries','Butter','Vanilla'] },
+      { id:'banana', name:'Banana Bread', type:'Bakery', cat:'veg', price:110, ingredients:['Banana','Walnut','Cinnamon'] },
+      { id:'salad', name:'Garden Salad', type:'Salad', cat:'veg', price:180, ingredients:['Greens','Cucumber','Cherry tomato','Vinaigrette'] },
+      { id:'vegclub', name:'Veg Club Sandwich', type:'Sandwich', cat:'veg', price:200, ingredients:['Grilled veg','Cheese','Lettuce','Mayo'] },
+      { id:'chickpanini', name:'Chicken Panini', type:'Sandwich', cat:'nonveg', price:240, ingredients:['Grilled chicken','Cheese','Peppers','Aioli'] },
+      { id:'benedict', name:'Eggs Benedict', type:'Brunch', cat:'nonveg', price:260, ingredients:['Poached eggs','Ham','Muffin','Hollandaise'] },
+      { id:'baconroll', name:'Bacon Roll', type:'Brunch', cat:'nonveg', price:230, ingredients:['Bacon','Brioche','Egg','Ketchup'] },
+      { id:'chicksalad', name:'Grilled Chicken Salad', type:'Salad', cat:'nonveg', price:270, ingredients:['Grilled chicken','Greens','Parmesan','Caesar'] },
+      { id:'tunamelt', name:'Tuna Melt', type:'Sandwich', cat:'nonveg', price:250, ingredients:['Tuna','Cheddar','Onion','Sourdough'] },
+    ];
+  }
+
+  state = { view:'landing', step:'upload', items:null, previewTab:'veg', editingId:null, drafts:{}, landingTab:'veg', authMode:'login' };
+
+  landingData() {
+    return {
+      veg: {
+        heading: 'Signature Veg',
+        featured: { name:'Truffle Margherita', priceStr:'₹380', desc:'San Marzano base, fresh burrata, wild basil, olive oil.', mark:'oklch(0.5 0.14 150)' },
+        rest: [
+          { slot:'lp-v1', name:'Paneer Tikka Burger', priceStr:'₹320', desc:'Char-grilled paneer, mint aioli, slaw.', mark:'oklch(0.5 0.14 150)' },
+          { slot:'lp-v2', name:'Garden Salad Bowl', priceStr:'₹260', desc:'Greens, cherry tomato, vinaigrette.', mark:'oklch(0.5 0.14 150)' },
+        ],
+      },
+      nonveg: {
+        heading: 'Signature Non-Veg',
+        featured: { name:'Burrata & Prosciutto', priceStr:'₹520', desc:'24-month prosciutto di parma, arugula, burrata.', mark:'oklch(0.55 0.19 25)' },
+        rest: [
+          { slot:'lp-n1', name:'Truffle Umami Burger', priceStr:'₹340', desc:'Wagyu patty, truffle aioli, aged gruyère.', mark:'oklch(0.55 0.19 25)' },
+          { slot:'lp-n2', name:'Spicy Crispy Chicken', priceStr:'₹300', desc:'Buttermilk fried chicken, spicy slaw.', mark:'oklch(0.55 0.19 25)' },
+        ],
+      },
+    };
+  }
+
+  itemsList() { return this.state.items || this.seed(); }
+  updateItem(id, patch) {
+    const next = this.itemsList().map(x => x.id === id ? { ...x, ...(typeof patch === 'function' ? patch(x) : patch) } : x);
+    this.setState({ items: next });
+  }
+  mark(cat) { return cat === 'veg' ? 'oklch(0.5 0.14 150)' : 'oklch(0.55 0.19 25)'; }
+  price(p) { return '\u20b9' + p; }
+
+  qrCells() {
+    const n = 23;
+    const m = Array.from({ length: n }, () => Array(n).fill(0));
+    const finder = (r, c) => {
+      for (let i = 0; i < 7; i++) for (let j = 0; j < 7; j++) {
+        const edge = i === 0 || i === 6 || j === 0 || j === 6;
+        const core = i >= 2 && i <= 4 && j >= 2 && j <= 4;
+        m[r + i][c + j] = (edge || core) ? 1 : 0;
+      }
+    };
+    finder(0, 0); finder(0, n - 7); finder(n - 7, 0);
+    let s = 9;
+    const rnd = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      const inF = (r < 8 && c < 8) || (r < 8 && c >= n - 8) || (r >= n - 8 && c < 8);
+      if (!inF) m[r][c] = rnd() > 0.52 ? 1 : 0;
+    }
+    const cells = [];
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++)
+      cells.push({ c: m[r][c] ? 'oklch(0.24 0.02 60)' : 'transparent' });
+    return cells;
+  }
+
+  RAISED = '6px 6px 14px oklch(0.85 0.02 72), -6px -6px 14px oklch(0.99 0.008 88)';
+  RAISED_SM = '4px 4px 10px oklch(0.86 0.02 74), -4px -4px 10px oklch(0.99 0.008 88)';
+  INSET = 'inset 3px 3px 7px oklch(0.85 0.02 72), inset -3px -3px 7px oklch(0.99 0.008 88)';
+
+  renderVals() {
+    const view = this.state.view;
+    const step = this.state.step;
+    const list = this.itemsList();
+
+    const editingId = this.state.editingId;
+    const drafts = this.state.drafts || {};
+    const decorated = list.map(it => {
+      const ings = it.ingredients || [];
+      const editing = editingId === it.id;
+      const addIng = () => {
+        const d = (this.state.drafts || {})[it.id];
+        const v = (d || '').trim();
+        if (!v) return;
+        this.updateItem(it.id, x => ({ ingredients: [...(x.ingredients || []), v] }));
+        this.setState(s => ({ drafts: { ...(s.drafts || {}), [it.id]: '' } }));
+      };
+      return {
+        ...it,
+        priceStr: this.price(it.price),
+        mark: this.mark(it.cat),
+        rowShadow: editing ? this.INSET : this.RAISED_SM,
+        ingredientSummary: ings.length ? ings.slice(0, 4).join(' · ') : it.type,
+        editing,
+        editLabel: editing ? 'Close' : 'Edit',
+        editShadow: editing ? this.INSET : this.RAISED_SM,
+        editFg: editing ? 'oklch(0.52 0.15 42)' : 'oklch(0.46 0.02 60)',
+        draft: drafts[it.id] || '',
+        ingredients: ings.map((name, idx) => ({
+          name,
+          remove: () => this.updateItem(it.id, x => ({ ingredients: (x.ingredients || []).filter((_, i) => i !== idx) })),
+        })),
+        flip: () => this.updateItem(it.id, x => ({ cat: x.cat === 'veg' ? 'nonveg' : 'veg' })),
+        toggleEdit: () => this.setState(s => ({ editingId: s.editingId === it.id ? null : it.id })),
+        setPrice: (e) => this.updateItem(it.id, { price: parseInt(e.target.value, 10) || 0 }),
+        setDraft: (e) => { const v = e.target.value; this.setState(s => ({ drafts: { ...(s.drafts || {}), [it.id]: v } })); },
+        draftKey: (e) => { if (e.key === 'Enter') addIng(); },
+        addIng,
+      };
+    });
+
+    const stepOrder = ['upload', 'review', 'published'];
+    const curIdx = step === 'processing' ? 0 : stepOrder.indexOf(step);
+    const stepDefs = [{ n:'1', label:'Upload' }, { n:'2', label:'AI Review' }, { n:'3', label:'Publish' }];
+    const steps = stepDefs.map((sd, i) => {
+      const on = i === curIdx, done = i < curIdx;
+      return {
+        n: sd.n, label: sd.label,
+        shadow: on ? this.INSET : this.RAISED_SM,
+        dotBg: on ? 'oklch(0.62 0.17 42)' : done ? 'oklch(0.62 0.14 150)' : 'oklch(0.88 0.01 80)',
+        dotFg: (on || done) ? 'oklch(0.99 0.01 85)' : 'oklch(0.5 0.02 60)',
+        fg: on ? 'oklch(0.26 0.02 60)' : 'oklch(0.52 0.02 60)',
+      };
+    });
+
+    const tab = this.state.previewTab;
+    const previewItems = decorated.filter(d => d.cat === tab);
+    const vegCount = decorated.filter(d => d.cat === 'veg').length;
+    const nonvegCount = decorated.length - vegCount;
+    const heroPreview = decorated.filter(d => d.cat === 'veg').slice(0, 4);
+
+    const detected = ['avotoast', 'chickpanini', 'capp', 'benedict', 'paneerwrap', 'baconroll']
+      .map((id, i) => {
+        const it = decorated.find(x => x.id === id);
+        return { name: it.name, priceStr: it.priceStr, dot: it.mark, tag: it.cat === 'veg' ? 'Veg' : 'Non-Veg', delay: (i * 0.28) + 's' };
+      });
+
+    const lTab = this.state.landingTab;
+    const lData = this.landingData()[lTab];
+    const RSM = '3px 3px 7px oklch(0.87 0.02 74), -3px -3px 7px oklch(0.99 0.008 88)';
+    const INS = 'inset 3px 3px 6px oklch(0.85 0.02 72), inset -3px -3px 6px oklch(0.99 0.008 88)';
+
+    return {
+      landingHeading: lData.heading,
+      landingFeatured: lData.featured,
+      landingRest: lData.rest,
+      setLandingVeg: () => this.setState({ landingTab: 'veg' }),
+      setLandingNonveg: () => this.setState({ landingTab: 'nonveg' }),
+      lVegFg: lTab === 'veg' ? 'oklch(0.45 0.13 150)' : 'oklch(0.55 0.03 60)',
+      lVegShadow: lTab === 'veg' ? INS : RSM,
+      lNvFg: lTab === 'nonveg' ? 'oklch(0.5 0.18 25)' : 'oklch(0.55 0.03 60)',
+      lNvShadow: lTab === 'nonveg' ? INS : RSM,
+
+      isLanding: view === 'landing',
+      isApp: view === 'app',
+      isAuth: view === 'auth',
+      goHome: () => this.setState({ view: 'landing' }),
+      goApp: () => this.setState({ view: 'app' }),
+      goLogin: () => this.setState({ view: 'auth', authMode: 'login' }),
+      goRegister: () => this.setState({ view: 'auth', authMode: 'register' }),
+      homeFg: view === 'landing' ? 'oklch(0.26 0.02 60)' : 'oklch(0.5 0.02 60)',
+      homeShadow: view === 'landing' ? this.INSET : this.RAISED_SM,
+      builderFg: view === 'app' ? 'oklch(0.26 0.02 60)' : 'oklch(0.5 0.02 60)',
+      builderShadow: view === 'app' ? this.INSET : this.RAISED_SM,
+      authFg: view === 'auth' ? 'oklch(0.26 0.02 60)' : 'oklch(0.5 0.02 60)',
+      authShadow: view === 'auth' ? this.INSET : this.RAISED_SM,
+
+      isLogin: this.state.authMode === 'login',
+      isRegister: this.state.authMode === 'register',
+      authBadge: this.state.authMode === 'login' ? 'Welcome back' : 'Free forever plan',
+      authHeadline: this.state.authMode === 'login' ? 'Sign in to\nyour menus.' : 'Create your\nPlate account.',
+      authSub: this.state.authMode === 'login'
+        ? 'Pick up where you left off — edit dishes, prices and republish in seconds.'
+        : 'Upload your first menu and get a live page with a QR code in under a minute.',
+      authPerks: this.state.authMode === 'login'
+        ? ['Your menus, live and editable', 'Instant QR + WhatsApp link', 'Changes update with no reprint']
+        : ['No credit card required', 'AI reads & sorts Veg / Non-Veg', 'Your first menu is free'],
+      authCta: this.state.authMode === 'login' ? 'Sign in' : 'Create account',
+      loginTabFg: this.state.authMode === 'login' ? 'oklch(0.26 0.02 60)' : 'oklch(0.52 0.02 60)',
+      loginTabShadow: this.state.authMode === 'login' ? this.INSET : this.RAISED_SM,
+      registerTabFg: this.state.authMode === 'register' ? 'oklch(0.26 0.02 60)' : 'oklch(0.52 0.02 60)',
+      registerTabShadow: this.state.authMode === 'register' ? this.INSET : this.RAISED_SM,
+      socials: [{ g: 'G', name: 'Google' }, { g: '', name: 'Apple' }],
+      authSwitchText: this.state.authMode === 'login' ? "New to Plate?" : 'Already have an account?',
+      authSwitchLink: this.state.authMode === 'login' ? 'Create an account' : 'Sign in',
+      authSwitchAction: this.state.authMode === 'login'
+        ? () => this.setState({ authMode: 'register' })
+        : () => this.setState({ authMode: 'login' }),
+
+      steps,
+      isUpload: step === 'upload',
+      isProcessing: step === 'processing',
+      isReview: step === 'review',
+      isPublished: step === 'published',
+      items: decorated,
+      detected,
+      totalCount: decorated.length,
+      vegCount, nonvegCount,
+      previewItems, heroPreview,
+      previewFeatured: previewItems[0] || null,
+      previewRest: previewItems.slice(1),
+      hasFeatured: previewItems.length > 0,
+      hasItems: step !== 'upload',
+      emptyPreview: step === 'upload',
+      link: 'plate.menu/bloom-cafe',
+      qr: this.qrCells(),
+
+      stats: [
+        { num: '2,400+', label: 'Menus live' },
+        { num: '20s', label: 'Avg. build time' },
+        { num: '0', label: 'Reprints needed' },
+      ],
+      how: [
+        { n: '1', title: 'Upload your menu', body: 'Photo, screenshot or PDF — whatever you already have.' },
+        { n: '2', title: 'AI reads & sorts', body: 'Dishes, prices and Veg / Non-Veg tags, done automatically.' },
+        { n: '3', title: 'Share the QR & link', body: 'Print for tables, drop the link in WhatsApp. Edit anytime.' },
+      ],
+      features: [
+        { title: 'Reads any format', body: 'Photos, PDFs or screenshots — the AI handles messy real-world menus.', tint: 'oklch(0.62 0.17 42 / 0.14)', mark: 'oklch(0.62 0.17 42)', round: '3px' },
+        { title: 'Auto Veg / Non-Veg', body: 'Every dish tagged and split into clean sections for your guests.', tint: 'oklch(0.62 0.14 150 / 0.16)', mark: 'oklch(0.5 0.14 150)', round: '50%' },
+        { title: 'Edit price & ingredients', body: 'Change a price or add ingredients in seconds — guests see it live.', tint: 'oklch(0.7 0.13 80 / 0.2)', mark: 'oklch(0.6 0.13 80)', round: '4px' },
+        { title: 'QR + link instantly', body: 'A branded page, a printable QR, and a WhatsApp-ready link.', tint: 'oklch(0.28 0.02 60 / 0.1)', mark: 'oklch(0.28 0.02 60)', round: '3px' },
+      ],
+      plans: [
+        { name: 'Starter', price: 'Free', per: '', popular: false, cta: 'Start free',
+          feats: ['1 menu', 'QR + shareable link', 'Veg / Non-Veg sorting'],
+          shadow: this.RAISED, btnBg: 'oklch(0.93 0.014 82)', btnFg: 'oklch(0.3 0.02 60)', btnShadow: this.RAISED_SM },
+        { name: 'Pro', price: '₹299', per: '/mo', popular: true, cta: 'Go Pro',
+          feats: ['Unlimited menus', 'Custom branding & banner', 'Photo per dish', 'Live price editing'],
+          shadow: this.INSET, btnBg: 'oklch(0.62 0.17 42)', btnFg: 'oklch(0.99 0.01 85)', btnShadow: '6px 6px 14px oklch(0.62 0.17 42 / 0.35), -4px -4px 12px oklch(0.99 0.008 88)' },
+        { name: 'Chain', price: '₹999', per: '/mo', popular: false, cta: 'Contact us',
+          feats: ['Multiple locations', 'Team accounts', 'Analytics dashboard', 'Priority support'],
+          shadow: this.RAISED, btnBg: 'oklch(0.93 0.014 82)', btnFg: 'oklch(0.3 0.02 60)', btnShadow: this.RAISED_SM },
+      ],
+      valueProps: [
+        { title: 'Reads any format', body: 'Photos, PDFs or screenshots — AI handles it.', tint: 'oklch(0.62 0.17 42 / 0.14)', mark: 'oklch(0.62 0.17 42)', round: '3px' },
+        { title: 'Auto Veg / Non-Veg', body: 'Every dish tagged and sorted for you.', tint: 'oklch(0.62 0.14 150 / 0.16)', mark: 'oklch(0.5 0.14 150)', round: '50%' },
+        { title: 'QR + link, instantly', body: 'Print it, or share on WhatsApp in one tap.', tint: 'oklch(0.28 0.02 60 / 0.1)', mark: 'oklch(0.28 0.02 60)', round: '3px' },
+      ],
+
+      setVeg: () => this.setState({ previewTab: 'veg' }),
+      setNonveg: () => this.setState({ previewTab: 'nonveg' }),
+      vegTabFg: tab === 'veg' ? 'oklch(0.4 0.12 150)' : 'oklch(0.52 0.03 60)',
+      vegTabShadow: tab === 'veg' ? 'inset 2px 2px 5px oklch(0.86 0.02 74), inset -2px -2px 5px oklch(0.99 0.008 88)' : '3px 3px 6px oklch(0.87 0.02 74), -3px -3px 6px oklch(0.99 0.008 88)',
+      nvTabFg: tab === 'nonveg' ? 'oklch(0.48 0.19 25)' : 'oklch(0.52 0.03 60)',
+      nvTabShadow: tab === 'nonveg' ? 'inset 2px 2px 5px oklch(0.86 0.02 74), inset -2px -2px 5px oklch(0.99 0.008 88)' : '3px 3px 6px oklch(0.87 0.02 74), -3px -3px 6px oklch(0.99 0.008 88)',
+
+      generate: () => { this.setState({ step: 'processing' }); setTimeout(() => this.setState({ step: 'review' }), 2600); },
+      publish: () => this.setState({ step: 'published' }),
+      backToReview: () => this.setState({ step: 'review' }),
+      reset: () => this.setState({ step: 'upload', items: null, previewTab: 'veg', editingId: null }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+import { Plus } from "lucide-react";
+import { IngredientChip } from "@/components/molecules/ingredient-chip";
+import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
+import { ingredientSummary, priceStr, type Dish } from "@/lib/menu-seed";
+
+interface DishRowProps {
+  dish: Dish;
+  editing: boolean;
+  draft: string;
+  onFlip: () => void;
+  onToggleEdit: () => void;
+  onSetPrice: (price: number) => void;
+  onDraftChange: (value: string) => void;
+  onAddIngredient: () => void;
+  onRemoveIngredient: (index: number) => void;
+}
+
+export function DishRow({
+  dish,
+  editing,
+  draft,
+  onFlip,
+  onToggleEdit,
+  onSetPrice,
+  onDraftChange,
+  onAddIngredient,
+  onRemoveIngredient,
+}: DishRowProps) {
+  return (
+    <div
+      className="overflow-hidden rounded-2xl bg-background"
+      style={{ boxShadow: editing ? INSET : RAISED_SM }}
+    >
+      <div className="flex items-center gap-[13px] px-4 py-[14px]">
+        <button
+          type="button"
+          onClick={onFlip}
+          title="Flip Veg / Non-Veg"
+          className="flex size-7 shrink-0 items-center justify-center rounded-[7px] border-2"
+          style={{
+            borderColor: dish.cat === "veg" ? "var(--veg)" : "var(--nonveg)",
+            background: "var(--background)",
+            boxShadow: RAISED_SM,
+          }}
+        >
+          <span
+            className="size-[11px] rounded-full"
+            style={{ background: dish.cat === "veg" ? "var(--veg)" : "var(--nonveg)" }}
+          />
+        </button>
+        <div className="min-w-0 flex-1">
+          <div className="font-condensed text-base font-bold text-[oklch(0.26_0.02_60)]">
+            {dish.name}
+          </div>
+          <div className="text-xs font-semibold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+            {ingredientSummary(dish)}
+          </div>
+        </div>
+        <div className="font-condensed text-base font-bold text-[oklch(0.42_0.02_60)]">
+          {priceStr(dish.price)}
+        </div>
+        <button
+          type="button"
+          onClick={onToggleEdit}
+          className="shrink-0 rounded-[10px] px-[15px] py-2 font-condensed text-[13px] font-bold"
+          style={{
+            background: "var(--background)",
+            color: editing ? "oklch(0.52 0.15 42)" : "oklch(0.46 0.02 60)",
+            boxShadow: editing ? INSET : RAISED_SM,
+          }}
+        >
+          {editing ? "Close" : "Edit"}
+        </button>
+      </div>
+
+      {editing ? (
+        <div className="px-4 pt-0.5 pb-[18px]">
+          <div className="mt-1.5 flex flex-wrap gap-[18px]">
+            <div>
+              <label className="mb-[7px] block text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+                Price (₹)
+              </label>
+              <div
+                className="flex items-center gap-2 rounded-[11px] px-[13px] py-[9px]"
+                style={{ boxShadow: INSET_SM }}
+              >
+                <span className="text-[15px] font-bold text-[oklch(0.55_0.03_60)]">₹</span>
+                <input
+                  type="number"
+                  value={dish.price}
+                  onChange={(e) => onSetPrice(parseInt(e.target.value, 10) || 0)}
+                  className="w-20 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                />
+              </div>
+            </div>
+            <div className="min-w-[200px] flex-1">
+              <label className="mb-[7px] block text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+                Ingredients
+              </label>
+              <div className="flex flex-wrap items-center gap-[7px]">
+                {dish.ingredients.map((ing, idx) => (
+                  <IngredientChip
+                    key={`${ing}-${idx}`}
+                    name={ing}
+                    onRemove={() => onRemoveIngredient(idx)}
+                  />
+                ))}
+                <div className="flex items-center gap-[7px]">
+                  <input
+                    value={draft}
+                    onChange={(e) => onDraftChange(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") onAddIngredient();
+                    }}
+                    placeholder="Add ingredient"
+                    className="w-[130px] rounded-full px-3 py-2 text-[13px] font-semibold text-[oklch(0.32_0.02_60)] outline-none"
+                    style={{ boxShadow: INSET_SM }}
+                  />
+                  <button
+                    type="button"
+                    onClick={onAddIngredient}
+                    className="flex size-8 items-center justify-center rounded-full bg-primary leading-none text-primary-foreground"
+                    style={{ boxShadow: ACCENT_GLOW_SM }}
+                  >
+                    <Plus className="size-4" strokeWidth={3} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onToggleEdit}
+            className="mt-4 rounded-[11px] px-5 py-2.5 font-condensed text-[13.5px] font-bold tracking-[0.3px] text-primary-foreground"
+            style={{ background: "var(--success)", boxShadow: SUCCESS_GLOW }}
+          >
+            Done
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}

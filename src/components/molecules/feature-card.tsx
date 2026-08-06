@@ -1,60 +1,34 @@
-import type { LucideIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { RAISED_LG } from "@/lib/neu-shadows";
 
 export function FeatureCard({
-  icon: Icon,
   title,
-  description,
-  variant = "default",
-  media,
-  ctaLabel,
-  className,
+  body,
+  tint,
+  mark,
+  round,
 }: {
-  icon: LucideIcon;
   title: string;
-  description: string;
-  variant?: "default" | "accent";
-  media?: React.ReactNode;
-  ctaLabel?: string;
-  className?: string;
+  body: string;
+  tint: string;
+  mark: string;
+  round: string;
 }) {
-  const accent = variant === "accent";
-
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-4 rounded-2xl border p-6",
-        accent
-          ? "border-transparent bg-primary text-primary-foreground"
-          : "bg-card text-card-foreground",
-        className,
-      )}
-    >
-      <span
-        className={cn(
-          "flex size-9 items-center justify-center rounded-lg",
-          accent ? "bg-white/15" : "bg-secondary",
-        )}
+    <div className="flex gap-[18px] rounded-[22px] bg-background p-6" style={{ boxShadow: RAISED_LG }}>
+      <div
+        className="flex size-[46px] shrink-0 items-center justify-center rounded-[14px]"
+        style={{ background: tint }}
       >
-        <Icon className={cn("size-4.5", accent ? "text-white" : "text-foreground")} />
-      </span>
-      <div className="flex flex-col gap-1.5">
-        <h3 className="font-semibold">{title}</h3>
-        <p className={cn("text-sm", accent ? "text-primary-foreground/80" : "text-muted-foreground")}>
-          {description}
-        </p>
+        <span className="size-4" style={{ background: mark, borderRadius: round }} />
       </div>
-      {ctaLabel ? (
-        <Button
-          size="sm"
-          variant="secondary"
-          className="mt-auto w-fit bg-white text-primary hover:bg-white/90"
-        >
-          {ctaLabel}
-        </Button>
-      ) : null}
-      {media ? <div className="mt-auto pt-2">{media}</div> : null}
+      <div>
+        <div className="font-condensed text-[19px] font-bold text-[oklch(0.26_0.02_60)]">
+          {title}
+        </div>
+        <div className="mt-[5px] text-sm leading-[1.5] text-[oklch(0.48_0.02_60)] text-pretty">
+          {body}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+  a { color: oklch(0.66 0.18 42); text-decoration: none; }
+  a:hover { color: oklch(0.58 0.18 42); }
+  @keyframes meltUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes meltFade { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</helmet>
+<div style="display:flex; align-items:center; justify-content:center; min-height:100%; padding:24px; background:oklch(0.93 0.012 80); font-family:'Barlow',sans-serif;">
+  <div style="position:relative; width:402px; height:840px; background:oklch(0.16 0.015 60); border-radius:52px; padding:12px; box-shadow:0 40px 90px -30px oklch(0.16 0.02 60 / 0.55), 0 0 0 1px oklch(1 0 0 / 0.06) inset;">
+    <div style="position:relative; width:100%; height:100%; border-radius:42px; overflow:hidden; background:oklch(0.97 0.015 85); display:flex; flex-direction:column;">
+
+      <!-- status bar -->
+      <div style="position:relative; z-index:5; display:flex; align-items:center; justify-content:space-between; padding:14px 26px 6px; font-size:14px; font-weight:600; color:oklch(0.24 0.02 60);">
+        <span>9:41</span>
+        <div style="position:absolute; left:50%; top:9px; transform:translateX(-50%); width:96px; height:26px; background:oklch(0.16 0.015 60); border-radius:16px;"></div>
+        <span style="display:flex; gap:5px; align-items:center; font-size:12px;">olleh</span>
+      </div>
+
+      <!-- scroll area -->
+      <div style="flex:1; overflow-y:auto; overflow-x:hidden;">
+
+        <!-- brand header -->
+        <div style="padding:8px 22px 14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:40px; height:40px; border-radius:12px; background:oklch(0.66 0.18 42); display:flex; align-items:center; justify-content:center; color:oklch(0.99 0.01 85); font-family:'Anton',sans-serif; font-size:22px; transform:rotate(-4deg);">M</div>
+              <div>
+                <div style="font-family:'Anton',sans-serif; font-size:24px; letter-spacing:0.5px; line-height:0.9; color:oklch(0.22 0.02 60);">MELT</div>
+                <div style="font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:oklch(0.58 0.03 60);">Smash burgers &amp; more</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; padding:7px 12px; border-radius:999px; background:oklch(0.99 0.008 85); border:1px solid oklch(0.9 0.01 80); font-size:12px; font-weight:600; color:oklch(0.4 0.02 60);">
+              <span style="width:7px; height:7px; border-radius:50%; background:oklch(0.62 0.14 150);"></span>Table 12
+            </div>
+          </div>
+        </div>
+
+        <!-- featured hero -->
+        <div style="padding:0 22px;">
+          <div onClick="{{ openHero }}" style="position:relative; height:230px; border-radius:24px; overflow:hidden; cursor:pointer; box-shadow:0 18px 40px -22px oklch(0.16 0.02 60 / 0.6);">
+            <image-slot id="hero-smash" shape="rect" placeholder="Classic Smash — hero photo"></image-slot>
+            <div style="position:absolute; inset:0; background:linear-gradient(to top, oklch(0.14 0.02 55 / 0.82) 8%, oklch(0.14 0.02 55 / 0.12) 55%, transparent); pointer-events:none;"></div>
+            <div style="position:absolute; top:14px; left:14px; display:flex; gap:6px; pointer-events:none;">
+              <span style="padding:5px 11px; border-radius:999px; background:oklch(0.66 0.18 42); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:12px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase;">Chef's pick</span>
+            </div>
+            <div style="position:absolute; bottom:16px; left:16px; right:16px; pointer-events:none;">
+              <div style="font-family:'Anton',sans-serif; font-size:28px; letter-spacing:0.4px; color:oklch(0.99 0.01 85); line-height:0.95;">The Classic Smash</div>
+              <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-top:6px;">
+                <div style="font-size:13px; font-weight:500; color:oklch(0.92 0.01 85); max-width:66%; line-height:1.3;">Two smashed patties, aged cheddar, house sauce, toasted brioche.</div>
+                <div style="font-family:'Anton',sans-serif; font-size:24px; color:oklch(0.99 0.01 85);">$8<span style="font-size:15px;">.50</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- update stamp -->
+        <div style="display:flex; align-items:center; gap:7px; padding:14px 22px 2px; font-size:11.5px; font-weight:600; letter-spacing:0.3px; color:oklch(0.6 0.03 60);">
+          <span style="width:6px; height:6px; border-radius:50%; background:oklch(0.62 0.14 150);"></span>
+          Menu updated today · prices live
+        </div>
+
+        <!-- category chips -->
+        <div style="position:sticky; top:0; z-index:4; background:linear-gradient(oklch(0.97 0.015 85) 72%, transparent); padding:12px 0 10px;">
+          <div style="display:flex; gap:8px; overflow-x:auto; padding:0 22px;">
+            <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="5">
+              <button onClick="{{ cat.select }}" style="flex:0 0 auto; padding:9px 15px; border-radius:999px; border:1px solid {{ cat.border }}; background:{{ cat.bg }}; color:{{ cat.fg }}; font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.3px; cursor:pointer; white-space:nowrap;">{{ cat.name }}</button>
+            </sc-for>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; padding:11px 22px 0;">
+            <button onClick="{{ toggleVeg }}" style="display:flex; align-items:center; gap:7px; padding:7px 13px; border-radius:999px; border:1px solid {{ vegBorder }}; background:{{ vegBg }}; color:{{ vegFg }}; font-size:12.5px; font-weight:700; cursor:pointer;">
+              <span style="width:9px; height:9px; border:1.5px solid {{ vegDot }}; border-radius:2px; display:inline-block;"></span>Veg only
+            </button>
+            <span style="font-size:12px; font-weight:600; color:oklch(0.6 0.03 60);">{{ countLabel }}</span>
+          </div>
+        </div>
+
+        <!-- sections -->
+        <div style="padding:4px 22px 130px;">
+          <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="2">
+            <div style="margin-top:22px;">
+              <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px;">
+                <h2 style="margin:0; font-family:'Anton',sans-serif; font-size:22px; letter-spacing:0.4px; color:oklch(0.22 0.02 60);">{{ sec.name }}</h2>
+                <span style="font-size:12px; font-weight:600; color:oklch(0.62 0.03 60);">{{ sec.count }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="4">
+                  <div onClick="{{ it.open }}" style="display:flex; gap:13px; padding:14px; background:oklch(0.99 0.008 85); border:1px solid oklch(0.91 0.01 80); border-radius:18px; cursor:pointer;">
+                    <div style="flex:1; min-width:0;">
+                      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:17px; font-weight:700; color:oklch(0.22 0.02 60);">{{ it.name }}</span>
+                        <sc-for list="{{ it.badges }}" as="b" hint-placeholder-count="1">
+                          <span style="padding:2px 8px; border-radius:999px; background:{{ b.bg }}; color:{{ b.fg }}; font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">{{ b.label }}</span>
+                        </sc-for>
+                      </div>
+                      <div style="margin-top:5px; font-size:13px; line-height:1.4; color:oklch(0.5 0.025 60); text-wrap:pretty;">{{ it.desc }}</div>
+                      <div style="margin-top:9px; font-family:'Barlow Semi Condensed',sans-serif; font-size:17px; font-weight:700; color:oklch(0.66 0.18 42);">{{ it.priceStr }}</div>
+                    </div>
+                    <sc-if value="{{ it.hasPhoto }}" hint-placeholder-val="{{ false }}">
+                      <div style="flex:0 0 auto; width:78px; height:78px; border-radius:14px; overflow:hidden;">
+                        <image-slot id="{{ it.photoId }}" shape="rect" placeholder="{{ it.name }}"></image-slot>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- floating CTA -->
+      <div style="position:absolute; left:0; right:0; bottom:0; padding:14px 22px 22px; background:linear-gradient(transparent, oklch(0.97 0.015 85) 32%); pointer-events:none;">
+        <button style="pointer-events:auto; width:100%; display:flex; align-items:center; justify-content:center; gap:9px; padding:16px; border:none; border-radius:18px; background:oklch(0.22 0.02 60); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:16px; font-weight:700; letter-spacing:0.4px; cursor:pointer; box-shadow:0 14px 30px -12px oklch(0.16 0.02 60 / 0.7);">
+          <span style="width:9px; height:9px; border-radius:50%; background:oklch(0.66 0.18 42);"></span>
+          Order on WhatsApp
+        </button>
+      </div>
+
+      <!-- detail sheet -->
+      <sc-if value="{{ selected }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeItem }}" style="position:absolute; inset:0; z-index:20; background:oklch(0.14 0.02 55 / 0.5); animation:meltFade 0.2s ease;"></div>
+        <div style="position:absolute; left:0; right:0; bottom:0; z-index:21; max-height:88%; background:oklch(0.98 0.012 85); border-radius:28px 28px 0 0; overflow-y:auto; animation:meltUp 0.28s cubic-bezier(0.2,0.8,0.2,1);">
+          <div style="position:sticky; top:0; display:flex; justify-content:center; padding:10px 0 4px; background:oklch(0.98 0.012 85);">
+            <div style="width:42px; height:5px; border-radius:999px; background:oklch(0.85 0.01 80);"></div>
+          </div>
+          <sc-if value="{{ selected.hasPhoto }}" hint-placeholder-val="{{ false }}">
+            <div style="margin:6px 18px 0; height:200px; border-radius:20px; overflow:hidden;">
+              <image-slot id="{{ selected.sheetPhotoId }}" shape="rect" placeholder="{{ selected.name }}"></image-slot>
+            </div>
+          </sc-if>
+          <div style="padding:18px 22px 30px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+              <div>
+                <h2 style="margin:0; font-family:'Anton',sans-serif; font-size:26px; letter-spacing:0.4px; color:oklch(0.22 0.02 60); line-height:1;">{{ selected.name }}</h2>
+                <div style="display:flex; gap:6px; margin-top:9px;">
+                  <sc-for list="{{ selected.badges }}" as="b" hint-placeholder-count="1">
+                    <span style="padding:3px 9px; border-radius:999px; background:{{ b.bg }}; color:{{ b.fg }}; font-size:10.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">{{ b.label }}</span>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="font-family:'Anton',sans-serif; font-size:26px; color:oklch(0.66 0.18 42); white-space:nowrap;">{{ selected.priceStr }}</div>
+            </div>
+            <p style="margin:14px 0 0; font-size:14.5px; line-height:1.5; color:oklch(0.42 0.025 60); text-wrap:pretty;">{{ selected.long }}</p>
+
+            <sc-if value="{{ hasPairings }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:22px; padding:16px; border-radius:18px; background:oklch(0.95 0.02 42 / 0.5); border:1px solid oklch(0.66 0.18 42 / 0.25);">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="width:12px; height:12px; background:oklch(0.66 0.18 42); transform:rotate(45deg); display:inline-block;"></span>
+                  <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:oklch(0.5 0.1 45);">Smart pairings</span>
+                </div>
+                <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+                  <sc-for list="{{ pairings }}" as="p" hint-placeholder-count="2">
+                    <button onClick="{{ p.open }}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 13px; border-radius:13px; border:1px solid oklch(0.9 0.01 80); background:oklch(0.99 0.008 85); cursor:pointer; text-align:left;">
+                      <span style="font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; color:oklch(0.24 0.02 60);">{{ p.name }}</span>
+                      <span style="display:flex; align-items:center; gap:9px;">
+                        <span style="font-size:14px; font-weight:700; color:oklch(0.66 0.18 42);">{{ p.priceStr }}</span>
+                        <span style="font-size:16px; color:oklch(0.7 0.03 60);">›</span>
+                      </span>
+                    </button>
+                  </sc-for>
+                </div>
+                <div style="margin-top:11px; font-size:11.5px; font-weight:500; color:oklch(0.55 0.05 45);">Suggested to go great with your pick.</div>
+              </div>
+            </sc-if>
+
+            <button onClick="{{ closeItem }}" style="margin-top:22px; width:100%; padding:15px; border:none; border-radius:16px; background:oklch(0.22 0.02 60); color:oklch(0.99 0.01 85); font-family:'Barlow Semi Condensed',sans-serif; font-size:15px; font-weight:700; letter-spacing:0.4px; cursor:pointer;">Add to WhatsApp order</button>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:450,&quot;height&quot;:888}}">
+class Component extends DCLogic {
+  state = { activeCat: 'all', vegOnly: false, selectedId: null };
+
+  data() {
+    return [
+      { id:'classic', cat:'burgers', name:'The Classic Smash', tags:['bestseller'], veg:false, price:8.5,
+        desc:'Double smashed patties, aged cheddar, house sauce, brioche.',
+        long:'Two thin patties smashed hard on the flat-top for maximum crust, folded with melty aged cheddar, pickles and our tangy house sauce on a toasted brioche bun.',
+        photo:true, pair:['loadedfries','vanilla'] },
+      { id:'bacon', cat:'burgers', name:'Bacon Stack', tags:[], veg:false, price:9.9,
+        desc:'Smoked bacon, double cheese, crispy onions, BBQ mayo.',
+        long:'Our Classic loaded with smoked streaky bacon, extra cheese, crispy fried onions and a smoky BBQ mayo.',
+        photo:false, pair:['rings','cola'] },
+      { id:'double', cat:'burgers', name:'Double Trouble', tags:['new'], veg:false, price:11.5,
+        desc:'Triple patty, triple cheese, for the seriously hungry.',
+        long:'Three smashed patties, three slices of cheese, pickles and house sauce. Built for a serious appetite.',
+        photo:false, pair:['loadedfries','choc'] },
+      { id:'chicken', cat:'burgers', name:'Crispy Chicken', tags:['spicy'], veg:false, price:9.2,
+        desc:'Buttermilk fried chicken, hot honey, slaw.',
+        long:'Buttermilk-brined fried chicken thigh with a drizzle of hot honey, crunchy slaw and pickles.',
+        photo:false, pair:['lemonade','rings'] },
+      { id:'garden', cat:'burgers', name:'Garden Melt', tags:['veg'], veg:true, price:8.9,
+        desc:'Plant-based patty, vegan cheese, smashed avo.',
+        long:'A juicy plant-based patty with melted vegan cheese, smashed avocado, lettuce and vegan house sauce.',
+        photo:false, pair:['fries','lemonade'] },
+
+      { id:'loadedfries', cat:'sides', name:'Loaded Cheese Fries', tags:['veg'], veg:true, price:5.5,
+        desc:'Crispy fries, molten cheese sauce, crispy onions.',
+        long:'A mountain of skin-on fries buried under molten cheese sauce and crispy onions.',
+        photo:true, pair:['classic','cola'] },
+      { id:'fries', cat:'sides', name:'Classic Fries', tags:['veg'], veg:true, price:3.2,
+        desc:'Skin-on, double-fried, sea salt.', long:'Skin-on fries, double-fried for extra crunch, finished with flaky sea salt.', photo:false, pair:[] },
+      { id:'rings', cat:'sides', name:'Onion Rings', tags:['veg'], veg:true, price:4.0,
+        desc:'Beer-battered, golden, six per basket.', long:'Thick-cut onion rings in a crisp beer batter, six to a basket.', photo:false, pair:[] },
+      { id:'wings', cat:'sides', name:'Buffalo Wings', tags:['spicy'], veg:false, price:6.5,
+        desc:'Six wings tossed in buffalo hot sauce.', long:'Six crispy wings tossed in tangy buffalo hot sauce with a blue-cheese dip.', photo:false, pair:['lemonade'] },
+      { id:'mozz', cat:'sides', name:'Mozzarella Sticks', tags:['veg'], veg:true, price:4.8,
+        desc:'Golden, gooey, marinara dip.', long:'Golden breaded mozzarella sticks, gooey inside, with a marinara dip.', photo:false, pair:[] },
+
+      { id:'smashcombo', cat:'combos', name:'Smash Combo', tags:['bestseller'], veg:false, price:12.9,
+        desc:'Classic Smash + fries + any drink.', long:'The Classic Smash paired with skin-on fries and a drink of your choice. The people\u2019s favourite.', photo:true, pair:['cookie'] },
+      { id:'chickencombo', cat:'combos', name:'Chicken Combo', tags:[], veg:false, price:13.5,
+        desc:'Crispy Chicken + fries + any drink.', long:'Crispy Chicken burger with fries and a drink of your choice.', photo:false, pair:['lemonade'] },
+      { id:'family', cat:'combos', name:'Family Box', tags:['new'], veg:false, price:34.0,
+        desc:'4 burgers, 2 loaded fries, 4 drinks.', long:'Four Classic Smash burgers, two loaded fries and four drinks \u2014 dinner sorted.', photo:false, pair:[] },
+
+      { id:'vanilla', cat:'drinks', name:'Vanilla Shake', tags:['veg'], veg:true, price:4.5,
+        desc:'Thick, hand-spun, real vanilla.', long:'Hand-spun thick shake made with real vanilla bean.', photo:false, pair:[] },
+      { id:'choc', cat:'drinks', name:'Chocolate Shake', tags:['veg'], veg:true, price:4.5,
+        desc:'Thick, hand-spun, dark cocoa.', long:'Hand-spun thick chocolate shake with dark cocoa.', photo:false, pair:[] },
+      { id:'straw', cat:'drinks', name:'Strawberry Shake', tags:['veg'], veg:true, price:4.5,
+        desc:'Thick, hand-spun, real strawberries.', long:'Hand-spun thick shake blended with real strawberries.', photo:false, pair:[] },
+      { id:'lemonade', cat:'drinks', name:'Fresh Lemonade', tags:['veg'], veg:true, price:3.5,
+        desc:'Cloudy, tart, lightly sweet.', long:'House-made cloudy lemonade \u2014 tart, refreshing, lightly sweet.', photo:false, pair:[] },
+      { id:'cola', cat:'drinks', name:'Cola', tags:[], veg:true, price:2.5,
+        desc:'Ice cold, bottomless refills.', long:'Ice-cold cola with bottomless refills.', photo:false, pair:[] },
+      { id:'coffee', cat:'drinks', name:'Iced Coffee', tags:['veg'], veg:true, price:3.8,
+        desc:'Cold brew over ice, splash of milk.', long:'Smooth cold brew over ice with a splash of milk.', photo:false, pair:[] },
+
+      { id:'cookie', cat:'sweets', name:'Warm Cookie Dough', tags:['veg'], veg:true, price:5.0,
+        desc:'Skillet-baked, vanilla ice cream.', long:'Skillet-baked chocolate chip cookie dough, gooey in the middle, with a scoop of vanilla ice cream.', photo:false, pair:['vanilla'] },
+      { id:'brownie', cat:'sweets', name:'Choc Brownie', tags:['veg','new'], veg:true, price:4.5,
+        desc:'Fudgy, warm, sea-salt finish.', long:'Warm fudgy chocolate brownie finished with flaky sea salt.', photo:false, pair:['choc'] },
+    ];
+  }
+
+  cats() {
+    return [
+      { id:'all', name:'All' },
+      { id:'burgers', name:'Burgers' },
+      { id:'sides', name:'Fries & Sides' },
+      { id:'combos', name:'Combos' },
+      { id:'drinks', name:'Shakes & Drinks' },
+      { id:'sweets', name:'Sweets' },
+    ];
+  }
+
+  badgeStyle(tag) {
+    const map = {
+      bestseller: { label:'Bestseller', bg:'oklch(0.66 0.18 42)', fg:'oklch(0.99 0.01 85)' },
+      new:        { label:'New',        bg:'oklch(0.22 0.02 60)', fg:'oklch(0.99 0.01 85)' },
+      spicy:      { label:'Spicy',      bg:'oklch(0.94 0.05 42)', fg:'oklch(0.5 0.15 42)' },
+      veg:        { label:'Veg',        bg:'oklch(0.93 0.05 150)', fg:'oklch(0.42 0.12 150)' },
+    };
+    return map[tag];
+  }
+
+  decorate(raw) {
+    return {
+      ...raw,
+      priceStr: '$' + raw.price.toFixed(2),
+      badges: raw.tags.map(t => this.badgeStyle(t)),
+      hasPhoto: !!raw.photo,
+      photoId: 'thumb-' + raw.id,
+      sheetPhotoId: 'sheet-' + raw.id,
+    };
+  }
+
+  renderVals() {
+    const raw = this.data();
+    const byId = {};
+    raw.forEach(r => { byId[r.id] = r; });
+    const veg = this.state.vegOnly;
+    const active = this.state.activeCat;
+
+    const catDefs = this.cats();
+    const cats = catDefs.map(c => {
+      const on = c.id === active;
+      return {
+        name: c.name,
+        select: () => this.setState({ activeCat: c.id }),
+        bg: on ? 'oklch(0.22 0.02 60)' : 'oklch(0.99 0.008 85)',
+        fg: on ? 'oklch(0.99 0.01 85)' : 'oklch(0.35 0.02 60)',
+        border: on ? 'oklch(0.22 0.02 60)' : 'oklch(0.9 0.01 80)',
+      };
+    });
+
+    const visible = raw.filter(r => (active === 'all' || r.cat === active) && (!veg || r.veg));
+
+    const sections = catDefs.filter(c => c.id !== 'all')
+      .filter(c => active === 'all' || c.id === active)
+      .map(c => {
+        const items = visible.filter(r => r.cat === c.id).map(r => {
+          const d = this.decorate(r);
+          d.open = () => this.setState({ selectedId: r.id });
+          return d;
+        });
+        return { name: c.name, count: items.length + (items.length === 1 ? ' item' : ' items'), items };
+      })
+      .filter(s => s.items.length > 0);
+
+    const sel = this.state.selectedId ? this.decorate(byId[this.state.selectedId]) : null;
+    let pairings = [];
+    if (sel) {
+      pairings = (byId[sel.id].pair || []).map(pid => byId[pid]).filter(Boolean).map(p => {
+        const d = this.decorate(p);
+        d.open = () => this.setState({ selectedId: p.id });
+        return d;
+      });
+    }
+
+    return {
+      cats,
+      sections,
+      selected: sel,
+      pairings,
+      hasPairings: pairings.length > 0,
+      countLabel: visible.length + ' dishes',
+      toggleVeg: () => this.setState(s => ({ vegOnly: !s.vegOnly })),
+      vegBg: veg ? 'oklch(0.93 0.05 150)' : 'oklch(0.99 0.008 85)',
+      vegFg: veg ? 'oklch(0.42 0.12 150)' : 'oklch(0.4 0.02 60)',
+      vegBorder: veg ? 'oklch(0.62 0.14 150 / 0.5)' : 'oklch(0.9 0.01 80)',
+      vegDot: veg ? 'oklch(0.5 0.14 150)' : 'oklch(0.6 0.03 60)',
+      openHero: () => this.setState({ selectedId: 'classic' }),
+      closeItem: () => this.setState({ selectedId: null }),
+    };
+  }
+}
+</script>
+</body>
+</html>

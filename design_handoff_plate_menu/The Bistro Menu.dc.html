@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+  a { color: oklch(0.55 0.16 295); text-decoration: none; }
+  a:hover { color: oklch(0.48 0.16 295); }
+</style>
+</helmet>
+<div style="display:flex; align-items:center; justify-content:center; min-height:100%; padding:24px; background:oklch(0.88 0.03 295); font-family:'Barlow',sans-serif;">
+  <div style="position:relative; width:402px; height:860px; background:oklch(0.28 0.05 295); border-radius:52px; padding:12px; box-shadow:0 40px 90px -30px oklch(0.3 0.08 295 / 0.6), 0 0 0 1px oklch(1 0 0 / 0.06) inset;">
+    <div style="position:relative; width:100%; height:100%; border-radius:42px; overflow:hidden; background:oklch(0.92 0.025 295); display:flex; flex-direction:column;">
+
+      <!-- status bar -->
+      <div style="position:relative; z-index:5; display:flex; align-items:center; justify-content:space-between; padding:14px 26px 4px; font-size:14px; font-weight:600; color:oklch(0.32 0.04 295);">
+        <span>9:41</span>
+        <span style="display:flex; align-items:center; gap:6px; font-size:13px;">Customer Menu</span>
+        <span style="display:flex; gap:6px; align-items:center;">
+          <span style="width:16px; height:16px; border-radius:4px; box-shadow:2px 2px 4px oklch(0.8 0.04 295), -2px -2px 4px oklch(0.98 0.015 300);"></span>
+        </span>
+      </div>
+
+      <!-- scroll area -->
+      <div style="flex:1; overflow-y:auto; overflow-x:hidden; padding-bottom:96px;">
+
+        <!-- hero -->
+        <div style="padding:10px 14px 0;">
+          <div style="position:relative; height:190px; border-radius:26px; overflow:hidden; box-shadow:8px 8px 18px oklch(0.82 0.04 295), -8px -8px 18px oklch(0.98 0.015 300);">
+            <image-slot id="bistro-hero" shape="rect" placeholder="The Bistro — hero food spread"></image-slot>
+            <div style="position:absolute; inset:0; background:linear-gradient(to top, oklch(0.2 0.05 295 / 0.82) 6%, oklch(0.2 0.05 295 / 0.1) 52%, oklch(0.2 0.05 295 / 0.25)); pointer-events:none;"></div>
+            <div style="position:absolute; top:12px; right:12px; display:flex; gap:8px;">
+              <sc-for list="{{ heroIcons }}" as="ic" hint-placeholder-count="3">
+                <div style="width:34px; height:34px; border-radius:11px; background:oklch(0.92 0.025 295 / 0.32); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; color:oklch(0.99 0.01 300); font-size:15px; border:1px solid oklch(1 0 0 / 0.25);">{{ ic.g }}</div>
+              </sc-for>
+            </div>
+            <div style="position:absolute; bottom:14px; left:16px; right:16px; pointer-events:none;">
+              <div style="font-family:'Fraunces',serif; font-size:30px; font-weight:600; color:oklch(0.99 0.01 300); line-height:1;">The Bistro</div>
+              <div style="display:flex; align-items:center; gap:10px; margin-top:8px; font-size:12.5px; font-weight:600; color:oklch(0.93 0.02 300);">
+                <span style="display:flex; align-items:center; gap:5px;">◉ Downtown Culinary District</span>
+                <span style="display:flex; align-items:center; gap:5px; padding:3px 9px; border-radius:999px; background:oklch(0.92 0.025 295 / 0.3); backdrop-filter:blur(6px);">★ 4.9 <span style="opacity:0.85;">(2k+ reviews)</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- category chips -->
+        <div style="display:flex; gap:10px; overflow-x:auto; padding:18px 16px 4px;">
+          <sc-for list="{{ cats }}" as="cat" hint-placeholder-count="4">
+            <button onClick="{{ cat.select }}" style="flex:0 0 auto; padding:11px 20px; border:none; border-radius:15px; background:oklch(0.92 0.025 295); color:{{ cat.fg }}; font-family:'Barlow',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.2px; cursor:pointer; white-space:nowrap; box-shadow:{{ cat.shadow }};">{{ cat.name }}</button>
+          </sc-for>
+        </div>
+
+        <!-- search -->
+        <div style="padding:14px 16px 4px;">
+          <div style="display:flex; align-items:center; gap:11px; padding:14px 18px; border-radius:16px; background:oklch(0.92 0.025 295); box-shadow:inset 4px 4px 9px oklch(0.82 0.04 295), inset -4px -4px 9px oklch(0.98 0.015 300);">
+            <span style="width:16px; height:16px; border:2px solid oklch(0.6 0.05 295); border-radius:50%; position:relative; flex:0 0 auto;"><span style="position:absolute; width:7px; height:2px; background:oklch(0.6 0.05 295); bottom:-2px; right:-4px; transform:rotate(45deg); border-radius:2px;"></span></span>
+            <span style="font-size:15px; font-weight:500; color:oklch(0.6 0.04 295);">Search menu…</span>
+          </div>
+        </div>
+
+        <!-- Signature Burgers -->
+        <div style="padding:22px 16px 0;">
+          <h2 style="margin:0 0 14px; font-family:'Fraunces',serif; font-size:24px; font-weight:600; color:oklch(0.3 0.05 295);">Signature Burgers</h2>
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <sc-for list="{{ burgers }}" as="it" hint-placeholder-count="2">
+              <div style="position:relative; display:flex; gap:14px; padding:14px; border-radius:20px; background:oklch(0.92 0.025 295); box-shadow:7px 7px 16px oklch(0.82 0.04 295), -7px -7px 16px oklch(0.98 0.015 300);">
+                <div style="position:relative; flex:0 0 auto; width:90px; height:90px; border-radius:15px; overflow:hidden; box-shadow:inset 2px 2px 5px oklch(0.75 0.05 295 / 0.5);">
+                  <image-slot id="{{ it.photoId }}" shape="rect" placeholder="{{ it.name }}"></image-slot>
+                  <sc-if value="{{ it.chefPick }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute; top:6px; left:6px; padding:3px 7px; border-radius:7px; background:oklch(0.55 0.16 295); color:oklch(0.99 0.01 300); font-size:7.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">Chef's Choice</div>
+                  </sc-if>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="display:flex; justify-content:space-between; gap:8px;">
+                    <div style="font-family:'Fraunces',serif; font-size:17px; font-weight:600; color:oklch(0.28 0.05 295); line-height:1.15;">{{ it.name }}</div>
+                    <div style="font-size:15px; font-weight:700; color:oklch(0.55 0.18 292); white-space:nowrap;">{{ it.priceStr }}</div>
+                  </div>
+                  <div style="margin-top:5px; font-size:12.5px; line-height:1.4; color:oklch(0.52 0.04 295); text-wrap:pretty;">{{ it.desc }}</div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+                    <sc-for list="{{ it.badges }}" as="b" hint-placeholder-count="1">
+                      <span style="display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:999px; background:{{ b.bg }}; color:{{ b.fg }}; font-size:10px; font-weight:700; letter-spacing:0.3px;"><span style="width:7px; height:7px; border:1.5px solid {{ b.fg }}; border-radius:{{ b.round }}; display:inline-block;"></span>{{ b.label }}</span>
+                    </sc-for>
+                    <div style="flex:1;"></div>
+                    <button style="width:30px; height:30px; border:none; border-radius:10px; background:oklch(0.92 0.025 295); color:oklch(0.5 0.14 295); font-size:18px; line-height:1; cursor:pointer; box-shadow:4px 4px 9px oklch(0.82 0.04 295), -4px -4px 9px oklch(0.98 0.015 300);">+</button>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- Artisanal Pizzas -->
+        <div style="padding:26px 16px 0;">
+          <h2 style="margin:0 0 14px; font-family:'Fraunces',serif; font-size:24px; font-weight:600; color:oklch(0.3 0.05 295);">Artisanal Pizzas</h2>
+
+          <!-- featured -->
+          <div style="border-radius:22px; background:oklch(0.92 0.025 295); overflow:hidden; box-shadow:8px 8px 20px oklch(0.81 0.045 295), -8px -8px 20px oklch(0.98 0.015 300);">
+            <div style="position:relative; height:170px;">
+              <image-slot id="pizza-featured" shape="rect" placeholder="Burrata & Prosciutto pizza"></image-slot>
+              <div style="position:absolute; top:12px; left:12px; padding:5px 12px; border-radius:999px; background:oklch(0.55 0.16 295); color:oklch(0.99 0.01 300); font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">★ Popular This Week</div>
+            </div>
+            <div style="padding:16px 18px 18px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                <div style="font-family:'Fraunces',serif; font-size:21px; font-weight:600; color:oklch(0.28 0.05 295);">Burrata &amp; Prosciutto</div>
+                <div style="font-size:17px; font-weight:700; color:oklch(0.55 0.18 292); white-space:nowrap;">$22.00</div>
+              </div>
+              <div style="margin-top:7px; font-size:13px; line-height:1.5; color:oklch(0.5 0.04 295); text-wrap:pretty;">San Marzano tomato base, fresh burrata, 24-month aged prosciutto di parma, wild arugula, and extra virgin olive oil drizzle.</div>
+              <button style="margin-top:15px; width:100%; display:flex; align-items:center; justify-content:center; gap:9px; padding:14px; border:none; border-radius:15px; background:oklch(0.92 0.025 295); color:oklch(0.48 0.15 295); font-family:'Barlow',sans-serif; font-size:15px; font-weight:700; letter-spacing:0.3px; cursor:pointer; box-shadow:5px 5px 12px oklch(0.82 0.04 295), -5px -5px 12px oklch(0.98 0.015 300);">
+                <span style="font-size:16px;">＋</span> Add to Order
+              </button>
+            </div>
+          </div>
+
+          <!-- second pizza -->
+          <div style="margin-top:14px; display:flex; gap:14px; padding:14px; border-radius:20px; background:oklch(0.92 0.025 295); box-shadow:7px 7px 16px oklch(0.82 0.04 295), -7px -7px 16px oklch(0.98 0.015 300);">
+            <div style="flex:0 0 auto; width:90px; height:90px; border-radius:15px; overflow:hidden; box-shadow:inset 2px 2px 5px oklch(0.75 0.05 295 / 0.5);">
+              <image-slot id="pizza-garden" shape="rect" placeholder="Mediterranean Garden pizza"></image-slot>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; justify-content:space-between; gap:8px;">
+                <div style="font-family:'Fraunces',serif; font-size:17px; font-weight:600; color:oklch(0.28 0.05 295); line-height:1.15;">Mediterranean Garden</div>
+                <div style="font-size:15px; font-weight:700; color:oklch(0.55 0.18 292); white-space:nowrap;">$19.00</div>
+              </div>
+              <div style="margin-top:5px; font-size:12.5px; line-height:1.4; color:oklch(0.52 0.04 295); text-wrap:pretty;">Roasted bell peppers, kalamata olives, artichokes, sun-dried tomato.</div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+                <span style="display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:999px; background:oklch(0.9 0.07 150); color:oklch(0.42 0.12 150); font-size:10px; font-weight:700;"><span style="width:7px; height:7px; border:1.5px solid oklch(0.42 0.12 150); border-radius:2px; display:inline-block;"></span>Vegetarian</span>
+                <div style="flex:1;"></div>
+                <button style="width:30px; height:30px; border:none; border-radius:10px; background:oklch(0.92 0.025 295); color:oklch(0.5 0.14 295); font-size:18px; line-height:1; cursor:pointer; box-shadow:4px 4px 9px oklch(0.82 0.04 295), -4px -4px 9px oklch(0.98 0.015 300);">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- footer -->
+        <div style="padding:30px 26px 10px; text-align:center;">
+          <div style="font-size:10px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:oklch(0.62 0.05 295);">Menu · Tech-powered experience</div>
+          <div style="margin-top:12px; font-family:'Fraunces',serif; font-style:italic; font-size:14px; line-height:1.5; color:oklch(0.5 0.05 295);">"Dedicated to the art of fresh flavors since 2012."</div>
+        </div>
+      </div>
+
+      <!-- bottom nav -->
+      <div style="position:absolute; left:0; right:0; bottom:0; padding:12px 22px 20px; background:linear-gradient(transparent, oklch(0.92 0.025 295) 30%);">
+        <div style="position:relative; display:flex; align-items:center; justify-content:space-between; padding:12px 22px; border-radius:22px; background:oklch(0.92 0.025 295); box-shadow:6px 6px 16px oklch(0.81 0.045 295), -6px -6px 16px oklch(0.98 0.015 300);">
+          <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+            <button style="display:flex; flex-direction:column; align-items:center; gap:4px; border:none; background:transparent; cursor:pointer; position:relative;">
+              <sc-if value="{{ n.isCart }}" hint-placeholder-val="{{ false }}">
+                <div style="position:relative; width:46px; height:46px; margin-top:-26px; border-radius:15px; background:oklch(0.55 0.16 295); display:flex; align-items:center; justify-content:center; color:oklch(0.99 0.01 300); font-size:19px; box-shadow:4px 6px 14px oklch(0.55 0.16 295 / 0.5);">
+                  {{ n.g }}
+                  <span style="position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:oklch(0.65 0.2 25); color:oklch(0.99 0.01 300); font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ n.badge }}</span>
+                </div>
+              </sc-if>
+              <sc-if value="{{ n.isTab }}" hint-placeholder-val="{{ true }}">
+                <span style="font-size:19px; color:{{ n.fg }};">{{ n.g }}</span>
+                <span style="font-size:10px; font-weight:700; letter-spacing:0.2px; color:{{ n.fg }};">{{ n.label }}</span>
+              </sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:450,&quot;height&quot;:908}}">
+class Component extends DCLogic {
+  state = { activeCat: 'Burgers' };
+
+  badge(kind) {
+    const m = {
+      veg:   { label:'Veg',   bg:'oklch(0.9 0.07 150)', fg:'oklch(0.42 0.12 150)', round:'2px' },
+      spicy: { label:'Spicy', bg:'oklch(0.93 0.07 30)', fg:'oklch(0.52 0.17 30)', round:'50%' },
+    };
+    return m[kind];
+  }
+
+  renderVals() {
+    const active = this.state.activeCat;
+    const RAISED = '5px 5px 11px oklch(0.82 0.04 295), -5px -5px 11px oklch(0.98 0.015 300)';
+    const INSET = 'inset 4px 4px 9px oklch(0.82 0.04 295), inset -4px -4px 9px oklch(0.98 0.015 300)';
+
+    const cats = ['Burgers', 'Pizzas', 'Sides', 'Beverages'].map(name => {
+      const on = name === active;
+      return {
+        name,
+        select: () => this.setState({ activeCat: name }),
+        fg: on ? 'oklch(0.4 0.14 295)' : 'oklch(0.5 0.05 295)',
+        shadow: on ? INSET : RAISED,
+      };
+    });
+
+    const burgers = [
+      { id:'truffle', name:'Truffle Umami Burger', price:18.5, chefPick:true, photo:'b-truffle',
+        desc:'Wagyu-beef patty, truffle aioli, aged gruyère, caramelized onion.', tags:['veg','spicy'] },
+      { id:'crispy', name:'Spicy Crispy Chicken', price:15.0, chefPick:false, photo:'b-crispy',
+        desc:'Buttermilk fried chicken, house-made spicy slaw, pickles.', tags:['spicy'] },
+    ].map(b => ({
+      ...b,
+      priceStr: '$' + b.price.toFixed(2),
+      photoId: b.photo,
+      badges: b.tags.map(t => this.badge(t)),
+    }));
+
+    return {
+      cats, burgers,
+      heroIcons: [{ g:'↩' }, { g:'♡' }, { g:'⤴' }],
+      nav: [
+        { isTab:true, g:'✦', label:'Menu', fg:'oklch(0.5 0.16 295)' },
+        { isTab:true, g:'♡', label:'Saved', fg:'oklch(0.6 0.04 295)' },
+        { isCart:true, g:'🛒', badge:'6' },
+        { isTab:true, g:'▤', label:'Table', fg:'oklch(0.6 0.04 295)' },
+        { isTab:true, g:'◔', label:'Profile', fg:'oklch(0.6 0.04 295)' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

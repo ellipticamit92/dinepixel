@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { LoginPage } from "@/components/templates/login-page";
+import { AuthPage } from "@/components/templates/auth-page";
 
 export const metadata: Metadata = {
-  title: "Login | MenuAI",
+  title: "Sign in | Plate",
 };
 
 export default function Login() {
-  return <LoginPage />;
+  return <AuthPage mode="login" />;
 }
