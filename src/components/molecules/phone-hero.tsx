@@ -5,11 +5,13 @@ export function PhoneHero({
   name = "Bloom Cafe",
   location = "Downtown District",
   rating = "4.9 (2k+)",
+  logoUrl = null,
 }: {
   height?: number;
   name?: string;
   location?: string;
   rating?: string;
+  logoUrl?: string | null;
 }) {
   return (
     <div className="px-[9px] pt-[9px]">
@@ -27,6 +29,12 @@ export function PhoneHero({
               "linear-gradient(to top, oklch(0.14 0.02 55 / 0.8) 6%, transparent 60%)",
           }}
         />
+        {logoUrl ? (
+          <div className="absolute top-[9px] left-[9px] size-9 overflow-hidden rounded-[10px] border-2 border-white/70">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={logoUrl} alt="Cafe logo" className="size-full object-cover" />
+          </div>
+        ) : null}
         <div className="absolute top-[9px] right-[9px] flex gap-1.5">
           {["♡", "⤴"].map((g) => (
             <div

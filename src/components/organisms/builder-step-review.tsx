@@ -14,6 +14,7 @@ interface BuilderStepReviewProps {
   onDraftChange: (id: string, value: string) => void;
   onAddIngredient: (id: string) => void;
   onRemoveIngredient: (id: string, index: number) => void;
+  onSave: (id: string) => void;
   onPublish: () => void;
   onReset: () => void;
 }
@@ -28,6 +29,7 @@ export function BuilderStepReview({
   onDraftChange,
   onAddIngredient,
   onRemoveIngredient,
+  onSave,
   onPublish,
   onReset,
 }: BuilderStepReviewProps) {
@@ -76,6 +78,7 @@ export function BuilderStepReview({
             onDraftChange={(value) => onDraftChange(dish.id, value)}
             onAddIngredient={() => onAddIngredient(dish.id)}
             onRemoveIngredient={(index) => onRemoveIngredient(dish.id, index)}
+            onSave={() => onSave(dish.id)}
           />
         ))}
       </div>

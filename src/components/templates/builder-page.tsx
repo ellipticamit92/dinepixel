@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { StepIndicator } from "@/components/molecules/step-indicator";
 import { BuilderStepUpload } from "@/components/organisms/builder-step-upload";
@@ -19,7 +20,7 @@ import { SEED_DISHES, type Dish, type DishCategory } from "@/lib/menu-seed";
 
 const SLUG = "bloom-cafe";
 
-export function BuilderPage() {
+export function BuilderPage({ session }: { session: { name: string } }) {
   const [step, setStep] = useState<BuilderStep>("upload");
   const [items, setItems] = useState<Dish[]>(SEED_DISHES);
   const [previewTab, setPreviewTab] = useState<DishCategory>("veg");
@@ -51,7 +52,7 @@ export function BuilderPage() {
 
   return (
     <div className="flex flex-1 flex-col bg-background font-sans text-[oklch(0.28_0.02_60)]">
-      <PlateNavbar />
+      <PlateNavbar session={session} />
       <StepIndicator step={step} />
 
       <div className="mx-auto grid w-full max-w-[1180px] items-start gap-8 px-6 py-6 pb-16 sm:px-10 lg:grid-cols-[1fr_380px]">
@@ -89,6 +90,11 @@ export function BuilderPage() {
               onRemoveIngredient={(id, index) =>
                 setItems((prev) => removeIngredient(prev, id, index))
               }
+              onSave={(id) => {
+                setEditingId(null);
+                const dish = items.find((d) => d.id === id);
+                toast.success(dish ? `${dish.name} updated` : "Dish updated");
+              }}
               onPublish={publish}
               onReset={reset}
             />

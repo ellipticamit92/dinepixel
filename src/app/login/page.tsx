@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "Sign in | Plate",
 };
 
-export default function Login() {
-  return <AuthPage mode="login" />;
+export default async function Login({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string; error?: string }>;
+}) {
+  const { next, error } = await searchParams;
+  return <AuthPage mode="login" next={next} error={error} />;
 }

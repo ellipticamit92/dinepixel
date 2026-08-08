@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { IngredientChip } from "@/components/molecules/ingredient-chip";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
 import { ingredientSummary, priceStr, type Dish } from "@/lib/menu-seed";
@@ -13,6 +13,8 @@ interface DishRowProps {
   onDraftChange: (value: string) => void;
   onAddIngredient: () => void;
   onRemoveIngredient: (index: number) => void;
+  onSave: () => void;
+  onDelete?: () => void;
 }
 
 export function DishRow({
@@ -25,10 +27,12 @@ export function DishRow({
   onDraftChange,
   onAddIngredient,
   onRemoveIngredient,
+  onSave,
+  onDelete,
 }: DishRowProps) {
   return (
     <div
-      className="overflow-hidden rounded-2xl bg-background"
+      className="rounded-2xl bg-background"
       style={{ boxShadow: editing ? INSET : RAISED_SM }}
     >
       <div className="flex items-center gap-[13px] px-4 py-[14px]">
@@ -71,6 +75,17 @@ export function DishRow({
         >
           {editing ? "Close" : "Edit"}
         </button>
+        {onDelete ? (
+          <button
+            type="button"
+            onClick={onDelete}
+            title="Remove dish"
+            className="flex size-9 shrink-0 items-center justify-center rounded-[10px]"
+            style={{ background: "var(--background)", color: "var(--nonveg)", boxShadow: RAISED_SM }}
+          >
+            <Trash2 className="size-4" strokeWidth={2} />
+          </button>
+        ) : null}
       </div>
 
       {editing ? (
@@ -130,7 +145,7 @@ export function DishRow({
           </div>
           <button
             type="button"
-            onClick={onToggleEdit}
+            onClick={onSave}
             className="mt-4 rounded-[11px] px-5 py-2.5 font-condensed text-[13.5px] font-bold tracking-[0.3px] text-primary-foreground"
             style={{ background: "var(--success)", boxShadow: SUCCESS_GLOW }}
           >

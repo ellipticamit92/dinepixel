@@ -7,6 +7,7 @@ export function AuthInput({
   type = "text",
   placeholder,
   autoComplete,
+  required,
 }: {
   label: string;
   icon: string;
@@ -14,6 +15,7 @@ export function AuthInput({
   type?: string;
   placeholder?: string;
   autoComplete?: string;
+  required?: boolean;
 }) {
   return (
     <div>
@@ -36,6 +38,7 @@ export function AuthInput({
           type={type}
           placeholder={placeholder}
           autoComplete={autoComplete}
+          required={required}
           className="flex-1 border-none bg-transparent text-[15px] font-semibold text-[oklch(0.26_0.02_60)] outline-none placeholder:text-[oklch(0.6_0.03_60)] placeholder:font-medium"
         />
       </div>

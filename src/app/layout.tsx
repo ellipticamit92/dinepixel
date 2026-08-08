@@ -6,6 +6,7 @@ import {
   Fraunces,
   Geist_Mono,
 } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const anton = Anton({
@@ -54,7 +55,10 @@ export default function RootLayout({
       lang="en"
       className={`${anton.variable} ${barlow.variable} ${barlowCondensed.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

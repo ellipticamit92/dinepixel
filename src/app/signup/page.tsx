@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "Register | Plate",
 };
 
-export default function Signup() {
-  return <AuthPage mode="register" />;
+export default async function Signup({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string; error?: string }>;
+}) {
+  const { next, error } = await searchParams;
+  return <AuthPage mode="register" next={next} error={error} />;
 }

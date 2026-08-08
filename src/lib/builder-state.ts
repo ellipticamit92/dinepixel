@@ -27,3 +27,11 @@ export function removeIngredient(items: Dish[], id: string, index: number): Dish
       : d
   );
 }
+
+export function addDish(items: Dish[], dish: Dish): Dish[] {
+  return [...items, dish];
+}
+
+export function removeDish(items: Dish[], id: string): Dish[] {
+  return items.filter((d) => d.id !== id);
+}

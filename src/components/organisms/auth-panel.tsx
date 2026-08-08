@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Apple } from "lucide-react";
 import { AuthInput } from "@/components/molecules/auth-input";
 import { RAISED_SM, INSET, ACCENT_GLOW } from "@/lib/neu-shadows";
+import { login, register } from "@/lib/auth-actions";
 
 export type AuthMode = "login" | "register";
 
@@ -51,9 +52,18 @@ const COPY: Record<
   },
 };
 
-export function AuthPanel({ mode }: { mode: AuthMode }) {
+export function AuthPanel({
+  mode,
+  next = "/admin",
+  error,
+}: {
+  mode: AuthMode;
+  next?: string;
+  error?: string;
+}) {
   const copy = COPY[mode];
   const isLogin = mode === "login";
+  const nextQuery = next && next !== "/admin" ? `?next=${encodeURIComponent(next)}` : "";
 
   return (
     <div className="grid flex-1 grid-cols-1 lg:grid-cols-2">
@@ -102,7 +112,7 @@ export function AuthPanel({ mode }: { mode: AuthMode }) {
           {/* tab toggle */}
           <div className="flex gap-2 rounded-[15px] p-1.5" style={{ boxShadow: INSET }}>
             <Link
-              href="/login"
+              href={`/login${nextQuery}`}
               className="flex-1 rounded-[11px] py-[11px] text-center font-condensed text-[14.5px] font-bold tracking-[0.3px]"
               style={{
                 color: isLogin ? "oklch(0.26 0.02 60)" : "oklch(0.52 0.02 60)",
@@ -112,7 +122,7 @@ export function AuthPanel({ mode }: { mode: AuthMode }) {
               Sign in
             </Link>
             <Link
-              href="/signup"
+              href={`/signup${nextQuery}`}
               className="flex-1 rounded-[11px] py-[11px] text-center font-condensed text-[14.5px] font-bold tracking-[0.3px]"
               style={{
                 color: !isLogin ? "oklch(0.26 0.02 60)" : "oklch(0.52 0.02 60)",
@@ -123,7 +133,18 @@ export function AuthPanel({ mode }: { mode: AuthMode }) {
             </Link>
           </div>
 
-          <form className="mt-6 flex flex-col gap-4">
+          <form className="mt-6 flex flex-col gap-4" action={isLogin ? login : register}>
+            <input type="hidden" name="next" value={next} />
+
+            {error ? (
+              <div
+                className="rounded-[11px] px-3.5 py-2.5 text-[13px] font-semibold"
+                style={{ color: "var(--nonveg)", boxShadow: INSET }}
+              >
+                Enter both an email and password to continue.
+              </div>
+            ) : null}
+
             {!isLogin ? (
               <AuthInput
                 label="Cafe / Restaurant name"
@@ -141,6 +162,7 @@ export function AuthPanel({ mode }: { mode: AuthMode }) {
               type="email"
               placeholder="you@cafe.com"
               autoComplete="email"
+              required
             />
 
             <AuthInput
@@ -150,6 +172,7 @@ export function AuthPanel({ mode }: { mode: AuthMode }) {
               type="password"
               placeholder="••••••••"
               autoComplete={isLogin ? "current-password" : "new-password"}
+              required
             />
 
             {isLogin ? (
@@ -173,13 +196,13 @@ export function AuthPanel({ mode }: { mode: AuthMode }) {
               </div>
             ) : null}
 
-            <Link
-              href="/builder"
+            <button
+              type="submit"
               className="mt-1 block w-full rounded-[14px] py-[15px] text-center font-condensed text-base font-bold tracking-[0.4px] text-primary-foreground"
               style={{ background: "var(--primary)", boxShadow: ACCENT_GLOW }}
             >
               {copy.cta}
-            </Link>
+            </button>
 
             <div className="my-0.5 flex items-center gap-3">
               <span className="h-px flex-1 bg-[oklch(0.86_0.02_74)]" />
@@ -210,7 +233,7 @@ export function AuthPanel({ mode }: { mode: AuthMode }) {
 
             <div className="text-center text-[13.5px] font-semibold text-[oklch(0.5_0.02_60)]">
               {copy.switchText}{" "}
-              <Link href={copy.switchHref} className="font-bold text-accent-foreground">
+              <Link href={`${copy.switchHref}${nextQuery}`} className="font-bold text-accent-foreground">
                 {copy.switchLink}
               </Link>
             </div>
