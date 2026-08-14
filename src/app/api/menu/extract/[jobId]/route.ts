@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 
-const MENULENS_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://api.dinepixel.cloud";
+const MENULENS_API_URL =
+  process.env.MENULENS_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "https://api.dinepixel.cloud";
+const MENULENS_API_KEY = process.env.MENULENS_API_KEY;
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/menu/extract/[jobId]">) {
   const { jobId } = await ctx.params;
 
-  const res = await fetch(`${MENULENS_API_URL}/extract/${encodeURIComponent(jobId)}`);
+  const res = await fetch(`${MENULENS_API_URL}/extract/${encodeURIComponent(jobId)}`, {
+    headers: MENULENS_API_KEY ? { "X-API-Key": MENULENS_API_KEY } : undefined,
+  });
 
   const body = await res.text();
   return new NextResponse(body, {

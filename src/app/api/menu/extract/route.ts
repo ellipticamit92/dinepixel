@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 
-const MENULENS_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "https://api.dinepixel.cloud";
+const MENULENS_API_URL =
+  process.env.MENULENS_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "https://api.dinepixel.cloud";
+const MENULENS_API_KEY = process.env.MENULENS_API_KEY;
 
 export async function POST(request: Request) {
   const incoming = await request.formData();
@@ -15,6 +17,7 @@ export async function POST(request: Request) {
 
   const res = await fetch(`${MENULENS_API_URL}/extract`, {
     method: "POST",
+    headers: MENULENS_API_KEY ? { "X-API-Key": MENULENS_API_KEY } : undefined,
     body: outgoing,
   });
 
