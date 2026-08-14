@@ -17,13 +17,13 @@ import {
   setDishPrice,
 } from "@/lib/builder-state";
 import { createExtractionJob, dishesFromMenu, pollExtractionJob } from "@/lib/menulens";
-import { SEED_DISHES, type Dish, type DishCategory } from "@/lib/menu-seed";
+import type { Dish, DishCategory } from "@/lib/menu-seed";
 
 const SLUG = "bloom-cafe";
 
 export function BuilderPage({ session }: { session: { name: string } }) {
   const [step, setStep] = useState<BuilderStep>("upload");
-  const [items, setItems] = useState<Dish[]>(SEED_DISHES);
+  const [items, setItems] = useState<Dish[]>([]);
   const [previewTab, setPreviewTab] = useState<DishCategory>("veg");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -62,7 +62,7 @@ export function BuilderPage({ session }: { session: { name: string } }) {
   const backToReview = () => setStep("review");
   const reset = () => {
     setStep("upload");
-    setItems(SEED_DISHES);
+    setItems([]);
     setEditingId(null);
     setPreviewTab("veg");
     setFile(null);
