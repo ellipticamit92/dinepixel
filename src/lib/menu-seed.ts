@@ -1,12 +1,6 @@
 export type DishCategory = "veg" | "nonveg";
 
-export type MenuSection =
-  | "Cafe Bites"
-  | "Chinese"
-  | "South Indian"
-  | "Momos"
-  | "Burgers"
-  | "Drinks";
+export type MenuSection = string;
 
 export const MENU_SECTIONS: MenuSection[] = [
   "Cafe Bites",

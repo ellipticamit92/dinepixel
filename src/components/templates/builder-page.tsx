@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { StepIndicator } from "@/components/molecules/step-indicator";
@@ -16,6 +16,7 @@ import {
   removeIngredient,
   setDishPrice,
 } from "@/lib/builder-state";
+import { createExtractionJob, dishesFromMenu, pollExtractionJob } from "@/lib/menulens";
 import { SEED_DISHES, type Dish, type DishCategory } from "@/lib/menu-seed";
 
 const SLUG = "bloom-cafe";
@@ -26,18 +27,35 @@ export function BuilderPage({ session }: { session: { name: string } }) {
   const [previewTab, setPreviewTab] = useState<DishCategory>("veg");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
+  const handleFileSelected = (selected: File) => {
+    setFile(selected);
+    setFileName(selected.name);
+  };
 
-  const generate = () => {
+  const generate = async () => {
+    if (!file) {
+      toast.error("Choose a menu photo or PDF first");
+      return;
+    }
     setStep("processing");
-    timerRef.current = setTimeout(() => setStep("review"), 2600);
+    try {
+      const job = await createExtractionJob(file);
+      const menu = await pollExtractionJob(job.job_id);
+      const dishes = dishesFromMenu(menu);
+      if (dishes.length === 0) {
+        toast.error("No dishes found in that file — try another one");
+        setStep("upload");
+        return;
+      }
+      setItems(dishes);
+      setStep("review");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't read that menu");
+      setStep("upload");
+    }
   };
 
   const publish = () => setStep("published");
@@ -47,6 +65,7 @@ export function BuilderPage({ session }: { session: { name: string } }) {
     setItems(SEED_DISHES);
     setEditingId(null);
     setPreviewTab("veg");
+    setFile(null);
     setFileName(null);
   };
 
@@ -60,7 +79,7 @@ export function BuilderPage({ session }: { session: { name: string } }) {
           {step === "upload" ? (
             <BuilderStepUpload
               fileName={fileName}
-              onFileSelected={setFileName}
+              onFileSelected={handleFileSelected}
               onGenerate={generate}
             />
           ) : null}

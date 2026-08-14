@@ -10,7 +10,7 @@ export function UploadDropwell({
   onFileSelected,
 }: {
   fileName: string | null;
-  onFileSelected: (name: string) => void;
+  onFileSelected: (file: File) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -32,7 +32,7 @@ export function UploadDropwell({
         e.preventDefault();
         setDragging(false);
         const file = e.dataTransfer.files?.[0];
-        if (file) onFileSelected(file.name);
+        if (file) onFileSelected(file);
       }}
       className={cn(
         "relative mt-[26px] flex h-[280px] cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl bg-background text-center transition-opacity",
@@ -47,7 +47,7 @@ export function UploadDropwell({
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) onFileSelected(file.name);
+          if (file) onFileSelected(file);
         }}
       />
       <UploadCloud className="size-8 text-muted-foreground" strokeWidth={1.5} />

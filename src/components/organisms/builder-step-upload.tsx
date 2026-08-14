@@ -12,14 +12,16 @@ const valueProps = [
 
 interface BuilderStepUploadProps {
   fileName: string | null;
-  onFileSelected: (name: string) => void;
+  onFileSelected: (file: File) => void;
   onGenerate: () => void;
+  generating?: boolean;
 }
 
 export function BuilderStepUpload({
   fileName,
   onFileSelected,
   onGenerate,
+  generating = false,
 }: BuilderStepUploadProps) {
   return (
     <div>
@@ -42,11 +44,12 @@ export function BuilderStepUpload({
         <button
           type="button"
           onClick={onGenerate}
-          className="flex items-center gap-2.5 rounded-2xl bg-primary px-[26px] py-[15px] font-condensed text-[17px] font-bold tracking-[0.4px] text-primary-foreground"
+          disabled={!fileName || generating}
+          className="flex items-center gap-2.5 rounded-2xl bg-primary px-[26px] py-[15px] font-condensed text-[17px] font-bold tracking-[0.4px] text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
           style={{ boxShadow: ACCENT_GLOW }}
         >
           <span className="inline-block size-3 rotate-45 bg-primary-foreground" />
-          Generate my menu with AI
+          {generating ? "Reading your menu…" : "Generate my menu with AI"}
         </button>
         <span className="text-[13px] font-semibold text-[oklch(0.55_0.03_60)]">
           Takes about 20 seconds

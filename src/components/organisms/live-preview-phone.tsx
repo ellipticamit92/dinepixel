@@ -6,7 +6,6 @@ import { PhoneFrame } from "@/components/molecules/phone-frame";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
 import {
-  MENU_SECTIONS,
   ingredientSummary,
   markColor,
   priceStr,
@@ -32,13 +31,15 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl }: Li
   );
   const featured = filtered[0] ?? null;
   const rest = filtered.slice(1);
-  const groups = MENU_SECTIONS.map((s) => ({
-    section: s,
-    dishes: rest.filter((d) => d.section === s),
-  })).filter((g) => g.dishes.length > 0);
-  const availableSections = MENU_SECTIONS.filter((s) =>
-    items.some((d) => d.cat === tab && d.section === s)
+  const availableSections = Array.from(
+    new Set(items.filter((d) => d.cat === tab).map((d) => d.section))
   );
+  const groups = availableSections
+    .map((s) => ({
+      section: s,
+      dishes: rest.filter((d) => d.section === s),
+    }))
+    .filter((g) => g.dishes.length > 0);
 
   return (
     <div className="sticky top-[92px]">
