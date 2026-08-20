@@ -11,6 +11,9 @@ interface BuilderStepReviewProps {
   onFlip: (id: string) => void;
   onToggleEdit: (id: string) => void;
   onSetPrice: (id: string, price: number) => void;
+  onSetHalfPrice: (id: string, price: number) => void;
+  onSetFullPrice: (id: string, price: number) => void;
+  onToggleHalfFull: (id: string, enabled: boolean) => void;
   onDraftChange: (id: string, value: string) => void;
   onAddIngredient: (id: string) => void;
   onRemoveIngredient: (id: string, index: number) => void;
@@ -26,6 +29,9 @@ export function BuilderStepReview({
   onFlip,
   onToggleEdit,
   onSetPrice,
+  onSetHalfPrice,
+  onSetFullPrice,
+  onToggleHalfFull,
   onDraftChange,
   onAddIngredient,
   onRemoveIngredient,
@@ -75,6 +81,9 @@ export function BuilderStepReview({
             onFlip={() => onFlip(dish.id)}
             onToggleEdit={() => onToggleEdit(dish.id)}
             onSetPrice={(price) => onSetPrice(dish.id, price)}
+            onSetHalfPrice={(price) => onSetHalfPrice(dish.id, price)}
+            onSetFullPrice={(price) => onSetFullPrice(dish.id, price)}
+            onToggleHalfFull={(enabled) => onToggleHalfFull(dish.id, enabled)}
             onDraftChange={(value) => onDraftChange(dish.id, value)}
             onAddIngredient={() => onAddIngredient(dish.id)}
             onRemoveIngredient={(index) => onRemoveIngredient(dish.id, index)}

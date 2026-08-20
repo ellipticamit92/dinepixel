@@ -2,7 +2,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { IngredientChip } from "@/components/molecules/ingredient-chip";
 import { DishImageUpload } from "@/components/molecules/dish-image-upload";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
-import { ingredientSummary, priceStr, type Dish } from "@/lib/menu-seed";
+import { dishPriceLabel, hasHalfFullPricing, ingredientSummary, type Dish } from "@/lib/menu-seed";
 
 interface DishRowProps {
   dish: Dish;
@@ -12,6 +12,9 @@ interface DishRowProps {
   onFlip: () => void;
   onToggleEdit: () => void;
   onSetPrice: (price: number) => void;
+  onSetHalfPrice: (price: number) => void;
+  onSetFullPrice: (price: number) => void;
+  onToggleHalfFull: (enabled: boolean) => void;
   onDraftChange: (value: string) => void;
   onAddIngredient: () => void;
   onRemoveIngredient: (index: number) => void;
@@ -29,6 +32,9 @@ export function DishRow({
   onFlip,
   onToggleEdit,
   onSetPrice,
+  onSetHalfPrice,
+  onSetFullPrice,
+  onToggleHalfFull,
   onDraftChange,
   onAddIngredient,
   onRemoveIngredient,
@@ -37,6 +43,7 @@ export function DishRow({
   onSave,
   onDelete,
 }: DishRowProps) {
+  const halfFull = hasHalfFullPricing(dish);
   return (
     <div
       className="rounded-2xl bg-background"
@@ -81,8 +88,8 @@ export function DishRow({
             {ingredientSummary(dish)}
           </div>
         </div>
-        <div className="font-condensed text-base font-bold text-[oklch(0.42_0.02_60)]">
-          {priceStr(dish.price)}
+        <div className="font-condensed text-base font-bold whitespace-nowrap text-[oklch(0.42_0.02_60)]">
+          {dishPriceLabel(dish)}
         </div>
         <button
           type="button"
@@ -126,21 +133,63 @@ export function DishRow({
           ) : null}
           <div className="mt-4 flex flex-wrap gap-[18px]">
             <div>
-              <label className="mb-[7px] block text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
-                Price (₹)
-              </label>
-              <div
-                className="flex items-center gap-2 rounded-[11px] px-[13px] py-[9px]"
-                style={{ boxShadow: INSET_SM }}
-              >
-                <span className="text-[15px] font-bold text-[oklch(0.55_0.03_60)]">₹</span>
-                <input
-                  type="number"
-                  value={dish.price}
-                  onChange={(e) => onSetPrice(parseInt(e.target.value, 10) || 0)}
-                  className="w-20 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
-                />
+              <div className="mb-[7px] flex items-center gap-2">
+                <label className="text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+                  Price (₹)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => onToggleHalfFull(!halfFull)}
+                  className="text-[10.5px] font-bold tracking-[0.2px] text-primary underline-offset-2 hover:underline"
+                >
+                  {halfFull ? "Use single price" : "Half / Full pricing"}
+                </button>
               </div>
+              {halfFull ? (
+                <div className="flex gap-2">
+                  <div
+                    className="flex items-center gap-2 rounded-[11px] px-[13px] py-[9px]"
+                    style={{ boxShadow: INSET_SM }}
+                  >
+                    <span className="text-[11px] font-bold tracking-[0.3px] text-[oklch(0.55_0.03_60)] uppercase">
+                      Half
+                    </span>
+                    <input
+                      type="number"
+                      value={dish.halfPrice ?? 0}
+                      onChange={(e) => onSetHalfPrice(parseInt(e.target.value, 10) || 0)}
+                      className="w-16 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                    />
+                  </div>
+                  <div
+                    className="flex items-center gap-2 rounded-[11px] px-[13px] py-[9px]"
+                    style={{ boxShadow: INSET_SM }}
+                  >
+                    <span className="text-[11px] font-bold tracking-[0.3px] text-[oklch(0.55_0.03_60)] uppercase">
+                      Full
+                    </span>
+                    <input
+                      type="number"
+                      value={dish.fullPrice ?? 0}
+                      onChange={(e) => onSetFullPrice(parseInt(e.target.value, 10) || 0)}
+                      className="w-16 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="flex items-center gap-2 rounded-[11px] px-[13px] py-[9px]"
+                  style={{ boxShadow: INSET_SM }}
+                >
+                  <span className="text-[15px] font-bold text-[oklch(0.55_0.03_60)]">₹</span>
+                  <input
+                    type="number"
+                    value={dish.price}
+                    onChange={(e) => onSetPrice(parseInt(e.target.value, 10) || 0)}
+                    className="w-20 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                  />
+                </div>
+              )}
             </div>
             <div className="min-w-[200px] flex-1">
               <label className="mb-[7px] block text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">

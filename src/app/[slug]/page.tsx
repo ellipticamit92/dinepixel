@@ -36,6 +36,10 @@ export default async function Menu(props: PageProps<"/[slug]">) {
       restaurantName={menu.restaurantName}
       logoUrl={menu.logoUrl}
       bannerUrl={menu.bannerUrl}
+      zomatoUrl={menu.zomatoUrl}
+      zomatoRating={menu.zomatoRating}
+      swiggyUrl={menu.swiggyUrl}
+      swiggyRating={menu.swiggyRating}
       dishes={menu.dishes}
     />
   );

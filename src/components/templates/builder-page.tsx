@@ -17,7 +17,10 @@ import {
   addIngredient,
   flipDishCategory,
   removeIngredient,
+  setDishFullPrice,
+  setDishHalfPrice,
   setDishPrice,
+  toggleHalfFullPricing,
 } from "@/lib/builder-state";
 import { createExtractionJob, dishesFromMenu, pollExtractionJob } from "@/lib/menulens";
 import { saveExtractedMenu } from "@/lib/menu-actions";
@@ -118,6 +121,15 @@ export function BuilderPage({ session }: { session: { name: string } }) {
               }
               onSetPrice={(id, price) =>
                 setItems((prev) => setDishPrice(prev, id, price))
+              }
+              onSetHalfPrice={(id, price) =>
+                setItems((prev) => setDishHalfPrice(prev, id, price))
+              }
+              onSetFullPrice={(id, price) =>
+                setItems((prev) => setDishFullPrice(prev, id, price))
+              }
+              onToggleHalfFull={(id, enabled) =>
+                setItems((prev) => toggleHalfFullPricing(prev, id, enabled))
               }
               onDraftChange={(id, value) =>
                 setDrafts((prev) => ({ ...prev, [id]: value }))

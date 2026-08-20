@@ -8,6 +8,10 @@ export interface MenuForSession {
   restaurantName: string;
   logoUrl: string | null;
   bannerUrl: string | null;
+  zomatoUrl: string | null;
+  zomatoRating: number | null;
+  swiggyUrl: string | null;
+  swiggyRating: number | null;
   dishes: Dish[];
 }
 
@@ -18,6 +22,8 @@ interface MenuItemRow {
   type: string;
   category: "veg" | "nonveg";
   price: number;
+  halfPrice: number | null;
+  fullPrice: number | null;
   imageUrl: string | null;
   ingredients: string[];
   section: string;
@@ -31,6 +37,8 @@ export function toDish(item: MenuItemRow): Dish {
     type: item.type,
     cat: item.category,
     price: item.price,
+    halfPrice: item.halfPrice,
+    fullPrice: item.fullPrice,
     imageUrl: item.imageUrl,
     ingredients: item.ingredients,
     section: item.section,
@@ -55,6 +63,10 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     restaurantName: menu.restaurantName ?? session.name,
     logoUrl: menu.logoUrl,
     bannerUrl: menu.bannerUrl,
+    zomatoUrl: menu.zomatoUrl,
+    zomatoRating: menu.zomatoRating,
+    swiggyUrl: menu.swiggyUrl,
+    swiggyRating: menu.swiggyRating,
     dishes: menu.items.map(toDish),
   };
 }
@@ -74,6 +86,10 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     restaurantName: menu.restaurantName ?? menu.owner.name ?? "Menu",
     logoUrl: menu.logoUrl,
     bannerUrl: menu.bannerUrl,
+    zomatoUrl: menu.zomatoUrl,
+    zomatoRating: menu.zomatoRating,
+    swiggyUrl: menu.swiggyUrl,
+    swiggyRating: menu.swiggyRating,
     dishes: menu.items.map(toDish),
   };
 }

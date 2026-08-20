@@ -7,9 +7,9 @@ import { PhoneHero } from "@/components/molecules/phone-hero";
 import { InstallHint } from "@/components/molecules/install-hint";
 import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
 import {
+  dishPriceLabel,
   ingredientSummary,
   markColor,
-  priceStr,
   type Dish,
   type DishCategory,
   type MenuSection,
@@ -21,11 +21,19 @@ export function MenuContent({
   restaurantName,
   logoUrl,
   bannerUrl,
+  zomatoUrl,
+  zomatoRating,
+  swiggyUrl,
+  swiggyRating,
   dishes,
 }: {
   restaurantName: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  zomatoUrl?: string | null;
+  zomatoRating?: number | null;
+  swiggyUrl?: string | null;
+  swiggyRating?: number | null;
   dishes: Dish[];
 }) {
   const [tab, setTab] = useState<DishCategory>("veg");
@@ -48,6 +56,35 @@ export function MenuContent({
       <PhoneHero height={190} logoSize={64} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
 
       <InstallHint />
+
+      {zomatoUrl || swiggyUrl ? (
+        <div className="flex gap-2 px-4 pt-3">
+          {zomatoUrl ? (
+            <a
+              href={zomatoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-2.5 font-condensed text-[12.5px] font-bold text-white"
+              style={{ background: "oklch(0.52 0.2 25)" }}
+            >
+              Order on Zomato
+              {zomatoRating ? <span className="opacity-85">★ {zomatoRating}</span> : null}
+            </a>
+          ) : null}
+          {swiggyUrl ? (
+            <a
+              href={swiggyUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-2.5 font-condensed text-[12.5px] font-bold text-white"
+              style={{ background: "oklch(0.62 0.18 45)" }}
+            >
+              Order on Swiggy
+              {swiggyRating ? <span className="opacity-85">★ {swiggyRating}</span> : null}
+            </a>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="flex gap-1.5 overflow-x-auto px-4 pt-4 pb-1">
         <button
@@ -102,7 +139,7 @@ export function MenuContent({
                   </span>
                 </div>
                 <span className="font-condensed text-base font-bold whitespace-nowrap text-primary">
-                  {priceStr(featured.price)}
+                  {dishPriceLabel(featured)}
                 </span>
               </div>
               <div className="mt-1.5 text-[12.5px] leading-[1.4] text-[oklch(0.52_0.02_60)]">
@@ -146,8 +183,8 @@ export function MenuContent({
                     {ingredientSummary(d)}
                   </div>
                 </div>
-                <div className="font-condensed text-[15px] font-bold text-primary">
-                  {priceStr(d.price)}
+                <div className="font-condensed text-[15px] font-bold whitespace-nowrap text-primary">
+                  {dishPriceLabel(d)}
                 </div>
                 <span
                   className="flex size-7 shrink-0 items-center justify-center rounded-[10px] text-lg leading-none text-accent-foreground"

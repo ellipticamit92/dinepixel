@@ -9,6 +9,7 @@ import { DishRow } from "@/components/molecules/dish-row";
 import { LogoUpload } from "@/components/molecules/logo-upload";
 import { BannerUpload } from "@/components/molecules/banner-upload";
 import { MenuQrCode } from "@/components/molecules/menu-qr-code";
+import { DeliveryLinkField } from "@/components/molecules/delivery-link-field";
 import { AdminOfferNotifier } from "@/components/organisms/admin-offer-notifier";
 import {
   Accordion,
@@ -29,13 +30,17 @@ import {
   flipDishCategory,
   removeDish,
   removeIngredient,
+  setDishFullPrice,
+  setDishHalfPrice,
   setDishPrice,
+  toggleHalfFullPricing,
 } from "@/lib/builder-state";
 import {
   createMenuItem,
   deleteMenuItem,
   removeDishImage,
   removeMenuImage,
+  updateDeliveryLinks,
   updateMenuItem,
   uploadDishImage,
   uploadMenuImage,
@@ -78,6 +83,11 @@ export function AdminDashboardPage({
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [uploadingImageId, setUploadingImageId] = useState<string | null>(null);
+  const [zomatoUrl, setZomatoUrl] = useState(menu?.zomatoUrl ?? "");
+  const [zomatoRating, setZomatoRating] = useState(menu?.zomatoRating?.toString() ?? "");
+  const [swiggyUrl, setSwiggyUrl] = useState(menu?.swiggyUrl ?? "");
+  const [swiggyRating, setSwiggyRating] = useState(menu?.swiggyRating?.toString() ?? "");
+  const [savingLinks, setSavingLinks] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [sectionFilter, setSectionFilter] = useState<SectionFilter>("all");
   const [query, setQuery] = useState("");
@@ -169,6 +179,8 @@ export function AdminDashboardPage({
       description: dish.description,
       cat: dish.cat,
       price: dish.price,
+      halfPrice: dish.halfPrice,
+      fullPrice: dish.fullPrice,
       ingredients: dish.ingredients,
     });
 
@@ -238,6 +250,32 @@ export function AdminDashboardPage({
     } catch {
       setItems(before);
       toast.error(`Couldn't remove photo for ${dish.name}`);
+    }
+  };
+
+  const saveDeliveryLinks = async () => {
+    if (!menu) {
+      toast.error("Build a menu first, then add delivery links here");
+      return;
+    }
+    setSavingLinks(true);
+    try {
+      const saved = await updateDeliveryLinks({
+        menuId: menu.id,
+        zomatoUrl,
+        zomatoRating: zomatoRating ? Number(zomatoRating) : null,
+        swiggyUrl,
+        swiggyRating: swiggyRating ? Number(swiggyRating) : null,
+      });
+      setZomatoUrl(saved.zomatoUrl ?? "");
+      setZomatoRating(saved.zomatoRating?.toString() ?? "");
+      setSwiggyUrl(saved.swiggyUrl ?? "");
+      setSwiggyRating(saved.swiggyRating?.toString() ?? "");
+      toast.success("Delivery links updated");
+    } catch {
+      toast.error("Couldn't save delivery links");
+    } finally {
+      setSavingLinks(false);
     }
   };
 
@@ -342,6 +380,42 @@ export function AdminDashboardPage({
               </div>
             </div>
           ) : null}
+
+          <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
+            <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+              Order online links
+            </div>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">
+              Add your Zomato and Swiggy listings — shown on your public menu page with the rating.
+            </p>
+            <div className="mt-4 flex flex-col gap-4">
+              <DeliveryLinkField
+                label="Zomato"
+                accent="oklch(0.52 0.2 25)"
+                url={zomatoUrl}
+                rating={zomatoRating}
+                onUrlChange={setZomatoUrl}
+                onRatingChange={setZomatoRating}
+              />
+              <DeliveryLinkField
+                label="Swiggy"
+                accent="oklch(0.62 0.18 45)"
+                url={swiggyUrl}
+                rating={swiggyRating}
+                onUrlChange={setSwiggyUrl}
+                onRatingChange={setSwiggyRating}
+              />
+              <button
+                type="button"
+                onClick={saveDeliveryLinks}
+                disabled={savingLinks}
+                className="self-start rounded-[11px] px-5 py-2.5 font-condensed text-[13px] font-bold text-[oklch(0.35_0.02_60)] disabled:opacity-60"
+                style={{ boxShadow: RAISED_SM }}
+              >
+                {savingLinks ? "Saving…" : "Save links"}
+              </button>
+            </div>
+          </div>
 
           <AdminOfferNotifier logoUrl={logoUrl} />
 
@@ -565,6 +639,15 @@ export function AdminDashboardPage({
                             }
                             onSetPrice={(price) =>
                               setItems((prev) => setDishPrice(prev, dish.id, price))
+                            }
+                            onSetHalfPrice={(price) =>
+                              setItems((prev) => setDishHalfPrice(prev, dish.id, price))
+                            }
+                            onSetFullPrice={(price) =>
+                              setItems((prev) => setDishFullPrice(prev, dish.id, price))
+                            }
+                            onToggleHalfFull={(enabled) =>
+                              setItems((prev) => toggleHalfFullPricing(prev, dish.id, enabled))
                             }
                             onDraftChange={(value) =>
                               setDrafts((prev) => ({ ...prev, [dish.id]: value }))

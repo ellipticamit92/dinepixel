@@ -127,6 +127,8 @@ export interface UpdateDishInput {
   description?: string | null;
   cat: DishCategory;
   price: number;
+  halfPrice?: number | null;
+  fullPrice?: number | null;
   ingredients: string[];
 }
 
@@ -136,13 +138,19 @@ export async function updateMenuItem(input: UpdateDishInput): Promise<Dish> {
   const name = cleanText(input.name, 200);
   if (!name) throw new Error("A dish needs a name");
 
+  const halfPrice = input.halfPrice != null ? cleanPrice(input.halfPrice) : null;
+  const fullPrice = input.fullPrice != null ? cleanPrice(input.fullPrice) : null;
+  const usingHalfFull = halfPrice !== null && fullPrice !== null;
+
   const item = await prisma.menuItem.update({
     where: { id },
     data: {
       name,
       description: cleanText(input.description, 2000),
       category: input.cat === "nonveg" ? "nonveg" : "veg",
-      price: cleanPrice(input.price),
+      price: usingHalfFull ? fullPrice : cleanPrice(input.price),
+      halfPrice: usingHalfFull ? halfPrice : null,
+      fullPrice: usingHalfFull ? fullPrice : null,
       ingredients: cleanIngredients(input.ingredients),
     },
   });
@@ -165,6 +173,52 @@ async function ownedMenuId(menuId: unknown): Promise<string> {
   if (!menu) throw new Error("Menu not found");
 
   return menu.id;
+}
+
+function cleanUrl(value: unknown, max: number): string | null {
+  const text = cleanText(value, max);
+  if (!text) return null;
+  try {
+    const url = new URL(text);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function cleanRating(value: unknown): number | null {
+  const rating = Number(value);
+  if (!Number.isFinite(rating)) return null;
+  return Math.min(5, Math.max(0, Math.round(rating * 10) / 10));
+}
+
+export interface UpdateDeliveryLinksInput {
+  menuId: string;
+  zomatoUrl?: string | null;
+  zomatoRating?: number | null;
+  swiggyUrl?: string | null;
+  swiggyRating?: number | null;
+}
+
+export async function updateDeliveryLinks(input: UpdateDeliveryLinksInput): Promise<{
+  zomatoUrl: string | null;
+  zomatoRating: number | null;
+  swiggyUrl: string | null;
+  swiggyRating: number | null;
+}> {
+  const id = await ownedMenuId(input.menuId);
+
+  const zomatoUrl = cleanUrl(input.zomatoUrl, 500);
+  const zomatoRating = zomatoUrl ? cleanRating(input.zomatoRating) : null;
+  const swiggyUrl = cleanUrl(input.swiggyUrl, 500);
+  const swiggyRating = swiggyUrl ? cleanRating(input.swiggyRating) : null;
+
+  return prisma.menu.update({
+    where: { id },
+    data: { zomatoUrl, zomatoRating, swiggyUrl, swiggyRating },
+    select: { zomatoUrl: true, zomatoRating: true, swiggyUrl: true, swiggyRating: true },
+  });
 }
 
 const MENU_IMAGE_KINDS = ["logo", "banner"] as const;

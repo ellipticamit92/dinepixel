@@ -9,9 +9,15 @@ export interface Dish {
   type: string;
   cat: DishCategory;
   price: number;
+  halfPrice?: number | null;
+  fullPrice?: number | null;
   imageUrl?: string | null;
   ingredients: string[];
   section: MenuSection;
+}
+
+export function hasHalfFullPricing(dish: Dish): boolean {
+  return dish.halfPrice != null && dish.fullPrice != null;
 }
 
 export const SEED_DISHES: Dish[] = [
@@ -53,6 +59,13 @@ export const SEED_DISHES: Dish[] = [
 
 export function priceStr(price: number) {
   return "₹" + price;
+}
+
+export function dishPriceLabel(dish: Dish): string {
+  if (hasHalfFullPricing(dish)) {
+    return `Half ${priceStr(dish.halfPrice as number)} · Full ${priceStr(dish.fullPrice as number)}`;
+  }
+  return priceStr(dish.price);
 }
 
 export function markColor(cat: DishCategory) {
