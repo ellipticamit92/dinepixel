@@ -179,8 +179,11 @@ const IMAGE_EXTENSIONS: Record<string, string> = {
   "image/svg+xml": "svg",
 };
 
+// Stored outside `public/` and served through src/app/uploads/menus/[menuId]/[filename]/route.ts,
+// which reads the file fresh on every request — `next start` only serves public/ files that
+// existed when the server booted, so anything written to public/ at runtime 404s until restart.
 function menuUploadDir(menuId: string): string {
-  return path.join(process.cwd(), "public", "uploads", "menus", menuId);
+  return path.join(process.cwd(), "uploads", "menus", menuId);
 }
 
 async function clearMenuImage(menuId: string, kind: MenuImageKind): Promise<void> {
@@ -191,7 +194,7 @@ async function clearMenuImage(menuId: string, kind: MenuImageKind): Promise<void
   );
 }
 
-/** Saves a logo or banner image to disk under public/uploads and records its URL on the menu. */
+/** Saves a logo or banner image to disk and records its URL on the menu. */
 export async function uploadMenuImage(
   menuId: string,
   kind: MenuImageKind,
