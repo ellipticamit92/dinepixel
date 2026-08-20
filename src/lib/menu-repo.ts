@@ -52,3 +52,20 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     dishes: menu.items.map(toDish),
   };
 }
+
+/** The public menu for a given slug, or null if no restaurant has published one. */
+export async function getMenuBySlug(slug: string): Promise<MenuForSession | null> {
+  const menu = await prisma.menu.findFirst({
+    where: { slug },
+    orderBy: { updatedAt: "desc" },
+    include: { items: { orderBy: { position: "asc" } }, owner: { select: { name: true } } },
+  });
+  if (!menu) return null;
+
+  return {
+    id: menu.id,
+    slug: menu.slug,
+    restaurantName: menu.restaurantName ?? menu.owner.name ?? "Menu",
+    dishes: menu.items.map(toDish),
+  };
+}
