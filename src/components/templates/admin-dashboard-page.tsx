@@ -30,8 +30,11 @@ import {
   removeIngredient,
   setDishFullPrice,
   setDishHalfPrice,
+  setDishLargePrice,
+  setDishMediumPrice,
   setDishPrice,
-  toggleHalfFullPricing,
+  setDishSmallPrice,
+  setPricingMode,
 } from "@/lib/builder-state";
 import {
   createMenuItem,
@@ -132,6 +135,9 @@ export function AdminDashboardPage({
       price: dish.price,
       halfPrice: dish.halfPrice,
       fullPrice: dish.fullPrice,
+      smallPrice: dish.smallPrice,
+      mediumPrice: dish.mediumPrice,
+      largePrice: dish.largePrice,
       ingredients: dish.ingredients,
     });
 
@@ -524,8 +530,17 @@ export function AdminDashboardPage({
                             onSetFullPrice={(price) =>
                               setItems((prev) => setDishFullPrice(prev, dish.id, price))
                             }
-                            onToggleHalfFull={(enabled) =>
-                              setItems((prev) => toggleHalfFullPricing(prev, dish.id, enabled))
+                            onSetSmallPrice={(price) =>
+                              setItems((prev) => setDishSmallPrice(prev, dish.id, price))
+                            }
+                            onSetMediumPrice={(price) =>
+                              setItems((prev) => setDishMediumPrice(prev, dish.id, price))
+                            }
+                            onSetLargePrice={(price) =>
+                              setItems((prev) => setDishLargePrice(prev, dish.id, price))
+                            }
+                            onSetPricingMode={(mode) =>
+                              setItems((prev) => setPricingMode(prev, dish.id, mode))
                             }
                             onDraftChange={(value) =>
                               setDrafts((prev) => ({ ...prev, [dish.id]: value }))

@@ -33,6 +33,7 @@ export default async function Menu(props: PageProps<"/[slug]">) {
 
   return (
     <MenuPage
+      slug={slug}
       restaurantName={menu.restaurantName}
       logoUrl={menu.logoUrl}
       bannerUrl={menu.bannerUrl}

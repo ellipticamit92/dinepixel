@@ -19,8 +19,11 @@ import {
   removeIngredient,
   setDishFullPrice,
   setDishHalfPrice,
+  setDishLargePrice,
+  setDishMediumPrice,
   setDishPrice,
-  toggleHalfFullPricing,
+  setDishSmallPrice,
+  setPricingMode,
 } from "@/lib/builder-state";
 import { createExtractionJob, dishesFromMenu, pollExtractionJob } from "@/lib/menulens";
 import { saveExtractedMenu } from "@/lib/menu-actions";
@@ -128,8 +131,17 @@ export function BuilderPage({ session }: { session: { name: string } }) {
               onSetFullPrice={(id, price) =>
                 setItems((prev) => setDishFullPrice(prev, id, price))
               }
-              onToggleHalfFull={(id, enabled) =>
-                setItems((prev) => toggleHalfFullPricing(prev, id, enabled))
+              onSetSmallPrice={(id, price) =>
+                setItems((prev) => setDishSmallPrice(prev, id, price))
+              }
+              onSetMediumPrice={(id, price) =>
+                setItems((prev) => setDishMediumPrice(prev, id, price))
+              }
+              onSetLargePrice={(id, price) =>
+                setItems((prev) => setDishLargePrice(prev, id, price))
+              }
+              onSetPricingMode={(id, mode) =>
+                setItems((prev) => setPricingMode(prev, id, mode))
               }
               onDraftChange={(id, value) =>
                 setDrafts((prev) => ({ ...prev, [id]: value }))

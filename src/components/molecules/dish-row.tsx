@@ -2,7 +2,13 @@ import { Plus, Trash2 } from "lucide-react";
 import { IngredientChip } from "@/components/molecules/ingredient-chip";
 import { DishImageUpload } from "@/components/molecules/dish-image-upload";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
-import { dishPriceLabel, hasHalfFullPricing, ingredientSummary, type Dish } from "@/lib/menu-seed";
+import { dishPriceLabel, ingredientSummary, pricingModeOf, type Dish, type PricingMode } from "@/lib/menu-seed";
+
+const PRICING_MODES: { mode: PricingMode; label: string }[] = [
+  { mode: "single", label: "Single" },
+  { mode: "halfFull", label: "Half / Full" },
+  { mode: "sizes", label: "S / M / L" },
+];
 
 interface DishRowProps {
   dish: Dish;
@@ -14,7 +20,10 @@ interface DishRowProps {
   onSetPrice: (price: number) => void;
   onSetHalfPrice: (price: number) => void;
   onSetFullPrice: (price: number) => void;
-  onToggleHalfFull: (enabled: boolean) => void;
+  onSetSmallPrice: (price: number) => void;
+  onSetMediumPrice: (price: number) => void;
+  onSetLargePrice: (price: number) => void;
+  onSetPricingMode: (mode: PricingMode) => void;
   onDraftChange: (value: string) => void;
   onAddIngredient: () => void;
   onRemoveIngredient: (index: number) => void;
@@ -34,7 +43,10 @@ export function DishRow({
   onSetPrice,
   onSetHalfPrice,
   onSetFullPrice,
-  onToggleHalfFull,
+  onSetSmallPrice,
+  onSetMediumPrice,
+  onSetLargePrice,
+  onSetPricingMode,
   onDraftChange,
   onAddIngredient,
   onRemoveIngredient,
@@ -43,7 +55,7 @@ export function DishRow({
   onSave,
   onDelete,
 }: DishRowProps) {
-  const halfFull = hasHalfFullPricing(dish);
+  const mode = pricingModeOf(dish);
   return (
     <div
       className="rounded-2xl bg-background"
@@ -133,19 +145,76 @@ export function DishRow({
           ) : null}
           <div className="mt-4 flex flex-wrap gap-[18px]">
             <div>
-              <div className="mb-[7px] flex items-center gap-2">
+              <div className="mb-[7px] flex flex-wrap items-center gap-2">
                 <label className="text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
                   Price (₹)
                 </label>
-                <button
-                  type="button"
-                  onClick={() => onToggleHalfFull(!halfFull)}
-                  className="text-[10.5px] font-bold tracking-[0.2px] text-primary underline-offset-2 hover:underline"
-                >
-                  {halfFull ? "Use single price" : "Half / Full pricing"}
-                </button>
+                <div className="flex gap-1">
+                  {PRICING_MODES.map((m) => (
+                    <button
+                      key={m.mode}
+                      type="button"
+                      onClick={() => onSetPricingMode(m.mode)}
+                      className="rounded-full px-2.5 py-[3px] font-condensed text-[10.5px] font-bold tracking-[0.2px]"
+                      style={{
+                        color: mode === m.mode ? "oklch(0.35 0.02 60)" : "oklch(0.6 0.03 60)",
+                        boxShadow: mode === m.mode ? INSET_SM : RAISED_SM,
+                      }}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              {halfFull ? (
+              {mode === "sizes" ? (
+                <div className="flex gap-2">
+                  <div
+                    className="flex items-center gap-2 rounded-[11px] px-[11px] py-[9px]"
+                    style={{ boxShadow: INSET_SM }}
+                  >
+                    <span className="text-[11px] font-bold tracking-[0.3px] text-[oklch(0.55_0.03_60)] uppercase">
+                      S
+                    </span>
+                    <input
+                      type="number"
+                      value={dish.smallPrice ?? ""}
+                      placeholder="—"
+                      onChange={(e) => onSetSmallPrice(parseInt(e.target.value, 10) || 0)}
+                      className="w-14 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                    />
+                  </div>
+                  <div
+                    className="flex items-center gap-2 rounded-[11px] px-[11px] py-[9px]"
+                    style={{ boxShadow: INSET_SM }}
+                  >
+                    <span className="text-[11px] font-bold tracking-[0.3px] text-[oklch(0.55_0.03_60)] uppercase">
+                      M
+                    </span>
+                    <input
+                      type="number"
+                      value={dish.mediumPrice ?? ""}
+                      placeholder="—"
+                      onChange={(e) => onSetMediumPrice(parseInt(e.target.value, 10) || 0)}
+                      className="w-14 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                    />
+                  </div>
+                  <div
+                    className="flex items-center gap-2 rounded-[11px] px-[11px] py-[9px]"
+                    style={{ boxShadow: INSET_SM }}
+                  >
+                    <span className="text-[11px] font-bold tracking-[0.3px] text-[oklch(0.55_0.03_60)] uppercase">
+                      L
+                    </span>
+                    <input
+                      type="number"
+                      value={dish.largePrice ?? ""}
+                      placeholder="—"
+                      onChange={(e) => onSetLargePrice(parseInt(e.target.value, 10) || 0)}
+                      className="w-14 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                    />
+                  </div>
+                </div>
+              ) : mode === "halfFull" ? (
                 <div className="flex gap-2">
                   <div
                     className="flex items-center gap-2 rounded-[11px] px-[13px] py-[9px]"
@@ -156,9 +225,10 @@ export function DishRow({
                     </span>
                     <input
                       type="number"
-                      value={dish.halfPrice ?? 0}
+                      value={dish.halfPrice ?? ""}
+                      placeholder="Optional"
                       onChange={(e) => onSetHalfPrice(parseInt(e.target.value, 10) || 0)}
-                      className="w-16 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none"
+                      className="w-16 border-none bg-transparent font-condensed text-base font-bold text-[oklch(0.24_0.02_60)] outline-none placeholder:text-[11px] placeholder:font-semibold"
                     />
                   </div>
                   <div

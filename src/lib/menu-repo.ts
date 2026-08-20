@@ -24,6 +24,9 @@ interface MenuItemRow {
   price: number;
   halfPrice: number | null;
   fullPrice: number | null;
+  smallPrice: number | null;
+  mediumPrice: number | null;
+  largePrice: number | null;
   imageUrl: string | null;
   ingredients: string[];
   section: string;
@@ -39,6 +42,9 @@ export function toDish(item: MenuItemRow): Dish {
     price: item.price,
     halfPrice: item.halfPrice,
     fullPrice: item.fullPrice,
+    smallPrice: item.smallPrice,
+    mediumPrice: item.mediumPrice,
+    largePrice: item.largePrice,
     imageUrl: item.imageUrl,
     ingredients: item.ingredients,
     section: item.section,

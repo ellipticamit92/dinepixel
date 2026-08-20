@@ -2,6 +2,7 @@ import { MenuContent } from "@/components/organisms/menu-content";
 import type { Dish } from "@/lib/menu-seed";
 
 export function MenuPage({
+  slug,
   restaurantName,
   logoUrl,
   bannerUrl,
@@ -11,6 +12,7 @@ export function MenuPage({
   swiggyRating,
   dishes,
 }: {
+  slug: string;
   restaurantName: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
@@ -22,6 +24,7 @@ export function MenuPage({
 }) {
   return (
     <MenuContent
+      slug={slug}
       restaurantName={restaurantName}
       logoUrl={logoUrl}
       bannerUrl={bannerUrl}

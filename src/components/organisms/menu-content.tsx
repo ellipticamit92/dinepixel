@@ -2,14 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ImageIcon } from "lucide-react";
+import { toast } from "sonner";
+import { ImageIcon, ShoppingCart } from "lucide-react";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import { InstallHint } from "@/components/molecules/install-hint";
-import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
+import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW } from "@/lib/neu-shadows";
+import { cartCount, cartTotal, useCart } from "@/lib/cart";
 import {
   dishPriceLabel,
   ingredientSummary,
   markColor,
+  matchesTab,
+  priceStr,
   type Dish,
   type DishCategory,
   type MenuSection,
@@ -18,6 +22,7 @@ import {
 type SectionFilter = "all" | MenuSection;
 
 export function MenuContent({
+  slug,
   restaurantName,
   logoUrl,
   bannerUrl,
@@ -27,6 +32,7 @@ export function MenuContent({
   swiggyRating,
   dishes,
 }: {
+  slug: string;
   restaurantName: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
@@ -38,9 +44,15 @@ export function MenuContent({
 }) {
   const [tab, setTab] = useState<DishCategory>("veg");
   const [section, setSection] = useState<SectionFilter>("all");
+  const { items: cartItems, add: addToCart } = useCart(slug);
+
+  const addDishToCart = (dish: Dish) => {
+    addToCart({ id: dish.id, name: dish.name, price: dish.price, imageUrl: dish.imageUrl });
+    toast.success(`${dish.name} added to cart`);
+  };
 
   const filtered = dishes.filter(
-    (d) => d.cat === tab && (section === "all" || d.section === section)
+    (d) => matchesTab(d, tab) && (section === "all" || d.section === section)
   );
   const featured = filtered[0] ?? null;
   const rest = filtered.slice(1);
@@ -131,12 +143,14 @@ export function MenuContent({
               <div className="mt-1.5 text-[12.5px] leading-[1.4] text-[oklch(0.52_0.02_60)]">
                 {ingredientSummary(featured)}
               </div>
-              <div
-                className="mt-3 rounded-xl py-2.5 text-center font-condensed text-[13px] font-bold tracking-[0.3px] text-accent-foreground"
+              <button
+                type="button"
+                onClick={() => addDishToCart(featured)}
+                className="mt-3 w-full rounded-xl py-2.5 text-center font-condensed text-[13px] font-bold tracking-[0.3px] text-accent-foreground"
                 style={{ boxShadow: INSET_SM }}
               >
                 ＋ Add to Order
-              </div>
+              </button>
             </div>
           </div>
         ) : null}
@@ -178,12 +192,14 @@ export function MenuContent({
                 <div className="font-condensed text-[15px] font-bold whitespace-nowrap text-primary">
                   {dishPriceLabel(d)}
                 </div>
-                <span
+                <button
+                  type="button"
+                  onClick={() => addDishToCart(d)}
                   className="flex size-7 shrink-0 items-center justify-center rounded-[10px] text-lg leading-none text-accent-foreground"
                   style={{ boxShadow: RAISED_SM }}
                 >
                   +
-                </span>
+                </button>
               </div>
             ))}
           </div>
@@ -209,6 +225,19 @@ export function MenuContent({
         className="fixed right-0 bottom-0 left-0 z-10 mx-auto max-w-md px-4 pt-4 pb-5"
         style={{ background: "linear-gradient(transparent, var(--background) 35%)" }}
       >
+        {cartItems.length > 0 ? (
+          <Link
+            href={`/${slug}/cart`}
+            className="mb-2 flex items-center justify-between rounded-2xl bg-primary px-4 py-3 font-condensed text-sm font-bold text-primary-foreground"
+            style={{ boxShadow: ACCENT_GLOW }}
+          >
+            <span className="flex items-center gap-2">
+              <ShoppingCart className="size-4" strokeWidth={2} />
+              {cartCount(cartItems)} item{cartCount(cartItems) > 1 ? "s" : ""} · {priceStr(cartTotal(cartItems))}
+            </span>
+            <span>View Cart →</span>
+          </Link>
+        ) : null}
         <div className="flex gap-2 rounded-2xl p-1.5" style={{ boxShadow: INSET, background: "var(--background)" }}>
           <button
             type="button"

@@ -129,6 +129,9 @@ export interface UpdateDishInput {
   price: number;
   halfPrice?: number | null;
   fullPrice?: number | null;
+  smallPrice?: number | null;
+  mediumPrice?: number | null;
+  largePrice?: number | null;
   ingredients: string[];
 }
 
@@ -140,7 +143,20 @@ export async function updateMenuItem(input: UpdateDishInput): Promise<Dish> {
 
   const halfPrice = input.halfPrice != null ? cleanPrice(input.halfPrice) : null;
   const fullPrice = input.fullPrice != null ? cleanPrice(input.fullPrice) : null;
-  const usingHalfFull = halfPrice !== null && fullPrice !== null;
+  const smallPrice = input.smallPrice != null ? cleanPrice(input.smallPrice) : null;
+  const mediumPrice = input.mediumPrice != null ? cleanPrice(input.mediumPrice) : null;
+  const largePrice = input.largePrice != null ? cleanPrice(input.largePrice) : null;
+
+  // Sizes takes precedence if both were somehow set; full is the anchor for half/full
+  // (half is optional), so a dish is only in that mode once full has a value.
+  const usingSizes = smallPrice !== null || mediumPrice !== null || largePrice !== null;
+  const usingHalfFull = !usingSizes && fullPrice !== null;
+
+  const price = usingSizes
+    ? (largePrice ?? mediumPrice ?? smallPrice as number)
+    : usingHalfFull
+      ? (fullPrice as number)
+      : cleanPrice(input.price);
 
   const item = await prisma.menuItem.update({
     where: { id },
@@ -148,9 +164,12 @@ export async function updateMenuItem(input: UpdateDishInput): Promise<Dish> {
       name,
       description: cleanText(input.description, 2000),
       category: input.cat === "nonveg" ? "nonveg" : "veg",
-      price: usingHalfFull ? fullPrice : cleanPrice(input.price),
+      price,
       halfPrice: usingHalfFull ? halfPrice : null,
       fullPrice: usingHalfFull ? fullPrice : null,
+      smallPrice: usingSizes ? smallPrice : null,
+      mediumPrice: usingSizes ? mediumPrice : null,
+      largePrice: usingSizes ? largePrice : null,
       ingredients: cleanIngredients(input.ingredients),
     },
   });

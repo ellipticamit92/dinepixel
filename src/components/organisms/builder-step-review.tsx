@@ -2,7 +2,7 @@
 
 import { DishRow } from "@/components/molecules/dish-row";
 import { ACCENT_GLOW, RAISED_SM } from "@/lib/neu-shadows";
-import type { Dish } from "@/lib/menu-seed";
+import type { Dish, PricingMode } from "@/lib/menu-seed";
 
 interface BuilderStepReviewProps {
   items: Dish[];
@@ -13,7 +13,10 @@ interface BuilderStepReviewProps {
   onSetPrice: (id: string, price: number) => void;
   onSetHalfPrice: (id: string, price: number) => void;
   onSetFullPrice: (id: string, price: number) => void;
-  onToggleHalfFull: (id: string, enabled: boolean) => void;
+  onSetSmallPrice: (id: string, price: number) => void;
+  onSetMediumPrice: (id: string, price: number) => void;
+  onSetLargePrice: (id: string, price: number) => void;
+  onSetPricingMode: (id: string, mode: PricingMode) => void;
   onDraftChange: (id: string, value: string) => void;
   onAddIngredient: (id: string) => void;
   onRemoveIngredient: (id: string, index: number) => void;
@@ -31,7 +34,10 @@ export function BuilderStepReview({
   onSetPrice,
   onSetHalfPrice,
   onSetFullPrice,
-  onToggleHalfFull,
+  onSetSmallPrice,
+  onSetMediumPrice,
+  onSetLargePrice,
+  onSetPricingMode,
   onDraftChange,
   onAddIngredient,
   onRemoveIngredient,
@@ -83,7 +89,10 @@ export function BuilderStepReview({
             onSetPrice={(price) => onSetPrice(dish.id, price)}
             onSetHalfPrice={(price) => onSetHalfPrice(dish.id, price)}
             onSetFullPrice={(price) => onSetFullPrice(dish.id, price)}
-            onToggleHalfFull={(enabled) => onToggleHalfFull(dish.id, enabled)}
+            onSetSmallPrice={(price) => onSetSmallPrice(dish.id, price)}
+            onSetMediumPrice={(price) => onSetMediumPrice(dish.id, price)}
+            onSetLargePrice={(price) => onSetLargePrice(dish.id, price)}
+            onSetPricingMode={(mode) => onSetPricingMode(dish.id, mode)}
             onDraftChange={(value) => onDraftChange(dish.id, value)}
             onAddIngredient={() => onAddIngredient(dish.id)}
             onRemoveIngredient={(index) => onRemoveIngredient(dish.id, index)}

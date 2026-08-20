@@ -61,6 +61,9 @@ model MenuItem {
   price       Int
   halfPrice   Int?
   fullPrice   Int?
+  smallPrice  Int?
+  mediumPrice Int?
+  largePrice  Int?
   imageUrl    String?
   ingredients String[]
   section     String

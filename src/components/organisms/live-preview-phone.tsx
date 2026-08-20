@@ -8,6 +8,7 @@ import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
 import {
   ingredientSummary,
   markColor,
+  matchesTab,
   priceStr,
   type Dish,
   type DishCategory,
@@ -28,7 +29,7 @@ type SectionFilter = "all" | MenuSection;
 export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bannerUrl }: LivePreviewPhoneProps) {
   const [section, setSection] = useState<SectionFilter>("all");
   const filtered = items.filter(
-    (d) => d.cat === tab && (section === "all" || d.section === section)
+    (d) => matchesTab(d, tab) && (section === "all" || d.section === section)
   );
   const featured = filtered[0] ?? null;
   const rest = filtered.slice(1);

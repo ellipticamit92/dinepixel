@@ -1,4 +1,4 @@
-import type { Dish, DishCategory } from "@/lib/menu-seed";
+import type { Dish, DishCategory, PricingMode } from "@/lib/menu-seed";
 
 export type BuilderStep = "upload" | "processing" | "review" | "published";
 
@@ -20,13 +20,53 @@ export function setDishFullPrice(items: Dish[], id: string, fullPrice: number): 
   return items.map((d) => (d.id === id ? { ...d, fullPrice, price: fullPrice } : d));
 }
 
-export function toggleHalfFullPricing(items: Dish[], id: string, enabled: boolean): Dish[] {
+function sizePrice(d: Dish, patch: Partial<Pick<Dish, "smallPrice" | "mediumPrice" | "largePrice">>): number {
+  const next = { smallPrice: d.smallPrice, mediumPrice: d.mediumPrice, largePrice: d.largePrice, ...patch };
+  return next.largePrice ?? next.mediumPrice ?? next.smallPrice ?? 0;
+}
+
+export function setDishSmallPrice(items: Dish[], id: string, smallPrice: number): Dish[] {
+  return items.map((d) =>
+    d.id === id ? { ...d, smallPrice, price: sizePrice(d, { smallPrice }) } : d
+  );
+}
+
+export function setDishMediumPrice(items: Dish[], id: string, mediumPrice: number): Dish[] {
+  return items.map((d) =>
+    d.id === id ? { ...d, mediumPrice, price: sizePrice(d, { mediumPrice }) } : d
+  );
+}
+
+export function setDishLargePrice(items: Dish[], id: string, largePrice: number): Dish[] {
+  return items.map((d) =>
+    d.id === id ? { ...d, largePrice, price: sizePrice(d, { largePrice }) } : d
+  );
+}
+
+export function setPricingMode(items: Dish[], id: string, mode: PricingMode): Dish[] {
   return items.map((d) => {
     if (d.id !== id) return d;
-    if (enabled) {
-      return { ...d, fullPrice: d.fullPrice ?? d.price, halfPrice: d.halfPrice ?? 0 };
+    if (mode === "halfFull") {
+      return {
+        ...d,
+        fullPrice: d.fullPrice ?? d.price,
+        halfPrice: d.halfPrice ?? null,
+        smallPrice: null,
+        mediumPrice: null,
+        largePrice: null,
+      };
     }
-    return { ...d, halfPrice: null, fullPrice: null };
+    if (mode === "sizes") {
+      return {
+        ...d,
+        mediumPrice: d.mediumPrice ?? d.price,
+        smallPrice: d.smallPrice ?? null,
+        largePrice: d.largePrice ?? null,
+        halfPrice: null,
+        fullPrice: null,
+      };
+    }
+    return { ...d, halfPrice: null, fullPrice: null, smallPrice: null, mediumPrice: null, largePrice: null };
   });
 }
 

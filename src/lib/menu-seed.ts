@@ -11,13 +11,36 @@ export interface Dish {
   price: number;
   halfPrice?: number | null;
   fullPrice?: number | null;
+  smallPrice?: number | null;
+  mediumPrice?: number | null;
+  largePrice?: number | null;
   imageUrl?: string | null;
   ingredients: string[];
   section: MenuSection;
 }
 
-export function hasHalfFullPricing(dish: Dish): boolean {
-  return dish.halfPrice != null && dish.fullPrice != null;
+/** Drinks aren't inherently veg/non-veg, so they show up under both tabs. */
+export function isDrink(dish: Dish): boolean {
+  return dish.section.trim().toLowerCase() === "drinks";
+}
+
+export function matchesTab(dish: Dish, tab: DishCategory): boolean {
+  return dish.cat === tab || isDrink(dish);
+}
+
+export type PricingMode = "single" | "halfFull" | "sizes";
+
+/**
+ * Full is the anchor for half/full pricing (half is optional); for sizes,
+ * any subset of small/medium/large can be set. "price" always mirrors the
+ * highest tier present so stats/sorting that read it plainly stay correct.
+ */
+export function pricingModeOf(dish: Dish): PricingMode {
+  if (dish.smallPrice != null || dish.mediumPrice != null || dish.largePrice != null) {
+    return "sizes";
+  }
+  if (dish.fullPrice != null) return "halfFull";
+  return "single";
 }
 
 export const SEED_DISHES: Dish[] = [
@@ -62,9 +85,23 @@ export function priceStr(price: number) {
 }
 
 export function dishPriceLabel(dish: Dish): string {
-  if (hasHalfFullPricing(dish)) {
-    return `Half ${priceStr(dish.halfPrice as number)} · Full ${priceStr(dish.fullPrice as number)}`;
+  const mode = pricingModeOf(dish);
+
+  if (mode === "sizes") {
+    const parts: string[] = [];
+    if (dish.smallPrice != null) parts.push(`S ${priceStr(dish.smallPrice)}`);
+    if (dish.mediumPrice != null) parts.push(`M ${priceStr(dish.mediumPrice)}`);
+    if (dish.largePrice != null) parts.push(`L ${priceStr(dish.largePrice)}`);
+    return parts.join(" · ");
   }
+
+  if (mode === "halfFull") {
+    const parts: string[] = [];
+    if (dish.halfPrice != null) parts.push(`Half ${priceStr(dish.halfPrice)}`);
+    parts.push(`Full ${priceStr(dish.fullPrice as number)}`);
+    return parts.join(" · ");
+  }
+
   return priceStr(dish.price);
 }
 
