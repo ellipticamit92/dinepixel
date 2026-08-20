@@ -43,7 +43,7 @@ export function MenuContent({
     .filter((g) => g.dishes.length > 0);
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]">
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-28 font-sans text-[oklch(0.28_0.02_60)]">
       <PhoneHero height={190} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
 
       <div className="flex gap-1.5 overflow-x-auto px-4 pt-4 pb-1">
@@ -164,8 +164,20 @@ export function MenuContent({
         ) : null}
       </div>
 
-      <div className="px-4 pt-4 pb-1">
-        <div className="flex gap-2 rounded-2xl p-1.5" style={{ boxShadow: INSET }}>
+      <div className="px-4 pt-6 text-center">
+        <Link
+          href="/terms"
+          className="text-[11px] font-semibold tracking-[0.3px] text-[oklch(0.6_0.03_60)] underline-offset-2 hover:underline"
+        >
+          Terms &amp; Conditions
+        </Link>
+      </div>
+
+      <div
+        className="fixed right-0 bottom-0 left-0 z-10 mx-auto max-w-md px-4 pt-4 pb-5"
+        style={{ background: "linear-gradient(transparent, var(--background) 35%)" }}
+      >
+        <div className="flex gap-2 rounded-2xl p-1.5" style={{ boxShadow: INSET, background: "var(--background)" }}>
           <button
             type="button"
             onClick={() => {
@@ -195,15 +207,6 @@ export function MenuContent({
             Non-Veg
           </button>
         </div>
-      </div>
-
-      <div className="px-4 pt-3 text-center">
-        <Link
-          href="/terms"
-          className="text-[11px] font-semibold tracking-[0.3px] text-[oklch(0.6_0.03_60)] underline-offset-2 hover:underline"
-        >
-          Terms &amp; Conditions
-        </Link>
       </div>
     </div>
   );
