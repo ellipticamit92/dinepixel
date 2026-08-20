@@ -241,6 +241,53 @@ export async function removeMenuImage(menuId: string, kind: MenuImageKind): Prom
   return { ok: true };
 }
 
+function dishUploadDir(itemId: string): string {
+  return path.join(process.cwd(), "uploads", "dishes", itemId);
+}
+
+async function clearDishImage(itemId: string): Promise<void> {
+  const dir = dishUploadDir(itemId);
+  const existing = await readdir(dir).catch(() => [] as string[]);
+  await Promise.all(
+    existing.filter((f) => f.startsWith("dish.")).map((f) => unlink(path.join(dir, f)))
+  );
+}
+
+/** Saves a dish's image to disk and records its URL on the menu item. */
+export async function uploadDishImage(itemId: string, formData: FormData): Promise<{ url: string }> {
+  const id = await ownedItemId(itemId);
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) throw new Error("No file uploaded");
+
+  const ext = IMAGE_EXTENSIONS[file.type];
+  if (!ext) throw new Error("Image must be PNG, JPEG, WebP, GIF, or SVG");
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("Image must be under 5MB");
+
+  const dir = dishUploadDir(id);
+  await mkdir(dir, { recursive: true });
+  await clearDishImage(id);
+
+  const filename = `dish.${ext}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(path.join(dir, filename), buffer);
+
+  const url = `/uploads/dishes/${id}/${filename}`;
+  await prisma.menuItem.update({ where: { id }, data: { imageUrl: url } });
+
+  return { url };
+}
+
+/** Removes a dish's image from disk and clears its URL. */
+export async function removeDishImage(itemId: string): Promise<{ ok: true }> {
+  const id = await ownedItemId(itemId);
+
+  await clearDishImage(id);
+  await prisma.menuItem.update({ where: { id }, data: { imageUrl: null } });
+
+  return { ok: true };
+}
+
 export async function deleteMenuItem(itemId: string): Promise<{ id: string }> {
   const id = await ownedItemId(itemId);
   await prisma.menuItem.delete({ where: { id } });

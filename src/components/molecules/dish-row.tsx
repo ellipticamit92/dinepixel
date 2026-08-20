@@ -1,5 +1,6 @@
 import { Plus, Trash2 } from "lucide-react";
 import { IngredientChip } from "@/components/molecules/ingredient-chip";
+import { DishImageUpload } from "@/components/molecules/dish-image-upload";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
 import { ingredientSummary, priceStr, type Dish } from "@/lib/menu-seed";
 
@@ -7,12 +8,15 @@ interface DishRowProps {
   dish: Dish;
   editing: boolean;
   draft: string;
+  uploadingImage?: boolean;
   onFlip: () => void;
   onToggleEdit: () => void;
   onSetPrice: (price: number) => void;
   onDraftChange: (value: string) => void;
   onAddIngredient: () => void;
   onRemoveIngredient: (index: number) => void;
+  onImageSelect?: (file: File) => void;
+  onImageRemove?: () => void;
   onSave: () => void;
   onDelete?: () => void;
 }
@@ -21,12 +25,15 @@ export function DishRow({
   dish,
   editing,
   draft,
+  uploadingImage = false,
   onFlip,
   onToggleEdit,
   onSetPrice,
   onDraftChange,
   onAddIngredient,
   onRemoveIngredient,
+  onImageSelect,
+  onImageRemove,
   onSave,
   onDelete,
 }: DishRowProps) {
@@ -52,6 +59,15 @@ export function DishRow({
             style={{ background: dish.cat === "veg" ? "var(--veg)" : "var(--nonveg)" }}
           />
         </button>
+        {dish.imageUrl ? (
+          <div
+            className="size-10 shrink-0 overflow-hidden rounded-[10px]"
+            style={{ boxShadow: RAISED_SM }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={dish.imageUrl} alt="" className="size-full object-cover" />
+          </div>
+        ) : null}
         <div className="min-w-0 flex-1">
           <div className="font-condensed text-base font-bold text-[oklch(0.26_0.02_60)]">
             {dish.name}
@@ -95,7 +111,20 @@ export function DishRow({
 
       {editing ? (
         <div className="px-4 pt-0.5 pb-[18px]">
-          <div className="mt-1.5 flex flex-wrap gap-[18px]">
+          {onImageSelect && onImageRemove ? (
+            <div className="mt-1.5">
+              <label className="mb-[7px] block text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+                Dish photo
+              </label>
+              <DishImageUpload
+                value={dish.imageUrl ?? null}
+                onSelect={onImageSelect}
+                onRemove={onImageRemove}
+                uploading={uploadingImage}
+              />
+            </div>
+          ) : null}
+          <div className="mt-4 flex flex-wrap gap-[18px]">
             <div>
               <label className="mb-[7px] block text-[11px] font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
                 Price (₹)

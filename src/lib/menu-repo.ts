@@ -18,6 +18,7 @@ interface MenuItemRow {
   type: string;
   category: "veg" | "nonveg";
   price: number;
+  imageUrl: string | null;
   ingredients: string[];
   section: string;
 }
@@ -30,6 +31,7 @@ export function toDish(item: MenuItemRow): Dish {
     type: item.type,
     cat: item.category,
     price: item.price,
+    imageUrl: item.imageUrl,
     ingredients: item.ingredients,
     section: item.section,
   };

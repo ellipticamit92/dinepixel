@@ -34,8 +34,10 @@ import {
 import {
   createMenuItem,
   deleteMenuItem,
+  removeDishImage,
   removeMenuImage,
   updateMenuItem,
+  uploadDishImage,
   uploadMenuImage,
 } from "@/lib/menu-actions";
 import type { MenuForSession } from "@/lib/menu-repo";
@@ -75,6 +77,7 @@ export function AdminDashboardPage({
   const [bannerUrl, setBannerUrl] = useState<string | null>(menu?.bannerUrl ?? null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [uploadingImageId, setUploadingImageId] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
   const [sectionFilter, setSectionFilter] = useState<SectionFilter>("all");
   const [query, setQuery] = useState("");
@@ -208,6 +211,33 @@ export function AdminDashboardPage({
     } catch {
       setItems(before);
       toast.error(`Couldn't remove ${dish.name}`);
+    }
+  };
+
+  const selectDishImage = async (dish: Dish, file: File) => {
+    setUploadingImageId(dish.id);
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+      const { url } = await uploadDishImage(dish.id, formData);
+      setItems((prev) => prev.map((d) => (d.id === dish.id ? { ...d, imageUrl: url } : d)));
+      toast.success(`${dish.name} photo updated`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : `Couldn't upload photo for ${dish.name}`);
+    } finally {
+      setUploadingImageId(null);
+    }
+  };
+
+  const removeDishPhoto = async (dish: Dish) => {
+    const before = items;
+    setItems((prev) => prev.map((d) => (d.id === dish.id ? { ...d, imageUrl: null } : d)));
+    try {
+      await removeDishImage(dish.id);
+      toast.success(`${dish.name} photo removed`);
+    } catch {
+      setItems(before);
+      toast.error(`Couldn't remove photo for ${dish.name}`);
     }
   };
 
@@ -528,6 +558,7 @@ export function AdminDashboardPage({
                             dish={dish}
                             editing={editingId === dish.id}
                             draft={drafts[dish.id] ?? ""}
+                            uploadingImage={uploadingImageId === dish.id}
                             onFlip={() => flipDish(dish.id)}
                             onToggleEdit={() =>
                               setEditingId((prev) => (prev === dish.id ? null : dish.id))
@@ -546,6 +577,8 @@ export function AdminDashboardPage({
                             onRemoveIngredient={(index) =>
                               setItems((prev) => removeIngredient(prev, dish.id, index))
                             }
+                            onImageSelect={(file) => selectDishImage(dish, file)}
+                            onImageRemove={() => removeDishPhoto(dish)}
                             onSave={() => saveDish(dish.id)}
                             onDelete={() => deleteDish(dish.id)}
                           />

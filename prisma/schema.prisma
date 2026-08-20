@@ -55,6 +55,7 @@ model MenuItem {
   type        String
   category    DishCategory
   price       Int
+  imageUrl    String?
   ingredients String[]
   section     String
   position    Int

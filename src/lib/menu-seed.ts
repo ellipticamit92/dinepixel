@@ -9,6 +9,7 @@ export interface Dish {
   type: string;
   cat: DishCategory;
   price: number;
+  imageUrl?: string | null;
   ingredients: string[];
   section: MenuSection;
 }
