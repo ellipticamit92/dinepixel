@@ -32,13 +32,13 @@ const COPY: Record<
       "Changes update with no reprint",
     ],
     cta: "Sign in",
-    switchText: "New to Plate?",
+    switchText: "New to Dinepixel?",
     switchLink: "Create an account",
     switchHref: "/signup",
   },
   register: {
     badge: "Free forever plan",
-    headline: ["Create your", "Plate account."],
+    headline: ["Create your", "Dinepixel account."],
     sub: "Upload your first menu and get a live page with a QR code in under a minute.",
     perks: [
       "No credit card required",

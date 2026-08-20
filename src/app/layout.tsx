@@ -40,7 +40,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Plate — AI Digital Menu Platform",
+  title: "Dinepixel — AI Digital Menu Platform",
   description:
     "Upload your paper menu and get a live, mobile-friendly digital menu with a QR code and shareable link in seconds.",
 };

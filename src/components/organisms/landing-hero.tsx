@@ -26,7 +26,7 @@ export function LandingHero() {
           online in <span className="text-primary">20 seconds.</span>
         </h1>
         <p className="mt-5 max-w-[500px] text-[18px] leading-[1.55] text-muted-foreground text-pretty">
-          Snap a photo or drop a PDF. Plate&apos;s AI reads every dish and
+          Snap a photo or drop a PDF. Dinepixel&apos;s AI reads every dish and
           price, auto-sorts{" "}
           <strong className="text-[var(--veg)]">Veg</strong> &amp;{" "}
           <strong className="text-[var(--nonveg)]">Non-Veg</strong>, and

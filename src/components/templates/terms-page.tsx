@@ -5,11 +5,11 @@ import { RAISED_SM } from "@/lib/neu-shadows";
 const SECTIONS = [
   {
     heading: "1. Acceptance of terms",
-    body: "By creating an account or publishing a menu with Plate, you agree to these Terms & Conditions. If you don't agree, please don't use the service.",
+    body: "By creating an account or publishing a menu with Dinepixel, you agree to these Terms & Conditions. If you don't agree, please don't use the service.",
   },
   {
-    heading: "2. What Plate does",
-    body: "Plate lets restaurants and cafes turn a photo or PDF of their menu into a live, shareable menu page and QR code. We read and structure the content you upload; we don't guarantee perfect accuracy of AI-extracted text.",
+    heading: "2. What Dinepixel does",
+    body: "Dinepixel lets restaurants and cafes turn a photo or PDF of their menu into a live, shareable menu page and QR code. We read and structure the content you upload; we don't guarantee perfect accuracy of AI-extracted text.",
   },
   {
     heading: "3. Your content",
@@ -17,7 +17,7 @@ const SECTIONS = [
   },
   {
     heading: "4. Acceptable use",
-    body: "Don't upload content that is unlawful, infringing, or misleading, and don't use Plate to publish anything other than a genuine restaurant or cafe menu.",
+    body: "Don't upload content that is unlawful, infringing, or misleading, and don't use Dinepixel to publish anything other than a genuine restaurant or cafe menu.",
   },
   {
     heading: "5. Availability",
@@ -25,15 +25,15 @@ const SECTIONS = [
   },
   {
     heading: "6. Limitation of liability",
-    body: "Plate is provided as-is. We aren't liable for losses arising from menu inaccuracies, downtime, or third-party services (such as the AI extraction provider) that Plate relies on.",
+    body: "Dinepixel is provided as-is. We aren't liable for losses arising from menu inaccuracies, downtime, or third-party services (such as the AI extraction provider) that Dinepixel relies on.",
   },
   {
     heading: "7. Changes to these terms",
-    body: "We may update these terms from time to time. Continued use of Plate after a change means you accept the updated terms.",
+    body: "We may update these terms from time to time. Continued use of Dinepixel after a change means you accept the updated terms.",
   },
   {
     heading: "8. Contact",
-    body: "Questions about these terms? Reach out to the team through the contact details on your Plate account.",
+    body: "Questions about these terms? Reach out to the team through the contact details on your Dinepixel account.",
   },
 ];
 

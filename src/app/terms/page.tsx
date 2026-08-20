@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth";
 import { TermsPage } from "@/components/templates/terms-page";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Plate",
+  title: "Terms & Conditions | Dinepixel",
 };
 
 export default async function Terms() {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AuthPage } from "@/components/templates/auth-page";
 
 export const metadata: Metadata = {
-  title: "Register | Plate",
+  title: "Register | Dinepixel",
 };
 
 export default async function Signup({

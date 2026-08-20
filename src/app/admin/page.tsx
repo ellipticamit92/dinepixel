@@ -5,7 +5,7 @@ import { getMenuForSession } from "@/lib/menu-repo";
 import { AdminDashboardPage } from "@/components/templates/admin-dashboard-page";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Plate",
+  title: "Dashboard | Dinepixel",
 };
 
 export default async function Admin() {

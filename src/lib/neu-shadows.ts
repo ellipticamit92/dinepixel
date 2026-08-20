@@ -1,4 +1,4 @@
-// Neumorphic shadow presets for the warm Plate theme, ported 1:1 from the
+// Neumorphic shadow presets for the warm Dinepixel theme, ported 1:1 from the
 // design prototype's RAISED / RAISED_SM / INSET constants (oklch shadow pair
 // = --shadow-dark / --shadow-light from globals.css).
 

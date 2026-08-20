@@ -14,11 +14,11 @@ export function Logo({
         className="flex size-[42px] shrink-0 -rotate-4 items-center justify-center rounded-[13px] bg-background text-[21px] text-primary shadow-neu-raised-sm font-display"
         aria-hidden
       >
-        P
+        D
       </div>
       <div className="leading-none">
         <div className="font-display text-[22px] leading-[0.9] tracking-[0.4px] text-foreground">
-          Plate
+          Dinepixel
         </div>
         {tagline ? (
           <div className="mt-0.5 text-[10.5px] font-semibold tracking-[1.4px] text-muted-foreground uppercase">

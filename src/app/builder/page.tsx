@@ -4,7 +4,7 @@ import { getSession } from "@/lib/auth";
 import { BuilderPage } from "@/components/templates/builder-page";
 
 export const metadata: Metadata = {
-  title: "Builder | Plate",
+  title: "Builder | Dinepixel",
 };
 
 export default async function Builder() {
