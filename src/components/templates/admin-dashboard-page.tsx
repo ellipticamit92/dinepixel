@@ -8,6 +8,7 @@ import { LivePreviewPhone } from "@/components/organisms/live-preview-phone";
 import { DishRow } from "@/components/molecules/dish-row";
 import { LogoUpload } from "@/components/molecules/logo-upload";
 import { BannerUpload } from "@/components/molecules/banner-upload";
+import { MenuQrCode } from "@/components/molecules/menu-qr-code";
 import { AdminOfferNotifier } from "@/components/organisms/admin-offer-notifier";
 import {
   Accordion,
@@ -299,6 +300,17 @@ export function AdminDashboardPage({
               />
             </div>
           </div>
+
+          {menu ? (
+            <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
+              <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+                Menu QR code
+              </div>
+              <div className="mt-4 flex justify-center sm:justify-start">
+                <MenuQrCode slug={menu.slug} url={`https://${menuUrl(menu.slug)}`} />
+              </div>
+            </div>
+          ) : null}
 
           <AdminOfferNotifier logoUrl={logoUrl} />
 

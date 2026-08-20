@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { QRCodeCanvas } from "qrcode.react";
+import { useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { RAISED_LG, RAISED, RAISED_SM, INSET, INSET_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
+import { RAISED, RAISED_SM, INSET, INSET_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
 import { menuUrl } from "@/lib/site";
+import { MenuQrCode } from "@/components/molecules/menu-qr-code";
 
 export function BuilderStepPublished({
   slug,
@@ -14,7 +14,6 @@ export function BuilderStepPublished({
   onBackToReview: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const link = menuUrl(slug);
   const fullUrl = `https://${link}`;
 
@@ -26,15 +25,6 @@ export function BuilderStepPublished({
     } catch {
       // clipboard unavailable; ignore
     }
-  };
-
-  const downloadQr = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const a = document.createElement("a");
-    a.download = `${slug}-menu-qr.png`;
-    a.href = canvas.toDataURL("image/png");
-    a.click();
   };
 
   return (
@@ -55,25 +45,7 @@ export function BuilderStepPublished({
       </p>
 
       <div className="mt-[26px] flex flex-wrap gap-[22px]">
-        <div className="rounded-[22px] bg-background p-[22px] text-center" style={{ boxShadow: RAISED_LG }}>
-          <div
-            className="flex w-[161px] items-center justify-center rounded-xl bg-white p-[11px]"
-            style={{ boxShadow: INSET_SM }}
-          >
-            <QRCodeCanvas ref={canvasRef} value={fullUrl} size={139} fgColor="oklch(0.24 0.02 60)" level="M" />
-          </div>
-          <div className="mt-3.5 text-xs font-bold tracking-[0.5px] text-[oklch(0.55_0.03_60)] uppercase">
-            Scan at the table
-          </div>
-          <button
-            type="button"
-            onClick={downloadQr}
-            className="mt-[11px] block w-full rounded-xl py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
-            style={{ boxShadow: RAISED_SM }}
-          >
-            Download QR
-          </button>
-        </div>
+        <MenuQrCode slug={slug} url={fullUrl} />
 
         <div className="flex min-w-[240px] flex-1 flex-col gap-3.5">
           <div className="rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED }}>
