@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ImageIcon } from "lucide-react";
 import { PhoneFrame } from "@/components/molecules/phone-frame";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import { RAISED_SM, INSET } from "@/lib/neu-shadows";
 import { LANDING_DEMO, type DishCategory } from "@/lib/menu-seed";
 import { cn } from "@/lib/utils";
+
+const DEFAULT_DISH_IMAGE = "/cafe_banner.jpg";
+const SIGNATURE_DISH_IMAGE = "/singature_dish.jpg";
+const ROW_ICONS = ["/pizza.png", "/burger.png"];
 
 export function LandingPhoneMenu() {
   const [tab, setTab] = useState<DishCategory>("veg");
@@ -16,7 +19,7 @@ export function LandingPhoneMenu() {
   return (
     <div className="flex justify-center">
       <PhoneFrame float className="w-[290px]" screenStyle={{ background: "oklch(0.94 0.014 82)" }}>
-        <PhoneHero />
+        <PhoneHero bannerUrl={DEFAULT_DISH_IMAGE} />
 
         <div className="px-[13px] pt-[11px] pb-1.5 font-display text-[15px] tracking-[0.3px] text-[oklch(0.3_0.02_60)]">
           {data.heading}
@@ -26,9 +29,8 @@ export function LandingPhoneMenu() {
           {/* featured */}
           <div className="overflow-hidden rounded-[14px]" style={{ background: "oklch(0.94 0.014 82)", boxShadow: RAISED_SM }}>
             <div className="relative h-[82px]">
-              <div className="flex h-full w-full items-center justify-center bg-[oklch(0.87_0.02_74)] text-[oklch(0.68_0.03_74)]">
-                <ImageIcon className="size-5" strokeWidth={1.5} />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={SIGNATURE_DISH_IMAGE} alt="" className="size-full object-cover" />
               <div className="absolute top-1.5 left-1.5 rounded-full bg-primary px-2 py-0.5 text-[6.5px] font-bold tracking-[0.4px] text-primary-foreground uppercase">
                 ★ Popular this week
               </div>
@@ -60,14 +62,15 @@ export function LandingPhoneMenu() {
           </div>
 
           {/* rows */}
-          {data.rest.map((r) => (
+          {data.rest.map((r, i) => (
             <div
               key={r.slot}
               className="flex gap-2.5 rounded-[14px] p-[9px]"
               style={{ background: "oklch(0.94 0.014 82)", boxShadow: RAISED_SM }}
             >
-              <div className="relative size-[52px] shrink-0 overflow-hidden rounded-[11px] bg-[oklch(0.87_0.02_74)] text-[oklch(0.68_0.03_74)] flex items-center justify-center">
-                <ImageIcon className="size-4" strokeWidth={1.5} />
+              <div className="relative size-[52px] shrink-0 overflow-hidden rounded-[11px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={ROW_ICONS[i % ROW_ICONS.length]} alt="" className="size-full object-cover" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex justify-between gap-1.5">
