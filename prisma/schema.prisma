@@ -38,6 +38,7 @@ model Menu {
   zomatoRating   Float?
   swiggyUrl      String?
   swiggyRating   Float?
+  whatsappNumber String?
   sourceFileName String?
   sourceNotes    String?
   ownerId        String

@@ -12,6 +12,7 @@ export interface MenuForSession {
   zomatoRating: number | null;
   swiggyUrl: string | null;
   swiggyRating: number | null;
+  whatsappNumber: string | null;
   dishes: Dish[];
 }
 
@@ -73,6 +74,7 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     zomatoRating: menu.zomatoRating,
     swiggyUrl: menu.swiggyUrl,
     swiggyRating: menu.swiggyRating,
+    whatsappNumber: menu.whatsappNumber,
     dishes: menu.items.map(toDish),
   };
 }
@@ -96,6 +98,7 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     zomatoRating: menu.zomatoRating,
     swiggyUrl: menu.swiggyUrl,
     swiggyRating: menu.swiggyRating,
+    whatsappNumber: menu.whatsappNumber,
     dishes: menu.items.map(toDish),
   };
 }

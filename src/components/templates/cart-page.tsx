@@ -2,11 +2,24 @@
 
 import Link from "next/link";
 import { ChevronLeft, ImageIcon, Minus, Plus, Trash2 } from "lucide-react";
+import { PhoneHero } from "@/components/molecules/phone-hero";
 import { cartCount, cartTotal, useCart } from "@/lib/cart";
 import { priceStr } from "@/lib/menu-seed";
 import { RAISED_SM, INSET_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
 
-export function CartPage({ slug, restaurantName }: { slug: string; restaurantName: string }) {
+export function CartPage({
+  slug,
+  restaurantName,
+  logoUrl,
+  bannerUrl,
+  whatsappNumber,
+}: {
+  slug: string;
+  restaurantName: string;
+  logoUrl?: string | null;
+  bannerUrl?: string | null;
+  whatsappNumber?: string | null;
+}) {
   const { items, setQty } = useCart(slug);
   const total = cartTotal(items);
   const count = cartCount(items);
@@ -15,10 +28,13 @@ export function CartPage({ slug, restaurantName }: { slug: string; restaurantNam
     const lines = items.map((i) => `${i.qty} × ${i.name} — ${priceStr(i.qty * i.price)}`);
     return `Order for ${restaurantName}:\n${lines.join("\n")}\n\nTotal: ${priceStr(total)}`;
   };
+  const whatsappHref = `https://wa.me/${whatsappNumber ?? ""}?text=${encodeURIComponent(whatsappMessage())}`;
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]">
-      <div className="flex items-center gap-3 px-4 pt-5 pb-3">
+      <PhoneHero height={190} logoSize={64} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
+
+      <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         <Link
           href={`/${slug}`}
           className="flex size-9 shrink-0 items-center justify-center rounded-[10px]"
@@ -26,10 +42,7 @@ export function CartPage({ slug, restaurantName }: { slug: string; restaurantNam
         >
           <ChevronLeft className="size-4" strokeWidth={2.5} />
         </Link>
-        <div className="min-w-0">
-          <h1 className="font-display text-xl text-[oklch(0.24_0.02_60)]">Your cart</h1>
-          <p className="truncate text-[12px] text-muted-foreground">{restaurantName}</p>
-        </div>
+        <h1 className="font-display text-xl text-[oklch(0.24_0.02_60)]">Your cart</h1>
       </div>
 
       {items.length === 0 ? (
@@ -107,7 +120,7 @@ export function CartPage({ slug, restaurantName }: { slug: string; restaurantNam
               <span className="font-display text-xl text-[oklch(0.24_0.02_60)]">{priceStr(total)}</span>
             </div>
             <a
-              href={`https://wa.me/?text=${encodeURIComponent(whatsappMessage())}`}
+              href={whatsappHref}
               target="_blank"
               rel="noreferrer"
               className="mt-3 flex items-center justify-center gap-2.5 rounded-2xl py-4 font-condensed text-base font-bold tracking-[0.3px] text-primary-foreground"

@@ -240,6 +240,26 @@ export async function updateDeliveryLinks(input: UpdateDeliveryLinksInput): Prom
   });
 }
 
+function cleanPhone(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const digits = value.replace(/[^0-9]/g, "").slice(0, 15);
+  return digits.length >= 8 ? digits : null;
+}
+
+/** Number customers' WhatsApp orders (from the public cart page) are sent to — digits only, with country code. */
+export async function updateWhatsappNumber(
+  menuId: string,
+  whatsappNumber: string | null
+): Promise<{ whatsappNumber: string | null }> {
+  const id = await ownedMenuId(menuId);
+
+  const cleaned = cleanPhone(whatsappNumber);
+
+  await prisma.menu.update({ where: { id }, data: { whatsappNumber: cleaned } });
+
+  return { whatsappNumber: cleaned };
+}
+
 const MENU_IMAGE_KINDS = ["logo", "banner"] as const;
 type MenuImageKind = (typeof MENU_IMAGE_KINDS)[number];
 

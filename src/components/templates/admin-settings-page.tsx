@@ -8,10 +8,11 @@ import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { LogoUpload } from "@/components/molecules/logo-upload";
 import { BannerUpload } from "@/components/molecules/banner-upload";
 import { DeliveryLinkField } from "@/components/molecules/delivery-link-field";
-import { RAISED_SM } from "@/lib/neu-shadows";
+import { RAISED_SM, INSET_SM } from "@/lib/neu-shadows";
 import {
   removeMenuImage,
   updateDeliveryLinks,
+  updateWhatsappNumber,
   uploadMenuImage,
 } from "@/lib/menu-actions";
 import type { MenuForSession } from "@/lib/menu-repo";
@@ -32,6 +33,8 @@ export function AdminSettingsPage({
   const [swiggyUrl, setSwiggyUrl] = useState(menu?.swiggyUrl ?? "");
   const [swiggyRating, setSwiggyRating] = useState(menu?.swiggyRating?.toString() ?? "");
   const [savingLinks, setSavingLinks] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState(menu?.whatsappNumber ?? "");
+  const [savingWhatsapp, setSavingWhatsapp] = useState(false);
 
   const selectImage = async (kind: "logo" | "banner", file: File) => {
     if (!menu) {
@@ -94,6 +97,23 @@ export function AdminSettingsPage({
     }
   };
 
+  const saveWhatsappNumber = async () => {
+    if (!menu) {
+      toast.error("Build a menu first, then add an order number here");
+      return;
+    }
+    setSavingWhatsapp(true);
+    try {
+      const saved = await updateWhatsappNumber(menu.id, whatsappNumber);
+      setWhatsappNumber(saved.whatsappNumber ?? "");
+      toast.success(saved.whatsappNumber ? "Order number updated" : "Order number removed");
+    } catch {
+      toast.error("Couldn't save order number");
+    } finally {
+      setSavingWhatsapp(false);
+    }
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-background font-sans text-[oklch(0.28_0.02_60)]">
       <PlateNavbar session={session} />
@@ -111,7 +131,7 @@ export function AdminSettingsPage({
           Settings
         </h1>
         <p className="mt-2 text-[14.5px] text-muted-foreground">
-          Manage your cafe branding and delivery platform links.
+          Manage your cafe branding, delivery platform links, and order number.
         </p>
 
         <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
@@ -167,6 +187,39 @@ export function AdminSettingsPage({
               style={{ boxShadow: RAISED_SM }}
             >
               {savingLinks ? "Saving…" : "Save links"}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
+          <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+            Order number (WhatsApp)
+          </div>
+          <p className="mt-1.5 text-[13px] text-muted-foreground">
+            When a guest checks out their cart on your public menu, their order is sent to this
+            number on WhatsApp. Include the country code, no spaces or symbols.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            <div
+              className="flex min-w-[200px] flex-1 items-center rounded-[11px] px-3.5 py-3"
+              style={{ boxShadow: INSET_SM }}
+            >
+              <input
+                type="tel"
+                value={whatsappNumber}
+                onChange={(e) => setWhatsappNumber(e.target.value)}
+                placeholder="e.g. 919876543210"
+                className="w-full border-none bg-transparent text-sm font-semibold text-[oklch(0.32_0.02_60)] outline-none"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={saveWhatsappNumber}
+              disabled={savingWhatsapp}
+              className="shrink-0 rounded-[11px] px-5 py-2.5 font-condensed text-[13px] font-bold text-[oklch(0.35_0.02_60)] disabled:opacity-60"
+              style={{ boxShadow: RAISED_SM }}
+            >
+              {savingWhatsapp ? "Saving…" : "Save number"}
             </button>
           </div>
         </div>

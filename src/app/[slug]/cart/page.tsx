@@ -14,5 +14,13 @@ export default async function Cart(props: PageProps<"/[slug]/cart">) {
   const menu = await getMenuBySlug(slug);
   if (!menu) notFound();
 
-  return <CartPage slug={slug} restaurantName={menu.restaurantName} />;
+  return (
+    <CartPage
+      slug={slug}
+      restaurantName={menu.restaurantName}
+      logoUrl={menu.logoUrl}
+      bannerUrl={menu.bannerUrl}
+      whatsappNumber={menu.whatsappNumber}
+    />
+  );
 }
