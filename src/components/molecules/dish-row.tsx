@@ -56,7 +56,12 @@ export function DishRow({
           <div className="font-condensed text-base font-bold text-[oklch(0.26_0.02_60)]">
             {dish.name}
           </div>
-          <div className="text-xs font-semibold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+          {dish.description ? (
+            <p className="mt-[3px] line-clamp-2 text-[13px] leading-[1.45] text-[oklch(0.48_0.02_60)]">
+              {dish.description}
+            </p>
+          ) : null}
+          <div className="mt-[3px] text-xs font-semibold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
             {ingredientSummary(dish)}
           </div>
         </div>

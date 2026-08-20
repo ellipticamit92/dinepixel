@@ -29,27 +29,17 @@ import {
   removeIngredient,
   setDishPrice,
 } from "@/lib/builder-state";
+import { createMenuItem, deleteMenuItem, updateMenuItem } from "@/lib/menu-actions";
+import type { MenuForSession } from "@/lib/menu-repo";
 import {
-  MENU_SECTIONS,
-  SEED_DISHES,
   priceStr,
   type Dish,
   type DishCategory,
   type MenuSection,
 } from "@/lib/menu-seed";
 
-const SLUG = "bloom-cafe";
 type Filter = "all" | DishCategory;
 type SectionFilter = "all" | MenuSection;
-
-function slugify(name: string) {
-  return (
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "") || "dish"
-  );
-}
 
 function StatTile({ value, label }: { value: string; label: string }) {
   return (
@@ -62,8 +52,14 @@ function StatTile({ value, label }: { value: string; label: string }) {
   );
 }
 
-export function AdminDashboardPage({ session }: { session: { name: string } }) {
-  const [items, setItems] = useState<Dish[]>(SEED_DISHES);
+export function AdminDashboardPage({
+  session,
+  menu,
+}: {
+  session: { name: string };
+  menu: MenuForSession | null;
+}) {
+  const [items, setItems] = useState<Dish[]>(menu?.dishes ?? []);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [previewTab, setPreviewTab] = useState<DishCategory>("veg");
@@ -76,7 +72,9 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
   const [newType, setNewType] = useState("");
   const [newPrice, setNewPrice] = useState("");
   const [newCat, setNewCat] = useState<DishCategory>("veg");
-  const [newSection, setNewSection] = useState<MenuSection>("Cafe Bites");
+  const [newSection, setNewSection] = useState<MenuSection>(
+    menu?.dishes[0]?.section ?? "Menu"
+  );
 
   const vegCount = items.filter((d) => d.cat === "veg").length;
   const nonvegCount = items.length - vegCount;
@@ -93,13 +91,26 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
     });
   }, [items, filter, sectionFilter, query]);
 
+  const sections = useMemo(() => {
+    const seen = new Set<MenuSection>();
+    const ordered: MenuSection[] = [];
+    for (const dish of items) {
+      if (seen.has(dish.section)) continue;
+      seen.add(dish.section);
+      ordered.push(dish.section);
+    }
+    return ordered;
+  }, [items]);
+
   const groups = useMemo(
     () =>
-      MENU_SECTIONS.map((section) => ({
-        section,
-        dishes: filtered.filter((d) => d.section === section),
-      })).filter((g) => g.dishes.length > 0),
-    [filtered]
+      sections
+        .map((section) => ({
+          section,
+          dishes: filtered.filter((d) => d.section === section),
+        }))
+        .filter((g) => g.dishes.length > 0),
+    [sections, filtered]
   );
 
   const handleLogoChange = (dataUrl: string | null) => {
@@ -107,43 +118,88 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
     toast.success(dataUrl ? "Logo updated" : "Logo removed");
   };
 
-  const saveDish = (id: string) => {
-    setEditingId(null);
-    const dish = items.find((d) => d.id === id);
-    toast.success(dish ? `${dish.name} updated` : "Dish updated");
+  const persist = (dish: Dish) =>
+    updateMenuItem({
+      id: dish.id,
+      name: dish.name,
+      description: dish.description,
+      cat: dish.cat,
+      price: dish.price,
+      ingredients: dish.ingredients,
+    });
+
+  const flipDish = async (id: string) => {
+    const before = items;
+    const next = flipDishCategory(items, id);
+    const dish = next.find((d) => d.id === id);
+    if (!dish) return;
+    setItems(next);
+    try {
+      await persist(dish);
+    } catch {
+      setItems(before);
+      toast.error(`Couldn't update ${dish.name}`);
+    }
   };
 
-  const deleteDish = (id: string) => {
+  const saveDish = async (id: string) => {
     const dish = items.find((d) => d.id === id);
+    if (!dish) return;
+    setEditingId(null);
+    try {
+      const saved = await persist(dish);
+      setItems((prev) => prev.map((d) => (d.id === saved.id ? saved : d)));
+      toast.success(`${saved.name} updated`);
+    } catch {
+      toast.error(`Couldn't save ${dish.name} — try again`);
+    }
+  };
+
+  const deleteDish = async (id: string) => {
+    const before = items;
+    const dish = items.find((d) => d.id === id);
+    if (!dish) return;
     setItems((prev) => removeDish(prev, id));
     if (editingId === id) setEditingId(null);
-    toast.success(dish ? `${dish.name} removed from menu` : "Dish removed");
+    try {
+      await deleteMenuItem(id);
+      toast.success(`${dish.name} removed from menu`);
+    } catch {
+      setItems(before);
+      toast.error(`Couldn't remove ${dish.name}`);
+    }
   };
 
-  const submitNewDish = () => {
+  const submitNewDish = async () => {
+    if (!menu) {
+      toast.error("Build a menu first, then add dishes here");
+      return;
+    }
     const name = newName.trim();
     const price = parseInt(newPrice, 10);
     if (!name || !price) {
       toast.error("Add a name and price to create a dish");
       return;
     }
-    const dish: Dish = {
-      id: `${slugify(name)}-${Date.now().toString(36)}`,
-      name,
-      type: newType.trim() || "Dish",
-      cat: newCat,
-      price,
-      ingredients: [],
-      section: newSection,
-    };
-    setItems((prev) => addDish(prev, dish));
-    setNewName("");
-    setNewType("");
-    setNewPrice("");
-    setNewCat("veg");
-    setNewSection("Cafe Bites");
-    setAddOpen(false);
-    toast.success(`${name} added to menu`);
+    try {
+      const dish = await createMenuItem({
+        menuId: menu.id,
+        name,
+        type: newType.trim() || "Dish",
+        cat: newCat,
+        price,
+        section: newSection.trim() || "Menu",
+      });
+      setItems((prev) => addDish(prev, dish));
+      setNewName("");
+      setNewType("");
+      setNewPrice("");
+      setNewCat("veg");
+      setAddOpen(false);
+      toast.success(`${dish.name} added to menu`);
+    } catch {
+      toast.error(`Couldn't add ${name}`);
+    }
   };
 
   return (
@@ -152,32 +208,36 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
 
       <div className="mx-auto grid w-full max-w-[1180px] items-start gap-8 px-6 py-6 pb-16 sm:px-10 lg:grid-cols-[1fr_380px]">
         <div>
-          <div
-            className="inline-flex items-center gap-[9px] rounded-full bg-background px-4 py-[9px] text-[13px] font-bold tracking-[0.4px]"
-            style={{ color: "oklch(0.42 0.12 150)", boxShadow: INSET }}
-          >
-            <span className="size-[9px] rounded-full" style={{ background: "var(--success)" }} />
-            Live &amp; published
-          </div>
+          {menu ? (
+            <div
+              className="inline-flex items-center gap-[9px] rounded-full bg-background px-4 py-[9px] text-[13px] font-bold tracking-[0.4px]"
+              style={{ color: "oklch(0.42 0.12 150)", boxShadow: INSET }}
+            >
+              <span className="size-[9px] rounded-full" style={{ background: "var(--success)" }} />
+              Live &amp; published
+            </div>
+          ) : null}
 
           <div className="mt-3.5 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h1 className="font-display text-[28px] tracking-[0.3px] text-[oklch(0.24_0.02_60)] sm:text-[34px]">
-                Bloom Cafe menu
+                {menu?.restaurantName ?? session.name} menu
               </h1>
               <p className="mt-2 text-[14.5px] text-muted-foreground">
                 Edits here go live on your public menu instantly.
               </p>
             </div>
-            <a
-              href={`/menu/${SLUG}`}
-              target="_blank"
-              rel="noreferrer"
-              className="shrink-0 rounded-[11px] px-[18px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
-              style={{ boxShadow: RAISED_SM }}
-            >
-              {menuUrl(SLUG)} ↗
-            </a>
+            {menu ? (
+              <a
+                href={`/menu/${menu.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="shrink-0 rounded-[11px] px-[18px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
+                style={{ boxShadow: RAISED_SM }}
+              >
+                {menuUrl(menu.slug)} ↗
+              </a>
+            ) : null}
           </div>
 
           <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
@@ -261,7 +321,7 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
             >
               All categories
             </button>
-            {MENU_SECTIONS.map((section) => (
+            {sections.map((section) => (
               <button
                 key={section}
                 type="button"
@@ -330,8 +390,8 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
                   </button>
                 </div>
               </div>
-              <div className="mt-3 flex flex-wrap gap-[7px]">
-                {MENU_SECTIONS.map((section) => (
+              <div className="mt-3 flex flex-wrap items-center gap-[7px]">
+                {sections.map((section) => (
                   <button
                     key={section}
                     type="button"
@@ -346,6 +406,13 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
                     {section}
                   </button>
                 ))}
+                <input
+                  value={newSection}
+                  onChange={(e) => setNewSection(e.target.value)}
+                  placeholder="Category"
+                  className="w-[150px] rounded-full px-3.5 py-[7px] text-[12.5px] font-semibold text-[oklch(0.28_0.02_60)] outline-none"
+                  style={{ boxShadow: INSET_SM }}
+                />
               </div>
               <div className="mt-3.5 flex gap-2.5">
                 <button
@@ -370,7 +437,7 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
 
           <div className="mt-5">
             {groups.length ? (
-              <Accordion multiple defaultValue={MENU_SECTIONS} className="flex flex-col gap-3">
+              <Accordion multiple defaultValue={sections} className="flex flex-col gap-3">
                 {groups.map(({ section, dishes }) => (
                   <AccordionItem
                     key={section}
@@ -397,7 +464,7 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
                             dish={dish}
                             editing={editingId === dish.id}
                             draft={drafts[dish.id] ?? ""}
-                            onFlip={() => setItems((prev) => flipDishCategory(prev, dish.id))}
+                            onFlip={() => flipDish(dish.id)}
                             onToggleEdit={() =>
                               setEditingId((prev) => (prev === dish.id ? null : dish.id))
                             }
@@ -429,7 +496,17 @@ export function AdminDashboardPage({ session }: { session: { name: string } }) {
                 className="rounded-2xl bg-background p-8 text-center text-[14px] font-semibold text-muted-foreground"
                 style={{ boxShadow: INSET_SM }}
               >
-                No dishes match your search.
+                {items.length === 0 ? (
+                  <>
+                    No menu saved yet.{" "}
+                    <a href="/builder" className="font-bold text-primary underline-offset-2 hover:underline">
+                      Upload a menu
+                    </a>{" "}
+                    to get started.
+                  </>
+                ) : (
+                  "No dishes match your search."
+                )}
               </div>
             )}
           </div>

@@ -20,4 +20,44 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  menus     Menu[]
+}
+
+enum DishCategory {
+  veg
+  nonveg
+}
+
+model Menu {
+  id             String     @id @default(cuid())
+  slug           String
+  restaurantName String?
+  sourceFileName String?
+  sourceNotes    String?
+  ownerId        String
+  owner          User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  items          MenuItem[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@unique([ownerId, slug])
+}
+
+model MenuItem {
+  id          String       @id @default(cuid())
+  menuId      String
+  menu        Menu         @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  slug        String
+  name        String
+  description String?
+  type        String
+  category    DishCategory
+  price       Int
+  ingredients String[]
+  section     String
+  position    Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([menuId])
 }

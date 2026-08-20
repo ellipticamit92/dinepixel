@@ -5,7 +5,10 @@ import { toast } from "sonner";
 import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { StepIndicator } from "@/components/molecules/step-indicator";
 import { BuilderStepUpload } from "@/components/organisms/builder-step-upload";
-import { BuilderStepProcessing } from "@/components/organisms/builder-step-processing";
+import {
+  BuilderStepProcessing,
+  type ProcessingStatus,
+} from "@/components/organisms/builder-step-processing";
 import { BuilderStepReview } from "@/components/organisms/builder-step-review";
 import { BuilderStepPublished } from "@/components/organisms/builder-step-published";
 import { LivePreviewPhone } from "@/components/organisms/live-preview-phone";
@@ -17,6 +20,7 @@ import {
   setDishPrice,
 } from "@/lib/builder-state";
 import { createExtractionJob, dishesFromMenu, pollExtractionJob } from "@/lib/menulens";
+import { saveExtractedMenu } from "@/lib/menu-actions";
 import type { Dish, DishCategory } from "@/lib/menu-seed";
 
 const SLUG = "bloom-cafe";
@@ -29,6 +33,7 @@ export function BuilderPage({ session }: { session: { name: string } }) {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [status, setStatus] = useState<ProcessingStatus>("uploading");
 
   const handleFileSelected = (selected: File) => {
     setFile(selected);
@@ -41,9 +46,11 @@ export function BuilderPage({ session }: { session: { name: string } }) {
       return;
     }
     setStep("processing");
+    setStatus("uploading");
     try {
       const job = await createExtractionJob(file);
-      const menu = await pollExtractionJob(job.job_id);
+      setStatus(job.status);
+      const menu = await pollExtractionJob(job.job_id, { onStatus: setStatus });
       const dishes = dishesFromMenu(menu);
       if (dishes.length === 0) {
         toast.error("No dishes found in that file — try another one");
@@ -52,6 +59,18 @@ export function BuilderPage({ session }: { session: { name: string } }) {
       }
       setItems(dishes);
       setStep("review");
+
+      try {
+        await saveExtractedMenu({
+          slug: SLUG,
+          restaurantName: menu.restaurant_name,
+          sourceFileName: file.name,
+          sourceNotes: menu.source_notes,
+          dishes,
+        });
+      } catch {
+        toast.error("Menu extracted, but couldn't be saved to your account");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't read that menu");
       setStep("upload");
@@ -84,7 +103,9 @@ export function BuilderPage({ session }: { session: { name: string } }) {
             />
           ) : null}
 
-          {step === "processing" ? <BuilderStepProcessing /> : null}
+          {step === "processing" ? (
+            <BuilderStepProcessing fileName={fileName} status={status} />
+          ) : null}
 
           {step === "review" ? (
             <BuilderStepReview

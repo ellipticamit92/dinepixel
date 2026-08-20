@@ -47,12 +47,21 @@ export async function getExtractionJob(jobId: string): Promise<MenuLensJob> {
 
 export async function pollExtractionJob(
   jobId: string,
-  { intervalMs = 1500, timeoutMs = 90_000 }: { intervalMs?: number; timeoutMs?: number } = {}
+  {
+    intervalMs = 1500,
+    timeoutMs = 90_000,
+    onStatus,
+  }: {
+    intervalMs?: number;
+    timeoutMs?: number;
+    onStatus?: (status: MenuLensJob["status"]) => void;
+  } = {}
 ): Promise<MenuLensMenu> {
   const start = Date.now();
 
   while (true) {
     const job = await getExtractionJob(jobId);
+    onStatus?.(job.status);
 
     if (job.status === "done") {
       if (!job.menu) throw new Error("Extraction finished with no menu data");
@@ -89,6 +98,7 @@ export function dishesFromMenu(menu: MenuLensMenu): Dish[] {
   return menu.items.map((item, index) => ({
     id: slugify(item.name, index),
     name: item.name,
+    description: item.description,
     type: item.category ?? "Dish",
     cat: dishCategoryOf(item),
     price: item.price ?? 0,

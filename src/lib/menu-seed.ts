@@ -2,18 +2,10 @@ export type DishCategory = "veg" | "nonveg";
 
 export type MenuSection = string;
 
-export const MENU_SECTIONS: MenuSection[] = [
-  "Cafe Bites",
-  "Chinese",
-  "South Indian",
-  "Momos",
-  "Burgers",
-  "Drinks",
-];
-
 export interface Dish {
   id: string;
   name: string;
+  description?: string | null;
   type: string;
   cat: DishCategory;
   price: number;
@@ -56,15 +48,6 @@ export const SEED_DISHES: Dish[] = [
   { id: "coldbrew", name: "Cold Brew", type: "Coffee", cat: "veg", price: 170, ingredients: ["Cold brew concentrate", "Ice", "Water"], section: "Drinks" },
   { id: "mangojuice", name: "Mango Juice", type: "Juice", cat: "veg", price: 130, ingredients: ["Mango", "Ice", "Sugar"], section: "Drinks" },
   { id: "watermelonjuice", name: "Watermelon Juice", type: "Juice", cat: "veg", price: 120, ingredients: ["Watermelon", "Mint", "Ice"], section: "Drinks" },
-];
-
-export const DETECTED_ORDER = [
-  "avotoast",
-  "chickpanini",
-  "capp",
-  "benedict",
-  "paneerwrap",
-  "baconroll",
 ];
 
 export function priceStr(price: number) {
