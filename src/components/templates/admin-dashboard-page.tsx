@@ -1,15 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Settings } from "lucide-react";
 import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { LivePreviewPhone } from "@/components/organisms/live-preview-phone";
 import { DishRow } from "@/components/molecules/dish-row";
-import { LogoUpload } from "@/components/molecules/logo-upload";
-import { BannerUpload } from "@/components/molecules/banner-upload";
-import { MenuQrCode } from "@/components/molecules/menu-qr-code";
-import { DeliveryLinkField } from "@/components/molecules/delivery-link-field";
+import { MenuSharePanel } from "@/components/organisms/menu-share-panel";
 import { AdminOfferNotifier } from "@/components/organisms/admin-offer-notifier";
 import {
   Accordion,
@@ -39,11 +37,8 @@ import {
   createMenuItem,
   deleteMenuItem,
   removeDishImage,
-  removeMenuImage,
-  updateDeliveryLinks,
   updateMenuItem,
   uploadDishImage,
-  uploadMenuImage,
 } from "@/lib/menu-actions";
 import type { MenuForSession } from "@/lib/menu-repo";
 import {
@@ -78,16 +73,7 @@ export function AdminDashboardPage({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [previewTab, setPreviewTab] = useState<DishCategory>("veg");
-  const [logoUrl, setLogoUrl] = useState<string | null>(menu?.logoUrl ?? null);
-  const [bannerUrl, setBannerUrl] = useState<string | null>(menu?.bannerUrl ?? null);
-  const [uploadingLogo, setUploadingLogo] = useState(false);
-  const [uploadingBanner, setUploadingBanner] = useState(false);
   const [uploadingImageId, setUploadingImageId] = useState<string | null>(null);
-  const [zomatoUrl, setZomatoUrl] = useState(menu?.zomatoUrl ?? "");
-  const [zomatoRating, setZomatoRating] = useState(menu?.zomatoRating?.toString() ?? "");
-  const [swiggyUrl, setSwiggyUrl] = useState(menu?.swiggyUrl ?? "");
-  const [swiggyRating, setSwiggyRating] = useState(menu?.swiggyRating?.toString() ?? "");
-  const [savingLinks, setSavingLinks] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [sectionFilter, setSectionFilter] = useState<SectionFilter>("all");
   const [query, setQuery] = useState("");
@@ -136,41 +122,6 @@ export function AdminDashboardPage({
         .filter((g) => g.dishes.length > 0),
     [sections, filtered]
   );
-
-  const selectImage = async (kind: "logo" | "banner", file: File) => {
-    if (!menu) {
-      toast.error("Build a menu first, then add branding here");
-      return;
-    }
-    const setUploading = kind === "logo" ? setUploadingLogo : setUploadingBanner;
-    const setUrl = kind === "logo" ? setLogoUrl : setBannerUrl;
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.set("file", file);
-      const { url } = await uploadMenuImage(menu.id, kind, formData);
-      setUrl(url);
-      toast.success(kind === "logo" ? "Logo updated" : "Banner updated");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : `Couldn't upload ${kind}`);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const removeImage = async (kind: "logo" | "banner") => {
-    if (!menu) return;
-    const setUrl = kind === "logo" ? setLogoUrl : setBannerUrl;
-    const before = kind === "logo" ? logoUrl : bannerUrl;
-    setUrl(null);
-    try {
-      await removeMenuImage(menu.id, kind);
-      toast.success(kind === "logo" ? "Logo removed" : "Banner removed");
-    } catch {
-      setUrl(before);
-      toast.error(`Couldn't remove ${kind}`);
-    }
-  };
 
   const persist = (dish: Dish) =>
     updateMenuItem({
@@ -253,32 +204,6 @@ export function AdminDashboardPage({
     }
   };
 
-  const saveDeliveryLinks = async () => {
-    if (!menu) {
-      toast.error("Build a menu first, then add delivery links here");
-      return;
-    }
-    setSavingLinks(true);
-    try {
-      const saved = await updateDeliveryLinks({
-        menuId: menu.id,
-        zomatoUrl,
-        zomatoRating: zomatoRating ? Number(zomatoRating) : null,
-        swiggyUrl,
-        swiggyRating: swiggyRating ? Number(swiggyRating) : null,
-      });
-      setZomatoUrl(saved.zomatoUrl ?? "");
-      setZomatoRating(saved.zomatoRating?.toString() ?? "");
-      setSwiggyUrl(saved.swiggyUrl ?? "");
-      setSwiggyRating(saved.swiggyRating?.toString() ?? "");
-      toast.success("Delivery links updated");
-    } catch {
-      toast.error("Couldn't save delivery links");
-    } finally {
-      setSavingLinks(false);
-    }
-  };
-
   const submitNewDish = async () => {
     if (!menu) {
       toast.error("Build a menu first, then add dishes here");
@@ -336,88 +261,41 @@ export function AdminDashboardPage({
                 Edits here go live on your public menu instantly.
               </p>
             </div>
-            {menu ? (
-              <a
-                href={`/${menu.slug}`}
-                target="_blank"
-                rel="noreferrer"
-                className="shrink-0 rounded-[11px] px-[18px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
+            <div className="flex shrink-0 items-center gap-2.5">
+              {menu ? (
+                <a
+                  href={`/${menu.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-[11px] px-[18px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
+                  style={{ boxShadow: RAISED_SM }}
+                >
+                  {menuUrl(menu.slug)} ↗
+                </a>
+              ) : null}
+              <Link
+                href="/admin/settings"
+                className="flex items-center gap-1.5 rounded-[11px] px-[15px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
                 style={{ boxShadow: RAISED_SM }}
               >
-                {menuUrl(menu.slug)} ↗
-              </a>
-            ) : null}
-          </div>
-
-          <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
-            <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
-              Cafe branding
-            </div>
-            <div className="mt-4 flex flex-col gap-4">
-              <LogoUpload
-                value={logoUrl}
-                onSelect={(file) => selectImage("logo", file)}
-                onRemove={() => removeImage("logo")}
-                uploading={uploadingLogo}
-              />
-              <div className="h-px" style={{ background: "oklch(0.88 0.015 72)" }} />
-              <BannerUpload
-                value={bannerUrl}
-                onSelect={(file) => selectImage("banner", file)}
-                onRemove={() => removeImage("banner")}
-                uploading={uploadingBanner}
-              />
+                <Settings className="size-4" strokeWidth={2} />
+                Settings
+              </Link>
             </div>
           </div>
 
           {menu ? (
             <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
               <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
-                Menu QR code
+                Share your menu
               </div>
-              <div className="mt-4 flex justify-center sm:justify-start">
-                <MenuQrCode slug={menu.slug} url={`https://${menuUrl(menu.slug)}`} />
+              <div className="mt-4">
+                <MenuSharePanel slug={menu.slug} />
               </div>
             </div>
           ) : null}
 
-          <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
-            <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
-              Order online links
-            </div>
-            <p className="mt-1.5 text-[13px] text-muted-foreground">
-              Add your Zomato and Swiggy listings — shown on your public menu page with the rating.
-            </p>
-            <div className="mt-4 flex flex-col gap-4">
-              <DeliveryLinkField
-                label="Zomato"
-                accent="oklch(0.52 0.2 25)"
-                url={zomatoUrl}
-                rating={zomatoRating}
-                onUrlChange={setZomatoUrl}
-                onRatingChange={setZomatoRating}
-              />
-              <DeliveryLinkField
-                label="Swiggy"
-                accent="oklch(0.62 0.18 45)"
-                url={swiggyUrl}
-                rating={swiggyRating}
-                onUrlChange={setSwiggyUrl}
-                onRatingChange={setSwiggyRating}
-              />
-              <button
-                type="button"
-                onClick={saveDeliveryLinks}
-                disabled={savingLinks}
-                className="self-start rounded-[11px] px-5 py-2.5 font-condensed text-[13px] font-bold text-[oklch(0.35_0.02_60)] disabled:opacity-60"
-                style={{ boxShadow: RAISED_SM }}
-              >
-                {savingLinks ? "Saving…" : "Save links"}
-              </button>
-            </div>
-          </div>
-
-          <AdminOfferNotifier logoUrl={logoUrl} />
+          <AdminOfferNotifier logoUrl={menu?.logoUrl ?? null} />
 
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
             <StatTile value={String(items.length)} label="Total dishes" />
@@ -697,8 +575,8 @@ export function AdminDashboardPage({
           tab={previewTab}
           onTabChange={setPreviewTab}
           empty={false}
-          logoUrl={logoUrl}
-          bannerUrl={bannerUrl}
+          logoUrl={menu?.logoUrl ?? null}
+          bannerUrl={menu?.bannerUrl ?? null}
         />
       </div>
     </div>
