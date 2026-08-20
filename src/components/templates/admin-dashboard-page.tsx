@@ -292,6 +292,7 @@ export function AdminDashboardPage({
                 onRemove={() => removeImage("logo")}
                 uploading={uploadingLogo}
               />
+              <div className="h-px" style={{ background: "oklch(0.88 0.015 72)" }} />
               <BannerUpload
                 value={bannerUrl}
                 onSelect={(file) => selectImage("banner", file)}
