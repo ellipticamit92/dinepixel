@@ -6,7 +6,17 @@ import { PhoneHero } from "@/components/molecules/phone-hero";
 import { RAISED_SM, INSET_SM } from "@/lib/neu-shadows";
 import { ingredientSummary, markColor, priceStr, type Dish, type DishCategory } from "@/lib/menu-seed";
 
-export function MenuContent({ restaurantName, dishes }: { restaurantName: string; dishes: Dish[] }) {
+export function MenuContent({
+  restaurantName,
+  logoUrl,
+  bannerUrl,
+  dishes,
+}: {
+  restaurantName: string;
+  logoUrl?: string | null;
+  bannerUrl?: string | null;
+  dishes: Dish[];
+}) {
   const [tab, setTab] = useState<DishCategory>("veg");
   const filtered = dishes.filter((d) => d.cat === tab);
   const featured = filtered[0] ?? null;
@@ -14,7 +24,7 @@ export function MenuContent({ restaurantName, dishes }: { restaurantName: string
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]">
-      <PhoneHero height={190} name={restaurantName} />
+      <PhoneHero height={190} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
 
       <div className="flex gap-2 px-4 pt-4 pb-2">
         <button

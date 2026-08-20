@@ -14,5 +14,12 @@ export default async function Menu(props: PageProps<"/[slug]">) {
   const menu = await getMenuBySlug(slug);
   if (!menu) notFound();
 
-  return <MenuPage restaurantName={menu.restaurantName} dishes={menu.dishes} />;
+  return (
+    <MenuPage
+      restaurantName={menu.restaurantName}
+      logoUrl={menu.logoUrl}
+      bannerUrl={menu.bannerUrl}
+      dishes={menu.dishes}
+    />
+  );
 }

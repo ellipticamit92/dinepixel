@@ -1,5 +1,7 @@
 "use server";
 
+import { mkdir, readdir, unlink, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { toDish } from "@/lib/menu-repo";
@@ -146,6 +148,94 @@ export async function updateMenuItem(input: UpdateDishInput): Promise<Dish> {
   });
 
   return toDish(item);
+}
+
+/** Resolves a menu only if it belongs to the signed-in restaurant. */
+async function ownedMenuId(menuId: unknown): Promise<string> {
+  const session = await getSession();
+  if (!session) throw new Error("Not signed in");
+
+  const id = cleanText(menuId, 60);
+  if (!id) throw new Error("Missing menu");
+
+  const menu = await prisma.menu.findFirst({
+    where: { id, owner: { email: session.email } },
+    select: { id: true },
+  });
+  if (!menu) throw new Error("Menu not found");
+
+  return menu.id;
+}
+
+const MENU_IMAGE_KINDS = ["logo", "banner"] as const;
+type MenuImageKind = (typeof MENU_IMAGE_KINDS)[number];
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+};
+
+function menuUploadDir(menuId: string): string {
+  return path.join(process.cwd(), "public", "uploads", "menus", menuId);
+}
+
+async function clearMenuImage(menuId: string, kind: MenuImageKind): Promise<void> {
+  const dir = menuUploadDir(menuId);
+  const existing = await readdir(dir).catch(() => [] as string[]);
+  await Promise.all(
+    existing.filter((f) => f.startsWith(`${kind}.`)).map((f) => unlink(path.join(dir, f)))
+  );
+}
+
+/** Saves a logo or banner image to disk under public/uploads and records its URL on the menu. */
+export async function uploadMenuImage(
+  menuId: string,
+  kind: MenuImageKind,
+  formData: FormData
+): Promise<{ url: string }> {
+  const id = await ownedMenuId(menuId);
+  if (!MENU_IMAGE_KINDS.includes(kind)) throw new Error("Invalid image type");
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) throw new Error("No file uploaded");
+
+  const ext = IMAGE_EXTENSIONS[file.type];
+  if (!ext) throw new Error("Image must be PNG, JPEG, WebP, GIF, or SVG");
+  if (file.size > MAX_IMAGE_BYTES) throw new Error("Image must be under 5MB");
+
+  const dir = menuUploadDir(id);
+  await mkdir(dir, { recursive: true });
+  await clearMenuImage(id, kind);
+
+  const filename = `${kind}.${ext}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await writeFile(path.join(dir, filename), buffer);
+
+  const url = `/uploads/menus/${id}/${filename}`;
+  await prisma.menu.update({
+    where: { id },
+    data: kind === "logo" ? { logoUrl: url } : { bannerUrl: url },
+  });
+
+  return { url };
+}
+
+/** Removes a menu's logo or banner image from disk and clears its URL. */
+export async function removeMenuImage(menuId: string, kind: MenuImageKind): Promise<{ ok: true }> {
+  const id = await ownedMenuId(menuId);
+  if (!MENU_IMAGE_KINDS.includes(kind)) throw new Error("Invalid image type");
+
+  await clearMenuImage(id, kind);
+  await prisma.menu.update({
+    where: { id },
+    data: kind === "logo" ? { logoUrl: null } : { bannerUrl: null },
+  });
+
+  return { ok: true };
 }
 
 export async function deleteMenuItem(itemId: string): Promise<{ id: string }> {

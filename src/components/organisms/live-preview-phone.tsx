@@ -20,11 +20,12 @@ interface LivePreviewPhoneProps {
   onTabChange: (tab: DishCategory) => void;
   empty: boolean;
   logoUrl?: string | null;
+  bannerUrl?: string | null;
 }
 
 type SectionFilter = "all" | MenuSection;
 
-export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl }: LivePreviewPhoneProps) {
+export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bannerUrl }: LivePreviewPhoneProps) {
   const [section, setSection] = useState<SectionFilter>("all");
   const filtered = items.filter(
     (d) => d.cat === tab && (section === "all" || d.section === section)
@@ -49,7 +50,7 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl }: Li
       </div>
       <div className="mx-auto w-full max-w-[340px]">
         <PhoneFrame screenStyle={{ background: "oklch(0.95 0.012 84)" }}>
-          <PhoneHero height={128} logoUrl={logoUrl} />
+          <PhoneHero height={128} logoUrl={logoUrl} bannerUrl={bannerUrl} />
 
           {!empty ? (
             <>

@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { ImageIcon, Loader2, UploadCloud, X } from "lucide-react";
 import { INSET_LG, RAISED_SM } from "@/lib/neu-shadows";
 
-export function LogoUpload({
+export function BannerUpload({
   value,
   onSelect,
   onRemove,
@@ -34,7 +34,7 @@ export function LogoUpload({
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
         }}
-        className="relative flex size-[84px] shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[20px] bg-background text-center"
+        className="relative flex h-[84px] w-[140px] shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-[20px] bg-background text-center"
         style={{ boxShadow: display ? RAISED_SM : INSET_LG }}
       >
         <input
@@ -46,7 +46,7 @@ export function LogoUpload({
         />
         {display ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={display} alt="Cafe logo" className="size-full object-cover" />
+          <img src={display} alt="Cafe banner" className="size-full object-cover" />
         ) : (
           <div className="flex flex-col items-center gap-1.5 px-2 text-muted-foreground">
             <UploadCloud className="size-5" strokeWidth={1.5} />
@@ -62,10 +62,10 @@ export function LogoUpload({
 
       <div className="min-w-0">
         <div className="text-[13.5px] font-semibold text-[oklch(0.32_0.02_60)]">
-          {display ? "Logo uploaded" : "No logo yet"}
+          {display ? "Banner uploaded" : "No banner yet"}
         </div>
         <div className="mt-0.5 text-xs text-muted-foreground">
-          Square image, shown on your menu &amp; QR page.
+          Wide image, shown at the top of your menu page.
         </div>
         <div className="mt-2 flex gap-2">
           <button

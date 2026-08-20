@@ -7,6 +7,7 @@ import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { LivePreviewPhone } from "@/components/organisms/live-preview-phone";
 import { DishRow } from "@/components/molecules/dish-row";
 import { LogoUpload } from "@/components/molecules/logo-upload";
+import { BannerUpload } from "@/components/molecules/banner-upload";
 import { AdminOfferNotifier } from "@/components/organisms/admin-offer-notifier";
 import {
   Accordion,
@@ -29,7 +30,13 @@ import {
   removeIngredient,
   setDishPrice,
 } from "@/lib/builder-state";
-import { createMenuItem, deleteMenuItem, updateMenuItem } from "@/lib/menu-actions";
+import {
+  createMenuItem,
+  deleteMenuItem,
+  removeMenuImage,
+  updateMenuItem,
+  uploadMenuImage,
+} from "@/lib/menu-actions";
 import type { MenuForSession } from "@/lib/menu-repo";
 import {
   priceStr,
@@ -63,7 +70,10 @@ export function AdminDashboardPage({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [previewTab, setPreviewTab] = useState<DishCategory>("veg");
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(menu?.logoUrl ?? null);
+  const [bannerUrl, setBannerUrl] = useState<string | null>(menu?.bannerUrl ?? null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
   const [sectionFilter, setSectionFilter] = useState<SectionFilter>("all");
   const [query, setQuery] = useState("");
@@ -113,9 +123,39 @@ export function AdminDashboardPage({
     [sections, filtered]
   );
 
-  const handleLogoChange = (dataUrl: string | null) => {
-    setLogoUrl(dataUrl);
-    toast.success(dataUrl ? "Logo updated" : "Logo removed");
+  const selectImage = async (kind: "logo" | "banner", file: File) => {
+    if (!menu) {
+      toast.error("Build a menu first, then add branding here");
+      return;
+    }
+    const setUploading = kind === "logo" ? setUploadingLogo : setUploadingBanner;
+    const setUrl = kind === "logo" ? setLogoUrl : setBannerUrl;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+      const { url } = await uploadMenuImage(menu.id, kind, formData);
+      setUrl(url);
+      toast.success(kind === "logo" ? "Logo updated" : "Banner updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : `Couldn't upload ${kind}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = async (kind: "logo" | "banner") => {
+    if (!menu) return;
+    const setUrl = kind === "logo" ? setLogoUrl : setBannerUrl;
+    const before = kind === "logo" ? logoUrl : bannerUrl;
+    setUrl(null);
+    try {
+      await removeMenuImage(menu.id, kind);
+      toast.success(kind === "logo" ? "Logo removed" : "Banner removed");
+    } catch {
+      setUrl(before);
+      toast.error(`Couldn't remove ${kind}`);
+    }
   };
 
   const persist = (dish: Dish) =>
@@ -229,7 +269,7 @@ export function AdminDashboardPage({
             </div>
             {menu ? (
               <a
-                href={`/menu/${menu.slug}`}
+                href={`/${menu.slug}`}
                 target="_blank"
                 rel="noreferrer"
                 className="shrink-0 rounded-[11px] px-[18px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
@@ -244,8 +284,19 @@ export function AdminDashboardPage({
             <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
               Cafe branding
             </div>
-            <div className="mt-3">
-              <LogoUpload value={logoUrl} onChange={handleLogoChange} />
+            <div className="mt-4 flex flex-col gap-4">
+              <LogoUpload
+                value={logoUrl}
+                onSelect={(file) => selectImage("logo", file)}
+                onRemove={() => removeImage("logo")}
+                uploading={uploadingLogo}
+              />
+              <BannerUpload
+                value={bannerUrl}
+                onSelect={(file) => selectImage("banner", file)}
+                onRemove={() => removeImage("banner")}
+                uploading={uploadingBanner}
+              />
             </div>
           </div>
 
@@ -518,6 +569,7 @@ export function AdminDashboardPage({
           onTabChange={setPreviewTab}
           empty={false}
           logoUrl={logoUrl}
+          bannerUrl={bannerUrl}
         />
       </div>
     </div>

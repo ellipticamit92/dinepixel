@@ -6,6 +6,8 @@ export interface MenuForSession {
   id: string;
   slug: string;
   restaurantName: string;
+  logoUrl: string | null;
+  bannerUrl: string | null;
   dishes: Dish[];
 }
 
@@ -49,6 +51,8 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     id: menu.id,
     slug: menu.slug,
     restaurantName: menu.restaurantName ?? session.name,
+    logoUrl: menu.logoUrl,
+    bannerUrl: menu.bannerUrl,
     dishes: menu.items.map(toDish),
   };
 }
@@ -66,6 +70,8 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     id: menu.id,
     slug: menu.slug,
     restaurantName: menu.restaurantName ?? menu.owner.name ?? "Menu",
+    logoUrl: menu.logoUrl,
+    bannerUrl: menu.bannerUrl,
     dishes: menu.items.map(toDish),
   };
 }

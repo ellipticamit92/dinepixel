@@ -6,12 +6,14 @@ export function PhoneHero({
   location = "Downtown District",
   rating = "4.9 (2k+)",
   logoUrl = null,
+  bannerUrl = null,
 }: {
   height?: number;
   name?: string;
   location?: string;
   rating?: string;
   logoUrl?: string | null;
+  bannerUrl?: string | null;
 }) {
   return (
     <div className="px-[9px] pt-[9px]">
@@ -19,9 +21,14 @@ export function PhoneHero({
         className="relative overflow-hidden rounded-[20px] shadow-neu-raised-sm"
         style={{ height }}
       >
-        <div className="flex h-full w-full items-center justify-center bg-[oklch(0.87_0.02_74)] text-[oklch(0.68_0.03_74)]">
-          <ImageIcon className="size-6" strokeWidth={1.5} />
-        </div>
+        {bannerUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={bannerUrl} alt="" className="size-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-[oklch(0.87_0.02_74)] text-[oklch(0.68_0.03_74)]">
+            <ImageIcon className="size-6" strokeWidth={1.5} />
+          </div>
+        )}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
