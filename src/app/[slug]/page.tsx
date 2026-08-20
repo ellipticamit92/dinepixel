@@ -1,12 +1,29 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { MenuPage } from "@/components/templates/menu-page";
 import { getMenuBySlug } from "@/lib/menu-repo";
 
+export const viewport: Viewport = {
+  themeColor: "#f4eee1",
+};
+
 export async function generateMetadata(props: PageProps<"/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
   const menu = await getMenuBySlug(slug);
-  return { title: menu ? `${menu.restaurantName} — Menu` : "Menu not found" };
+  if (!menu) return { title: "Menu not found" };
+
+  const icon = menu.logoUrl ?? menu.bannerUrl ?? undefined;
+
+  return {
+    title: `${menu.restaurantName} — Menu`,
+    manifest: `/${slug}/manifest.webmanifest`,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: menu.restaurantName,
+    },
+    icons: icon ? { apple: icon } : undefined,
+  };
 }
 
 export default async function Menu(props: PageProps<"/[slug]">) {
