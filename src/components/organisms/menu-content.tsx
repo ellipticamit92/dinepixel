@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ImageIcon } from "lucide-react";
 import { PhoneHero } from "@/components/molecules/phone-hero";
+import { InstallHint } from "@/components/molecules/install-hint";
 import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
 import {
   ingredientSummary,
@@ -44,7 +45,9 @@ export function MenuContent({
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-28 font-sans text-[oklch(0.28_0.02_60)]">
-      <PhoneHero height={190} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
+      <PhoneHero height={190} logoSize={64} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
+
+      <InstallHint />
 
       <div className="flex gap-1.5 overflow-x-auto px-4 pt-4 pb-1">
         <button

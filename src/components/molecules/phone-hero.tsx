@@ -2,6 +2,7 @@ import { ImageIcon } from "lucide-react";
 
 export function PhoneHero({
   height = 130,
+  logoSize = 36,
   name = "Bloom Cafe",
   location = "Downtown District",
   rating = "4.9 (2k+)",
@@ -9,6 +10,7 @@ export function PhoneHero({
   bannerUrl = null,
 }: {
   height?: number;
+  logoSize?: number;
   name?: string;
   location?: string;
   rating?: string;
@@ -37,7 +39,10 @@ export function PhoneHero({
           }}
         />
         {logoUrl ? (
-          <div className="absolute top-[9px] left-[9px] size-9 overflow-hidden rounded-[10px] border-2 border-white/70">
+          <div
+            className="absolute top-[9px] left-[9px] overflow-hidden rounded-[12px] border-2 border-white/70 shadow-md"
+            style={{ height: logoSize, width: logoSize }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={logoUrl} alt="Cafe logo" className="size-full object-cover" />
           </div>
