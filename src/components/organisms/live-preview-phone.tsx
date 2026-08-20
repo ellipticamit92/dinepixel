@@ -32,9 +32,9 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
   );
   const featured = filtered[0] ?? null;
   const rest = filtered.slice(1);
-  const availableSections = Array.from(
-    new Set(items.filter((d) => d.cat === tab).map((d) => d.section))
-  );
+  // Sections span both categories so the chip row stays stable when switching
+  // Veg/Non-Veg — only the dish list below should change, not the chips.
+  const availableSections = Array.from(new Set(items.map((d) => d.section)));
   const groups = availableSections
     .map((s) => ({
       section: s,

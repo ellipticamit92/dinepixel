@@ -8,6 +8,10 @@ export function PhoneHero({
   rating = "4.9 (2k+)",
   logoUrl = null,
   bannerUrl = null,
+  zomatoUrl = null,
+  zomatoRating = null,
+  swiggyUrl = null,
+  swiggyRating = null,
 }: {
   height?: number;
   logoSize?: number;
@@ -16,7 +20,12 @@ export function PhoneHero({
   rating?: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  zomatoUrl?: string | null;
+  zomatoRating?: number | null;
+  swiggyUrl?: string | null;
+  swiggyRating?: number | null;
 }) {
+  const hasDeliveryBadges = Boolean(zomatoUrl || swiggyUrl);
   return (
     <div className="px-[9px] pt-[9px]">
       <div
@@ -47,17 +56,50 @@ export function PhoneHero({
             <img src={logoUrl} alt="Cafe logo" className="size-full object-cover" />
           </div>
         ) : null}
-        <div className="absolute top-[9px] right-[9px] flex gap-1.5">
-          {["♡", "⤴"].map((g) => (
-            <div
-              key={g}
-              className="flex size-[26px] items-center justify-center rounded-[9px] border border-white/25 text-[11px] text-[oklch(0.99_0.01_85)] backdrop-blur-[5px]"
-              style={{ background: "oklch(0.95 0.012 84 / 0.32)" }}
-            >
-              {g}
-            </div>
-          ))}
-        </div>
+        {hasDeliveryBadges ? (
+          <div className="absolute top-[9px] right-[9px] flex flex-col items-end gap-1.5">
+            {zomatoUrl ? (
+              <a
+                href={zomatoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-full border border-white/25 py-1 pr-2.5 pl-1 text-[10.5px] font-bold text-white backdrop-blur-[5px]"
+                style={{ background: "oklch(0.52 0.2 25 / 0.85)" }}
+              >
+                <span className="flex size-4 items-center justify-center rounded-full bg-white text-[8.5px] font-black text-[oklch(0.52 0.2 25)]">
+                  Z
+                </span>
+                {zomatoRating ? <span>★ {zomatoRating}</span> : "Zomato"}
+              </a>
+            ) : null}
+            {swiggyUrl ? (
+              <a
+                href={swiggyUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 rounded-full border border-white/25 py-1 pr-2.5 pl-1 text-[10.5px] font-bold text-white backdrop-blur-[5px]"
+                style={{ background: "oklch(0.62 0.18 45 / 0.85)" }}
+              >
+                <span className="flex size-4 items-center justify-center rounded-full bg-white text-[8.5px] font-black text-[oklch(0.62 0.18 45)]">
+                  S
+                </span>
+                {swiggyRating ? <span>★ {swiggyRating}</span> : "Swiggy"}
+              </a>
+            ) : null}
+          </div>
+        ) : (
+          <div className="absolute top-[9px] right-[9px] flex gap-1.5">
+            {["♡", "⤴"].map((g) => (
+              <div
+                key={g}
+                className="flex size-[26px] items-center justify-center rounded-[9px] border border-white/25 text-[11px] text-[oklch(0.99_0.01_85)] backdrop-blur-[5px]"
+                style={{ background: "oklch(0.95 0.012 84 / 0.32)" }}
+              >
+                {g}
+              </div>
+            ))}
+          </div>
+        )}
         <div className="pointer-events-none absolute right-[13px] bottom-[10px] left-[13px]">
           <div className="font-display text-[20px] leading-none tracking-[0.3px] text-[oklch(0.99_0.01_85)]">
             {name}

@@ -44,47 +44,28 @@ export function MenuContent({
   );
   const featured = filtered[0] ?? null;
   const rest = filtered.slice(1);
-  const availableSections = Array.from(
-    new Set(dishes.filter((d) => d.cat === tab).map((d) => d.section))
-  );
+  // Sections span both categories so the chip row stays stable when switching
+  // Veg/Non-Veg — only the dish list below should change, not the chips.
+  const availableSections = Array.from(new Set(dishes.map((d) => d.section)));
   const groups = availableSections
     .map((s) => ({ section: s, dishes: rest.filter((d) => d.section === s) }))
     .filter((g) => g.dishes.length > 0);
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-28 font-sans text-[oklch(0.28_0.02_60)]">
-      <PhoneHero height={190} logoSize={64} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
+      <PhoneHero
+        height={190}
+        logoSize={64}
+        name={restaurantName}
+        logoUrl={logoUrl}
+        bannerUrl={bannerUrl}
+        zomatoUrl={zomatoUrl}
+        zomatoRating={zomatoRating}
+        swiggyUrl={swiggyUrl}
+        swiggyRating={swiggyRating}
+      />
 
       <InstallHint />
-
-      {zomatoUrl || swiggyUrl ? (
-        <div className="flex gap-2 px-4 pt-3">
-          {zomatoUrl ? (
-            <a
-              href={zomatoUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-2.5 font-condensed text-[12.5px] font-bold text-white"
-              style={{ background: "oklch(0.52 0.2 25)" }}
-            >
-              Order on Zomato
-              {zomatoRating ? <span className="opacity-85">★ {zomatoRating}</span> : null}
-            </a>
-          ) : null}
-          {swiggyUrl ? (
-            <a
-              href={swiggyUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-2xl py-2.5 font-condensed text-[12.5px] font-bold text-white"
-              style={{ background: "oklch(0.62 0.18 45)" }}
-            >
-              Order on Swiggy
-              {swiggyRating ? <span className="opacity-85">★ {swiggyRating}</span> : null}
-            </a>
-          ) : null}
-        </div>
-      ) : null}
 
       <div className="flex gap-1.5 overflow-x-auto px-4 pt-4 pb-1">
         <button
@@ -118,9 +99,14 @@ export function MenuContent({
         {featured ? (
           <div className="overflow-hidden rounded-2xl bg-background" style={{ boxShadow: RAISED_SM }}>
             <div className="relative h-36">
-              <div className="flex h-full w-full items-center justify-center bg-[oklch(0.87_0.02_74)] text-[oklch(0.68_0.03_74)]">
-                <ImageIcon className="size-7" strokeWidth={1.3} />
-              </div>
+              {featured.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={featured.imageUrl} alt="" className="size-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-[oklch(0.87_0.02_74)] text-[oklch(0.68_0.03_74)]">
+                  <ImageIcon className="size-7" strokeWidth={1.3} />
+                </div>
+              )}
               <div className="absolute top-2.5 left-2.5 rounded-full bg-primary px-3 py-1 text-[10px] font-bold tracking-[0.4px] text-primary-foreground uppercase">
                 ★ Popular this week
               </div>
@@ -175,6 +161,12 @@ export function MenuContent({
                 >
                   <span className="size-2 rounded-full" style={{ background: markColor(d.cat) }} />
                 </span>
+                {d.imageUrl ? (
+                  <div className="size-11 shrink-0 overflow-hidden rounded-[10px]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={d.imageUrl} alt="" className="size-full object-cover" />
+                  </div>
+                ) : null}
                 <div className="min-w-0 flex-1">
                   <div className="font-condensed text-[15px] font-bold text-[oklch(0.26_0.02_60)]">
                     {d.name}
