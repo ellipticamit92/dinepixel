@@ -4,14 +4,24 @@ import { useRef } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { RAISED_LG, RAISED_SM, INSET_SM } from "@/lib/neu-shadows";
 
-export function MenuQrCode({ slug, url }: { slug: string; url: string }) {
+export function MenuQrCode({
+  slug,
+  url,
+  label = "Scan at the table",
+  filename,
+}: {
+  slug: string;
+  url: string;
+  label?: string;
+  filename?: string;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const downloadQr = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const a = document.createElement("a");
-    a.download = `${slug}-menu-qr.png`;
+    a.download = filename ?? `${slug}-menu-qr.png`;
     a.href = canvas.toDataURL("image/png");
     a.click();
   };
@@ -25,7 +35,7 @@ export function MenuQrCode({ slug, url }: { slug: string; url: string }) {
         <QRCodeCanvas ref={canvasRef} value={url} size={139} fgColor="oklch(0.24 0.02 60)" level="M" />
       </div>
       <div className="mt-3.5 text-xs font-bold tracking-[0.5px] text-[oklch(0.55_0.03_60)] uppercase">
-        Scan at the table
+        {label}
       </div>
       <button
         type="button"

@@ -17,6 +17,7 @@ export default async function Cart(props: PageProps<"/[slug]/cart">) {
   return (
     <CartPage
       slug={slug}
+      menuId={menu.id}
       restaurantName={menu.restaurantName}
       logoUrl={menu.logoUrl}
       bannerUrl={menu.bannerUrl}

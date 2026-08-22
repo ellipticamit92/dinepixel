@@ -39,15 +39,31 @@ model Menu {
   swiggyUrl      String?
   swiggyRating   Float?
   whatsappNumber String?
+  tableCount     Int?
   sourceFileName String?
   sourceNotes    String?
   ownerId        String
   owner          User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   items          MenuItem[]
+  customers      Customer[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
   @@unique([ownerId, slug])
+}
+
+/** A customer who opted in to save their number when placing a WhatsApp order — powers the offer broadcast list. */
+model Customer {
+  id          String   @id @default(cuid())
+  menuId      String
+  menu        Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  phone       String
+  orderCount  Int      @default(1)
+  lastOrderAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@unique([menuId, phone])
+  @@index([menuId])
 }
 
 model MenuItem {

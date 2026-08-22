@@ -28,6 +28,7 @@ export async function generateMetadata(props: PageProps<"/[slug]">): Promise<Met
 
 export default async function Menu(props: PageProps<"/[slug]">) {
   const { slug } = await props.params;
+  const { table } = await props.searchParams;
   const menu = await getMenuBySlug(slug);
   if (!menu) notFound();
 
@@ -42,6 +43,7 @@ export default async function Menu(props: PageProps<"/[slug]">) {
       swiggyUrl={menu.swiggyUrl}
       swiggyRating={menu.swiggyRating}
       dishes={menu.dishes}
+      table={typeof table === "string" ? table : undefined}
     />
   );
 }

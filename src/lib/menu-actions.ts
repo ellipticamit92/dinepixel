@@ -260,6 +260,50 @@ export async function updateWhatsappNumber(
   return { whatsappNumber: cleaned };
 }
 
+/**
+ * Records a guest's number when they opt in to save it while sending a WhatsApp order.
+ * Public — called from the anonymous cart page, not gated behind a session. Repeat orders
+ * bump `orderCount`, which is how the admin's offer panel tells regular customers apart.
+ */
+export async function recordCustomerOrder(menuId: string, phone: string): Promise<{ ok: true }> {
+  const id = cleanText(menuId, 60);
+  if (!id) throw new Error("Missing menu");
+
+  const cleanedPhone = cleanPhone(phone);
+  if (!cleanedPhone) throw new Error("Invalid phone number");
+
+  const menu = await prisma.menu.findUnique({ where: { id }, select: { id: true } });
+  if (!menu) throw new Error("Menu not found");
+
+  await prisma.customer.upsert({
+    where: { menuId_phone: { menuId: id, phone: cleanedPhone } },
+    update: { orderCount: { increment: 1 }, lastOrderAt: new Date() },
+    create: { menuId: id, phone: cleanedPhone },
+  });
+
+  return { ok: true };
+}
+
+function cleanTableCount(value: unknown): number | null {
+  const count = Number(value);
+  if (!Number.isFinite(count)) return null;
+  return Math.min(200, Math.max(1, Math.round(count)));
+}
+
+/** Number of tables this menu has QR codes for — drives how many "Table N" QR codes admins can print. */
+export async function updateTableCount(
+  menuId: string,
+  tableCount: number | null
+): Promise<{ tableCount: number | null }> {
+  const id = await ownedMenuId(menuId);
+
+  const cleaned = tableCount == null ? null : cleanTableCount(tableCount);
+
+  await prisma.menu.update({ where: { id }, data: { tableCount: cleaned } });
+
+  return { tableCount: cleaned };
+}
+
 const MENU_IMAGE_KINDS = ["logo", "banner"] as const;
 type MenuImageKind = (typeof MENU_IMAGE_KINDS)[number];
 

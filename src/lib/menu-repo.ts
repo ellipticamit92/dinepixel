@@ -13,6 +13,7 @@ export interface MenuForSession {
   swiggyUrl: string | null;
   swiggyRating: number | null;
   whatsappNumber: string | null;
+  tableCount: number | null;
   dishes: Dish[];
 }
 
@@ -75,6 +76,7 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     swiggyUrl: menu.swiggyUrl,
     swiggyRating: menu.swiggyRating,
     whatsappNumber: menu.whatsappNumber,
+    tableCount: menu.tableCount,
     dishes: menu.items.map(toDish),
   };
 }
@@ -99,6 +101,34 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     swiggyUrl: menu.swiggyUrl,
     swiggyRating: menu.swiggyRating,
     whatsappNumber: menu.whatsappNumber,
+    tableCount: menu.tableCount,
     dishes: menu.items.map(toDish),
   };
+}
+
+export interface RegularCustomer {
+  id: string;
+  phone: string;
+  orderCount: number;
+  lastOrderAt: Date;
+}
+
+/** Customers who've opted in and ordered more than once — the offer broadcast's target list. */
+const REGULAR_ORDER_THRESHOLD = 2;
+
+export async function getRegularCustomers(menuId: string): Promise<RegularCustomer[]> {
+  const session = await getSession();
+  if (!session) return [];
+
+  const menu = await prisma.menu.findFirst({
+    where: { id: menuId, owner: { email: session.email } },
+    select: { id: true },
+  });
+  if (!menu) return [];
+
+  return prisma.customer.findMany({
+    where: { menuId, orderCount: { gte: REGULAR_ORDER_THRESHOLD } },
+    orderBy: { lastOrderAt: "desc" },
+    select: { id: true, phone: true, orderCount: true, lastOrderAt: true },
+  });
 }

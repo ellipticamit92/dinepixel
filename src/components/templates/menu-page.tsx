@@ -11,6 +11,7 @@ export function MenuPage({
   swiggyUrl,
   swiggyRating,
   dishes,
+  table,
 }: {
   slug: string;
   restaurantName: string;
@@ -21,6 +22,7 @@ export function MenuPage({
   swiggyUrl?: string | null;
   swiggyRating?: number | null;
   dishes: Dish[];
+  table?: string;
 }) {
   return (
     <MenuContent
@@ -33,6 +35,7 @@ export function MenuPage({
       swiggyUrl={swiggyUrl}
       swiggyRating={swiggyRating}
       dishes={dishes}
+      table={table}
     />
   );
 }

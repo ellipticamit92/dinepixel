@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Plus, Search, Settings } from "lucide-react";
+import { Plus, QrCode, Search, Settings } from "lucide-react";
 import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { LivePreviewPhone } from "@/components/organisms/live-preview-phone";
 import { DishRow } from "@/components/molecules/dish-row";
@@ -43,7 +43,7 @@ import {
   updateMenuItem,
   uploadDishImage,
 } from "@/lib/menu-actions";
-import type { MenuForSession } from "@/lib/menu-repo";
+import type { MenuForSession, RegularCustomer } from "@/lib/menu-repo";
 import {
   priceStr,
   type Dish,
@@ -68,9 +68,11 @@ function StatTile({ value, label }: { value: string; label: string }) {
 export function AdminDashboardPage({
   session,
   menu,
+  regularCustomers,
 }: {
   session: { name: string };
   menu: MenuForSession | null;
+  regularCustomers: RegularCustomer[];
 }) {
   const [items, setItems] = useState<Dish[]>(menu?.dishes ?? []);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -280,6 +282,14 @@ export function AdminDashboardPage({
                 </a>
               ) : null}
               <Link
+                href="/admin/tables"
+                className="flex items-center gap-1.5 rounded-[11px] px-[15px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
+                style={{ boxShadow: RAISED_SM }}
+              >
+                <QrCode className="size-4" strokeWidth={2} />
+                Tables
+              </Link>
+              <Link
                 href="/admin/settings"
                 className="flex items-center gap-1.5 rounded-[11px] px-[15px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
                 style={{ boxShadow: RAISED_SM }}
@@ -301,7 +311,7 @@ export function AdminDashboardPage({
             </div>
           ) : null}
 
-          <AdminOfferNotifier logoUrl={menu?.logoUrl ?? null} />
+          <AdminOfferNotifier logoUrl={menu?.logoUrl ?? null} customers={regularCustomers} />
 
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
             <StatTile value={String(items.length)} label="Total dishes" />

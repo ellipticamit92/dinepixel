@@ -1,34 +1,57 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ImageIcon, Minus, Plus, Trash2 } from "lucide-react";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import { cartCount, cartTotal, useCart } from "@/lib/cart";
+import { useStoredTable } from "@/lib/table";
+import { storePhone, useStoredPhone } from "@/lib/customer";
+import { recordCustomerOrder } from "@/lib/menu-actions";
 import { priceStr } from "@/lib/menu-seed";
 import { RAISED_SM, INSET_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
 
 export function CartPage({
   slug,
+  menuId,
   restaurantName,
   logoUrl,
   bannerUrl,
   whatsappNumber,
 }: {
   slug: string;
+  menuId: string;
   restaurantName: string;
   logoUrl?: string | null;
   bannerUrl?: string | null;
   whatsappNumber?: string | null;
 }) {
   const { items, setQty } = useCart(slug);
+  const table = useStoredTable(slug);
+  const storedPhone = useStoredPhone(slug);
   const total = cartTotal(items);
   const count = cartCount(items);
 
+  const [phoneOverride, setPhoneOverride] = useState<string | null>(null);
+  const [saveOverride, setSaveOverride] = useState<boolean | null>(null);
+  const phone = phoneOverride ?? storedPhone ?? "";
+  const saveNumber = saveOverride ?? !!storedPhone;
+
   const whatsappMessage = () => {
     const lines = items.map((i) => `${i.qty} × ${i.name} — ${priceStr(i.qty * i.price)}`);
-    return `Order for ${restaurantName}:\n${lines.join("\n")}\n\nTotal: ${priceStr(total)}`;
+    const tableLine = table ? `Table: ${table}\n` : "";
+    return `${tableLine}Order for ${restaurantName}:\n${lines.join("\n")}\n\nTotal: ${priceStr(total)}`;
   };
   const whatsappHref = `https://wa.me/${whatsappNumber ?? ""}?text=${encodeURIComponent(whatsappMessage())}`;
+
+  const sendOrder = () => {
+    const digits = phone.replace(/[^0-9]/g, "");
+    if (!saveNumber || digits.length < 8) return;
+    storePhone(slug, digits);
+    recordCustomerOrder(menuId, digits).catch(() => {
+      // Best-effort — the order still goes out on WhatsApp even if this fails.
+    });
+  };
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]">
@@ -43,6 +66,14 @@ export function CartPage({
           <ChevronLeft className="size-4" strokeWidth={2.5} />
         </Link>
         <h1 className="font-display text-xl text-[oklch(0.24_0.02_60)]">Your cart</h1>
+        {table ? (
+          <span
+            className="ml-auto shrink-0 rounded-full px-3 py-1 font-condensed text-xs font-bold tracking-[0.3px] text-[oklch(0.35_0.02_60)]"
+            style={{ boxShadow: INSET_SM }}
+          >
+            Table {table}
+          </span>
+        ) : null}
       </div>
 
       {items.length === 0 ? (
@@ -119,10 +150,37 @@ export function CartPage({
               </span>
               <span className="font-display text-xl text-[oklch(0.24_0.02_60)]">{priceStr(total)}</span>
             </div>
+
+            <div
+              className="mt-3 flex flex-col gap-2.5 rounded-2xl bg-background p-[14px]"
+              style={{ boxShadow: RAISED_SM }}
+            >
+              <label className="flex items-start gap-2.5 text-[13px] font-semibold text-[oklch(0.4_0.02_60)]">
+                <input
+                  type="checkbox"
+                  checked={saveNumber}
+                  onChange={(e) => setSaveOverride(e.target.checked)}
+                  className="mt-0.5 size-4 shrink-0 accent-[var(--success)]"
+                />
+                Save my number so we can send offers &amp; updates
+              </label>
+              {saveNumber ? (
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhoneOverride(e.target.value)}
+                  placeholder="Your WhatsApp number, e.g. 919876543210"
+                  className="w-full rounded-[10px] px-3.5 py-3 text-sm font-semibold text-[oklch(0.32_0.02_60)] outline-none"
+                  style={{ boxShadow: INSET_SM }}
+                />
+              ) : null}
+            </div>
+
             <a
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
+              onClick={sendOrder}
               className="mt-3 flex items-center justify-center gap-2.5 rounded-2xl py-4 font-condensed text-base font-bold tracking-[0.3px] text-primary-foreground"
               style={{ background: "var(--success)", boxShadow: SUCCESS_GLOW }}
             >

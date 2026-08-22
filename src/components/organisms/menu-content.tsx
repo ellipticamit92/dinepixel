@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ImageIcon, ShoppingCart } from "lucide-react";
@@ -8,6 +8,7 @@ import { PhoneHero } from "@/components/molecules/phone-hero";
 import { InstallHint } from "@/components/molecules/install-hint";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW } from "@/lib/neu-shadows";
 import { cartCount, cartTotal, useCart } from "@/lib/cart";
+import { storeTable } from "@/lib/table";
 import {
   dishPriceLabel,
   ingredientSummary,
@@ -31,6 +32,7 @@ export function MenuContent({
   swiggyUrl,
   swiggyRating,
   dishes,
+  table,
 }: {
   slug: string;
   restaurantName: string;
@@ -41,10 +43,15 @@ export function MenuContent({
   swiggyUrl?: string | null;
   swiggyRating?: number | null;
   dishes: Dish[];
+  table?: string;
 }) {
   const [tab, setTab] = useState<DishCategory>("veg");
   const [section, setSection] = useState<SectionFilter>("all");
   const { items: cartItems, add: addToCart } = useCart(slug);
+
+  useEffect(() => {
+    if (table) storeTable(slug, table);
+  }, [slug, table]);
 
   const addDishToCart = (dish: Dish) => {
     addToCart({ id: dish.id, name: dish.name, price: dish.price, imageUrl: dish.imageUrl });
