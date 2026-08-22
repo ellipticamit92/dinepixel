@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Apple } from "lucide-react";
 import { AuthInput } from "@/components/molecules/auth-input";
 import { RAISED_SM, INSET, ACCENT_GLOW } from "@/lib/neu-shadows";
 import { login, register } from "@/lib/auth-actions";
@@ -203,33 +202,6 @@ export function AuthPanel({
             >
               {copy.cta}
             </button>
-
-            <div className="my-0.5 flex items-center gap-3">
-              <span className="h-px flex-1 bg-[oklch(0.86_0.02_74)]" />
-              <span className="text-xs font-semibold text-[oklch(0.6_0.03_60)]">
-                or continue with
-              </span>
-              <span className="h-px flex-1 bg-[oklch(0.86_0.02_74)]" />
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                className="flex flex-1 items-center justify-center gap-2.5 rounded-[13px] py-[13px] font-condensed text-sm font-bold text-[oklch(0.4_0.02_60)]"
-                style={{ boxShadow: RAISED_SM }}
-              >
-                <span className="text-[15px] font-bold">G</span>
-                Google
-              </button>
-              <button
-                type="button"
-                className="flex flex-1 items-center justify-center gap-2.5 rounded-[13px] py-[13px] font-condensed text-sm font-bold text-[oklch(0.4_0.02_60)]"
-                style={{ boxShadow: RAISED_SM }}
-              >
-                <Apple className="size-[15px]" strokeWidth={2} />
-                Apple
-              </button>
-            </div>
 
             <div className="text-center text-[13.5px] font-semibold text-[oklch(0.5_0.02_60)]">
               {copy.switchText}{" "}
