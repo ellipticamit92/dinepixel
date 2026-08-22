@@ -246,6 +246,21 @@ function cleanPhone(value: unknown): string | null {
   return digits.length >= 8 ? digits : null;
 }
 
+/** Restaurant/menu display name shown on the public menu, cart, and dashboard pages. */
+export async function updateRestaurantName(
+  menuId: string,
+  restaurantName: string
+): Promise<{ restaurantName: string }> {
+  const id = await ownedMenuId(menuId);
+
+  const cleaned = cleanText(restaurantName, 200);
+  if (!cleaned) throw new Error("Restaurant name can't be empty");
+
+  await prisma.menu.update({ where: { id }, data: { restaurantName: cleaned } });
+
+  return { restaurantName: cleaned };
+}
+
 /** Number customers' WhatsApp orders (from the public cart page) are sent to — digits only, with country code. */
 export async function updateWhatsappNumber(
   menuId: string,

@@ -14,6 +14,7 @@ import {
   updateDeliveryLinks,
   updateImageEnhancerUrl,
   updateMenuTheme,
+  updateRestaurantName,
   updateWhatsappNumber,
   uploadMenuImage,
 } from "@/lib/menu-actions";
@@ -32,6 +33,8 @@ export function AdminSettingsPage({
   session: { name: string };
   menu: MenuForSession | null;
 }) {
+  const [restaurantName, setRestaurantName] = useState(menu?.restaurantName ?? "");
+  const [savingName, setSavingName] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(menu?.logoUrl ?? null);
   const [bannerUrl, setBannerUrl] = useState<string | null>(menu?.bannerUrl ?? null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -80,6 +83,28 @@ export function AdminSettingsPage({
     } catch {
       setUrl(before);
       toast.error(`Couldn't remove ${kind}`);
+    }
+  };
+
+  const saveRestaurantName = async () => {
+    if (!menu) {
+      toast.error("Build a menu first, then set its name here");
+      return;
+    }
+    const trimmed = restaurantName.trim();
+    if (!trimmed) {
+      toast.error("Restaurant name can't be empty");
+      return;
+    }
+    setSavingName(true);
+    try {
+      const saved = await updateRestaurantName(menu.id, trimmed);
+      setRestaurantName(saved.restaurantName);
+      toast.success("Restaurant name updated");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't save restaurant name");
+    } finally {
+      setSavingName(false);
     }
   };
 
@@ -182,6 +207,39 @@ export function AdminSettingsPage({
         <p className="mt-2 text-[14.5px] text-muted-foreground">
           Manage your cafe branding, delivery platform links, and order number.
         </p>
+
+        <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
+          <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+            Restaurant name
+          </div>
+          <p className="mt-1.5 text-[13px] text-muted-foreground">
+            Shown on your public menu, cart, and dashboard pages.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            <div
+              className="flex min-w-[200px] flex-1 items-center rounded-[11px] px-3.5 py-3"
+              style={{ boxShadow: INSET_SM }}
+            >
+              <input
+                type="text"
+                value={restaurantName}
+                onChange={(e) => setRestaurantName(e.target.value)}
+                placeholder="e.g. The Bistro Cafe"
+                maxLength={200}
+                className="w-full border-none bg-transparent text-sm font-semibold text-[oklch(0.32_0.02_60)] outline-none"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={saveRestaurantName}
+              disabled={savingName}
+              className="shrink-0 rounded-[11px] px-5 py-2.5 font-condensed text-[13px] font-bold text-[oklch(0.35_0.02_60)] disabled:opacity-60"
+              style={{ boxShadow: RAISED_SM }}
+            >
+              {savingName ? "Saving…" : "Save name"}
+            </button>
+          </div>
+        </div>
 
         <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
           <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
