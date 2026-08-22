@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ImageIcon, Search, ShoppingCart } from "lucide-react";
+import { CircleUserRound, Heart, ImageIcon, Search, ShoppingCart, Table2, UtensilsCrossed } from "lucide-react";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import { InstallHint } from "@/components/molecules/install-hint";
-import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW } from "@/lib/neu-shadows";
+import { RAISED_SM, RAISED_LG, INSET_SM, ACCENT_GLOW } from "@/lib/neu-shadows";
 import { cartCount, cartTotal, useCart } from "@/lib/cart";
-import { storeTable } from "@/lib/table";
+import { storeTable, useStoredTable } from "@/lib/table";
 import type { MenuTheme } from "@/lib/menu-repo";
 import {
   dishPriceLabel,
@@ -52,6 +52,7 @@ export function MenuContent({
   const [section, setSection] = useState<SectionFilter>("all");
   const [query, setQuery] = useState("");
   const { items: cartItems, add: addToCart } = useCart(slug);
+  const storedTable = useStoredTable(slug) ?? table;
 
   useEffect(() => {
     if (table) storeTable(slug, table);
@@ -116,6 +117,37 @@ export function MenuContent({
             className="w-full border-none bg-transparent text-sm font-medium text-[oklch(0.32_0.02_60)] outline-none placeholder:text-muted-foreground"
           />
         </div>
+      </div>
+
+      <div className="flex gap-2 px-4 pt-2 pb-1">
+        <button
+          type="button"
+          onClick={() => {
+            setTab("veg");
+            setSection("all");
+          }}
+          className="font-condensed flex-1 rounded-xl py-2.5 text-sm font-bold tracking-[0.3px]"
+          style={{
+            color: tab === "veg" ? "oklch(0.4 0.12 150)" : "oklch(0.52 0.03 60)",
+            boxShadow: tab === "veg" ? INSET_SM : RAISED_SM,
+          }}
+        >
+          Veg
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setTab("nonveg");
+            setSection("all");
+          }}
+          className="font-condensed flex-1 rounded-xl py-2.5 text-sm font-bold tracking-[0.3px]"
+          style={{
+            color: tab === "nonveg" ? "oklch(0.48 0.19 25)" : "oklch(0.52 0.03 60)",
+            boxShadow: tab === "nonveg" ? INSET_SM : RAISED_SM,
+          }}
+        >
+          Non-Veg
+        </button>
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto px-4 pt-2 pb-1">
@@ -185,7 +217,7 @@ export function MenuContent({
               <button
                 type="button"
                 onClick={() => addDishToCart(featured)}
-                className="mt-3 w-full rounded-xl py-2.5 text-center font-condensed text-[13px] font-bold tracking-[0.3px] text-accent-foreground"
+                className="mt-3 w-full rounded-xl py-2.5 text-center font-condensed text-[13px] font-bold tracking-[0.3px] text-accent-foreground transition-colors hover:text-primary"
                 style={{ boxShadow: INSET_SM }}
               >
                 ＋ Add to Order
@@ -234,7 +266,7 @@ export function MenuContent({
                 <button
                   type="button"
                   onClick={() => addDishToCart(d)}
-                  className="flex size-7 shrink-0 items-center justify-center rounded-[10px] text-lg leading-none text-accent-foreground"
+                  className="flex size-7 shrink-0 items-center justify-center rounded-[10px] text-lg leading-none text-accent-foreground transition-transform duration-150 hover:scale-110 hover:text-primary active:scale-95"
                   style={{ boxShadow: RAISED_SM }}
                 >
                   +
@@ -267,50 +299,60 @@ export function MenuContent({
       </div>
 
       <div
-        className="fixed right-0 bottom-0 left-0 z-10 mx-auto max-w-md px-4 pt-4 pb-5"
-        style={{ background: "linear-gradient(transparent, var(--background) 35%)" }}
+        className="fixed right-0 bottom-0 left-0 z-10 mx-auto max-w-md px-5 pt-3 pb-5"
+        style={{ background: "linear-gradient(transparent, var(--background) 30%)" }}
       >
-        {cartItems.length > 0 ? (
-          <Link
-            href={`/${slug}/cart`}
-            className="mb-2 flex items-center justify-between rounded-2xl bg-primary px-4 py-3 font-condensed text-sm font-bold text-primary-foreground"
-            style={{ boxShadow: ACCENT_GLOW }}
-          >
-            <span className="flex items-center gap-2">
-              <ShoppingCart className="size-4" strokeWidth={2} />
-              {cartCount(cartItems)} item{cartCount(cartItems) > 1 ? "s" : ""} · {priceStr(cartTotal(cartItems))}
-            </span>
-            <span>View Cart →</span>
-          </Link>
-        ) : null}
-        <div className="flex gap-2 rounded-2xl p-1.5" style={{ boxShadow: INSET, background: "var(--background)" }}>
-          <button
-            type="button"
-            onClick={() => {
-              setTab("veg");
-              setSection("all");
-            }}
-            className="font-condensed flex-1 rounded-xl py-3 text-sm font-bold tracking-[0.3px]"
-            style={{
-              color: tab === "veg" ? "oklch(0.4 0.12 150)" : "oklch(0.52 0.03 60)",
-              boxShadow: tab === "veg" ? INSET_SM : RAISED_SM,
-            }}
-          >
-            Veg
+        <div
+          className="relative flex items-center justify-between rounded-[22px] px-5.5 py-3"
+          style={{ background: "var(--background)", boxShadow: RAISED_LG }}
+        >
+          <button type="button" className="flex flex-col items-center gap-1">
+            <UtensilsCrossed className="size-[19px] text-primary" strokeWidth={2} />
+            <span className="text-[10px] font-bold tracking-[0.2px] text-primary">Menu</span>
           </button>
           <button
             type="button"
-            onClick={() => {
-              setTab("nonveg");
-              setSection("all");
-            }}
-            className="font-condensed flex-1 rounded-xl py-3 text-sm font-bold tracking-[0.3px]"
-            style={{
-              color: tab === "nonveg" ? "oklch(0.48 0.19 25)" : "oklch(0.52 0.03 60)",
-              boxShadow: tab === "nonveg" ? INSET_SM : RAISED_SM,
-            }}
+            onClick={() => toast("Saved dishes are coming soon")}
+            className="flex flex-col items-center gap-1"
           >
-            Non-Veg
+            <Heart className="size-[19px] text-muted-foreground" strokeWidth={2} />
+            <span className="text-[10px] font-bold tracking-[0.2px] text-muted-foreground">Saved</span>
+          </button>
+
+          <Link
+            href={`/${slug}/cart`}
+            aria-label={`View cart, ${cartCount(cartItems)} item${cartCount(cartItems) === 1 ? "" : "s"}, ${priceStr(cartTotal(cartItems))}`}
+            className="relative -mt-6.5 flex size-[46px] items-center justify-center rounded-[15px] text-primary-foreground"
+            style={{ background: "var(--primary)", boxShadow: ACCENT_GLOW }}
+          >
+            <ShoppingCart className="size-[19px]" strokeWidth={2} />
+            {cartItems.length > 0 ? (
+              <span
+                className="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold text-primary-foreground"
+                style={{ background: "var(--nonveg)" }}
+              >
+                {cartCount(cartItems)}
+              </span>
+            ) : null}
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => toast(storedTable ? `You're at Table ${storedTable}` : "No table selected")}
+            className="flex flex-col items-center gap-1"
+          >
+            <Table2 className="size-[19px] text-muted-foreground" strokeWidth={2} />
+            <span className="max-w-[52px] truncate text-[10px] font-bold tracking-[0.2px] text-muted-foreground">
+              {storedTable ? `Table ${storedTable}` : "Table"}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => toast("Profile is coming soon")}
+            className="flex flex-col items-center gap-1"
+          >
+            <CircleUserRound className="size-[19px] text-muted-foreground" strokeWidth={2} />
+            <span className="text-[10px] font-bold tracking-[0.2px] text-muted-foreground">Profile</span>
           </button>
         </div>
       </div>
