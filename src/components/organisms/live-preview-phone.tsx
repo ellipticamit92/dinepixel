@@ -5,6 +5,7 @@ import { ImageIcon } from "lucide-react";
 import { PhoneFrame } from "@/components/molecules/phone-frame";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
+import type { MenuTheme } from "@/lib/menu-repo";
 import {
   ingredientSummary,
   markColor,
@@ -22,11 +23,20 @@ interface LivePreviewPhoneProps {
   empty: boolean;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  theme?: MenuTheme;
 }
 
 type SectionFilter = "all" | MenuSection;
 
-export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bannerUrl }: LivePreviewPhoneProps) {
+export function LivePreviewPhone({
+  items,
+  tab,
+  onTabChange,
+  empty,
+  logoUrl,
+  bannerUrl,
+  theme = "plate",
+}: LivePreviewPhoneProps) {
   const [section, setSection] = useState<SectionFilter>("all");
   const filtered = items.filter(
     (d) => matchesTab(d, tab) && (section === "all" || d.section === section)
@@ -49,8 +59,8 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
         <span className="animate-pl-pulse size-[7px] rounded-full bg-primary" />
         Live preview
       </div>
-      <div className="mx-auto w-full max-w-[340px]">
-        <PhoneFrame screenStyle={{ background: "oklch(0.95 0.012 84)" }}>
+      <div data-menu-theme={theme} className="mx-auto w-full max-w-[340px]">
+        <PhoneFrame screenStyle={{ background: "var(--background)" }}>
           <PhoneHero height={128} logoUrl={logoUrl} bannerUrl={bannerUrl} />
 
           {!empty ? (
@@ -61,8 +71,8 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                   onClick={() => setSection("all")}
                   className="shrink-0 rounded-full px-3 py-[6px] font-condensed text-[11.5px] font-bold tracking-[0.2px]"
                   style={{
-                    background: "oklch(0.95 0.012 84)",
-                    color: section === "all" ? "oklch(0.28 0.02 60)" : "oklch(0.55 0.03 60)",
+                    background: "var(--background)",
+                    color: section === "all" ? "var(--foreground)" : "var(--muted-foreground)",
                     boxShadow: section === "all" ? INSET_SM : RAISED_SM,
                   }}
                 >
@@ -75,8 +85,8 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                     onClick={() => setSection(s)}
                     className="shrink-0 rounded-full px-3 py-[6px] font-condensed text-[11.5px] font-bold tracking-[0.2px]"
                     style={{
-                      background: "oklch(0.95 0.012 84)",
-                      color: section === s ? "oklch(0.28 0.02 60)" : "oklch(0.55 0.03 60)",
+                      background: "var(--background)",
+                      color: section === s ? "var(--foreground)" : "var(--muted-foreground)",
                       boxShadow: section === s ? INSET_SM : RAISED_SM,
                     }}
                   >
@@ -89,10 +99,10 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                 {featured ? (
                   <div
                     className="overflow-hidden rounded-[15px]"
-                    style={{ background: "oklch(0.95 0.012 84)", boxShadow: RAISED_SM }}
+                    style={{ background: "var(--background)", boxShadow: RAISED_SM }}
                   >
                     <div className="relative h-24">
-                      <div className="flex h-full w-full items-center justify-center bg-[oklch(0.88_0.015_82)] text-[oklch(0.68_0.03_74)]">
+                      <div className="flex h-full w-full items-center justify-center bg-[var(--muted)] text-[var(--muted-foreground)]">
                         <ImageIcon className="size-5" strokeWidth={1.5} />
                       </div>
                       <div className="absolute top-[7px] left-[7px] rounded-full bg-primary px-2.5 py-[3px] text-[8px] font-bold tracking-[0.4px] text-primary-foreground uppercase">
@@ -108,7 +118,7 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                           >
                             <span className="size-1.5 rounded-full" style={{ background: markColor(featured.cat) }} />
                           </span>
-                          <span className="font-condensed text-[15px] font-bold text-[oklch(0.26_0.02_60)]">
+                          <span className="font-condensed text-[15px] font-bold text-[var(--foreground)]">
                             {featured.name}
                           </span>
                         </div>
@@ -116,7 +126,7 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                           {priceStr(featured.price)}
                         </span>
                       </div>
-                      <div className="mt-[5px] text-[10.5px] leading-[1.4] text-[oklch(0.52_0.02_60)]">
+                      <div className="mt-[5px] text-[10.5px] leading-[1.4] text-[var(--muted-foreground)]">
                         {ingredientSummary(featured)}
                       </div>
                       <div
@@ -132,16 +142,16 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                 {groups.map(({ section: s, dishes }) => (
                   <div key={s} className="flex flex-col gap-2.5">
                     {section === "all" ? (
-                      <div className="flex items-center gap-1.5 px-0.5 text-[10.5px] font-bold tracking-[0.6px] text-[oklch(0.52_0.03_60)] uppercase">
+                      <div className="flex items-center gap-1.5 px-0.5 text-[10.5px] font-bold tracking-[0.6px] text-[var(--muted-foreground)] uppercase">
                         {s}
-                        <span className="h-px flex-1" style={{ background: "oklch(0.85 0.02 72)" }} />
+                        <span className="h-px flex-1" style={{ background: "var(--border)" }} />
                       </div>
                     ) : null}
                     {dishes.map((p) => (
                       <div
                         key={p.id}
                         className="flex items-center gap-[11px] rounded-[13px] p-3"
-                        style={{ background: "oklch(0.95 0.012 84)", boxShadow: RAISED_SM }}
+                        style={{ background: "var(--background)", boxShadow: RAISED_SM }}
                       >
                         <span
                           className="inline-flex size-4 shrink-0 items-center justify-center rounded-[3px] border-[1.5px]"
@@ -150,10 +160,10 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                           <span className="size-[7px] rounded-full" style={{ background: markColor(p.cat) }} />
                         </span>
                         <div className="min-w-0 flex-1">
-                          <div className="font-condensed text-[14.5px] font-bold text-[oklch(0.26_0.02_60)]">
+                          <div className="font-condensed text-[14.5px] font-bold text-[var(--foreground)]">
                             {p.name}
                           </div>
-                          <div className="text-[10.5px] font-semibold tracking-[0.6px] text-[oklch(0.6_0.03_60)] uppercase">
+                          <div className="text-[10.5px] font-semibold tracking-[0.6px] text-[var(--muted-foreground)] uppercase">
                             {ingredientSummary(p)}
                           </div>
                         </div>
@@ -162,7 +172,7 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                         </div>
                         <span
                           className="flex size-[26px] shrink-0 items-center justify-center rounded-[9px] text-base leading-none text-accent-foreground"
-                          style={{ background: "oklch(0.95 0.012 84)", boxShadow: RAISED_SM }}
+                          style={{ background: "var(--background)", boxShadow: RAISED_SM }}
                         >
                           +
                         </span>
@@ -181,15 +191,15 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
               <div className="px-3.5 pt-2 pb-3.5">
                 <div
                   className="flex gap-[7px] rounded-[15px] p-1.5"
-                  style={{ background: "oklch(0.95 0.012 84)", boxShadow: INSET }}
+                  style={{ background: "var(--background)", boxShadow: INSET }}
                 >
                   <button
                     type="button"
                     onClick={() => onTabChange("veg")}
                     className="font-condensed flex-1 rounded-xl py-2.5 text-sm font-bold tracking-[0.3px]"
                     style={{
-                      background: "oklch(0.95 0.012 84)",
-                      color: tab === "veg" ? "oklch(0.4 0.12 150)" : "oklch(0.52 0.03 60)",
+                      background: "var(--background)",
+                      color: tab === "veg" ? "var(--veg)" : "var(--muted-foreground)",
                       boxShadow: tab === "veg" ? INSET_SM : RAISED_SM,
                     }}
                   >
@@ -200,8 +210,8 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
                     onClick={() => onTabChange("nonveg")}
                     className="font-condensed flex-1 rounded-xl py-2.5 text-sm font-bold tracking-[0.3px]"
                     style={{
-                      background: "oklch(0.95 0.012 84)",
-                      color: tab === "nonveg" ? "oklch(0.48 0.19 25)" : "oklch(0.52 0.03 60)",
+                      background: "var(--background)",
+                      color: tab === "nonveg" ? "var(--nonveg)" : "var(--muted-foreground)",
                       boxShadow: tab === "nonveg" ? INSET_SM : RAISED_SM,
                     }}
                   >
@@ -214,9 +224,9 @@ export function LivePreviewPhone({ items, tab, onTabChange, empty, logoUrl, bann
             <div className="flex flex-1 flex-col items-center justify-center gap-3.5 p-7 text-center">
               <div
                 className="size-[52px] rounded-[15px]"
-                style={{ background: "oklch(0.95 0.012 84)", boxShadow: INSET_SM }}
+                style={{ background: "var(--background)", boxShadow: INSET_SM }}
               />
-              <div className="text-[13.5px] leading-[1.4] font-semibold text-[oklch(0.55_0.03_60)]">
+              <div className="text-[13.5px] leading-[1.4] font-semibold text-[var(--muted-foreground)]">
                 Your live menu will appear here once AI reads your upload.
               </div>
             </div>

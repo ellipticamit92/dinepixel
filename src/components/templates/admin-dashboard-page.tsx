@@ -623,6 +623,7 @@ export function AdminDashboardPage({
           empty={false}
           logoUrl={menu?.logoUrl ?? null}
           bannerUrl={menu?.bannerUrl ?? null}
+          theme={menu?.theme}
         />
       </div>
     </div>
