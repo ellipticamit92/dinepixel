@@ -1,9 +1,9 @@
 import { PricingCard } from "@/components/molecules/pricing-card";
 
 const plans = [
-  { name: "Starter", price: "Free", per: "", popular: false, cta: "Start free", feats: ["1 menu", "QR + shareable link", "Veg / Non-Veg sorting"] },
-  { name: "Pro", price: "₹299", per: "/mo", popular: true, cta: "Go Pro", feats: ["Unlimited menus", "Custom branding & banner", "Photo per dish", "Live price editing"] },
-  { name: "Chain", price: "₹999", per: "/mo", popular: false, cta: "Contact us", feats: ["Multiple locations", "Team accounts", "Analytics dashboard", "Priority support"] },
+  { name: "Starter", price: "Free", per: "", popular: false, cta: "Start free", feats: ["1 menu", "QR + shareable link", "Veg / Non-Veg sorting", "Up to 5 table QR codes"] },
+  { name: "Pro", price: "₹499", per: "/yr", popular: true, cta: "Go Pro", feats: ["12 menus", "100+ AI-generated dish photos", "20 table QR codes"] },
+  { name: "Premium", price: "₹999", per: "/yr", popular: false, cta: "Go Premium", feats: ["24 menus", "100+ AI-generated dish photos", "10 dish videos for special dishes", "Unlimited table QR codes"] },
 ];
 
 export function LandingPricing() {
