@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ImageIcon, ShoppingCart } from "lucide-react";
+import { ImageIcon, Search, ShoppingCart } from "lucide-react";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import { InstallHint } from "@/components/molecules/install-hint";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW } from "@/lib/neu-shadows";
@@ -50,6 +50,7 @@ export function MenuContent({
 }) {
   const [tab, setTab] = useState<DishCategory>("veg");
   const [section, setSection] = useState<SectionFilter>("all");
+  const [query, setQuery] = useState("");
   const { items: cartItems, add: addToCart } = useCart(slug);
 
   useEffect(() => {
@@ -61,11 +62,23 @@ export function MenuContent({
     toast.success(`${dish.name} added to cart`);
   };
 
+  const searching = query.trim().length > 0;
+  const matchesQuery = (d: Dish) => {
+    if (!searching) return true;
+    const q = query.trim().toLowerCase();
+    return (
+      d.name.toLowerCase().includes(q) ||
+      d.type.toLowerCase().includes(q) ||
+      d.ingredients.some((i) => i.toLowerCase().includes(q))
+    );
+  };
+
   const filtered = dishes.filter(
-    (d) => matchesTab(d, tab) && (section === "all" || d.section === section)
+    (d) => matchesTab(d, tab) && (section === "all" || d.section === section) && matchesQuery(d)
   );
-  const featured = filtered[0] ?? null;
-  const rest = filtered.slice(1);
+  // While searching, show a flat results list rather than spotlighting the first match.
+  const featured = searching ? null : (filtered[0] ?? null);
+  const rest = searching ? filtered : filtered.slice(1);
   // Sections span both categories so the chip row stays stable when switching
   // Veg/Non-Veg — only the dish list below should change, not the chips.
   const availableSections = Array.from(new Set(dishes.map((d) => d.section)));
@@ -92,7 +105,20 @@ export function MenuContent({
 
       <InstallHint />
 
-      <div className="flex gap-1.5 overflow-x-auto px-4 pt-4 pb-1">
+      <div className="px-4 pt-4 pb-1">
+        <div className="flex items-center gap-2.5 rounded-2xl px-4 py-3" style={{ boxShadow: INSET_SM }}>
+          <Search className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search menu…"
+            className="w-full border-none bg-transparent text-sm font-medium text-[oklch(0.32_0.02_60)] outline-none placeholder:text-muted-foreground"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-1.5 overflow-x-auto px-4 pt-2 pb-1">
         <button
           type="button"
           onClick={() => setSection("all")}
@@ -220,15 +246,21 @@ export function MenuContent({
 
         {!featured && groups.length === 0 ? (
           <div className="py-10 text-center text-sm font-semibold text-muted-foreground">
-            No dishes in this category yet.
+            {searching ? `No dishes match "${query.trim()}".` : "No dishes in this category yet."}
           </div>
         ) : null}
       </div>
 
-      <div className="px-4 pt-6 text-center">
+      <div className="px-6.5 pt-7 pb-2 text-center">
+        <div className="text-[10px] font-bold tracking-[1.2px] text-[oklch(0.6_0.03_60)] uppercase">
+          {restaurantName} · Menu
+        </div>
+        <div className="font-display mt-2 text-[13px] leading-[1.5] text-[oklch(0.52_0.02_60)] italic">
+          Thank you for dining with us.
+        </div>
         <Link
           href="/terms"
-          className="text-[11px] font-semibold tracking-[0.3px] text-[oklch(0.6_0.03_60)] underline-offset-2 hover:underline"
+          className="mt-3 inline-block text-[11px] font-semibold tracking-[0.3px] text-[oklch(0.6_0.03_60)] underline-offset-2 hover:underline"
         >
           Terms &amp; Conditions
         </Link>
