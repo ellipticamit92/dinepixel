@@ -1,6 +1,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import { IngredientChip } from "@/components/molecules/ingredient-chip";
 import { DishImageUpload } from "@/components/molecules/dish-image-upload";
+import { DishImageEnhancer } from "@/components/molecules/dish-image-enhancer";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
 import { dishPriceLabel, ingredientSummary, pricingModeOf, type Dish, type PricingMode } from "@/lib/menu-seed";
 
@@ -29,6 +30,8 @@ interface DishRowProps {
   onRemoveIngredient: (index: number) => void;
   onImageSelect?: (file: File) => void;
   onImageRemove?: () => void;
+  onEnhanceGenerate?: (count: number) => Promise<string[]>;
+  onEnhanceApply?: (url: string) => Promise<void>;
   onSave: () => void;
   onDelete?: () => void;
 }
@@ -52,6 +55,8 @@ export function DishRow({
   onRemoveIngredient,
   onImageSelect,
   onImageRemove,
+  onEnhanceGenerate,
+  onEnhanceApply,
   onSave,
   onDelete,
 }: DishRowProps) {
@@ -141,6 +146,9 @@ export function DishRow({
                 onRemove={onImageRemove}
                 uploading={uploadingImage}
               />
+              {dish.imageUrl && onEnhanceGenerate && onEnhanceApply ? (
+                <DishImageEnhancer onGenerate={onEnhanceGenerate} onApply={onEnhanceApply} />
+              ) : null}
             </div>
           ) : null}
           <div className="mt-4 flex flex-wrap gap-[18px]">

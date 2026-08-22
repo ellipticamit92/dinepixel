@@ -1,6 +1,6 @@
 "use server";
 
-import { mkdir, readdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -304,6 +304,20 @@ export async function updateTableCount(
   return { tableCount: cleaned };
 }
 
+/** API endpoint the restaurant's own image-enhancer service is reachable at. */
+export async function updateImageEnhancerUrl(
+  menuId: string,
+  imageEnhancerUrl: string | null
+): Promise<{ imageEnhancerUrl: string | null }> {
+  const id = await ownedMenuId(menuId);
+
+  const cleaned = cleanUrl(imageEnhancerUrl, 500);
+
+  await prisma.menu.update({ where: { id }, data: { imageEnhancerUrl: cleaned } });
+
+  return { imageEnhancerUrl: cleaned };
+}
+
 const MENU_IMAGE_KINDS = ["logo", "banner"] as const;
 type MenuImageKind = (typeof MENU_IMAGE_KINDS)[number];
 
@@ -423,6 +437,98 @@ export async function removeDishImage(itemId: string): Promise<{ ok: true }> {
   await prisma.menuItem.update({ where: { id }, data: { imageUrl: null } });
 
   return { ok: true };
+}
+
+function cleanEnhanceCount(value: unknown): number {
+  const count = Number(value);
+  if (!Number.isFinite(count)) return 1;
+  return Math.min(6, Math.max(1, Math.round(count)));
+}
+
+/**
+ * Sends the dish's current photo to the restaurant's configured image-enhancer API and
+ * returns the generated variant URLs for preview — nothing is saved until the admin picks
+ * one via applyEnhancedDishImage.
+ */
+export async function enhanceDishImage(itemId: string, count: number): Promise<{ images: string[] }> {
+  const session = await getSession();
+  if (!session) throw new Error("Not signed in");
+
+  const id = cleanText(itemId, 60);
+  if (!id) throw new Error("Missing dish id");
+
+  const item = await prisma.menuItem.findFirst({
+    where: { id, menu: { owner: { email: session.email } } },
+    select: { id: true, imageUrl: true, menu: { select: { imageEnhancerUrl: true } } },
+  });
+  if (!item) throw new Error("Dish not found");
+  if (!item.imageUrl) throw new Error("Add a dish photo before enhancing it");
+
+  const endpoint = item.menu.imageEnhancerUrl;
+  if (!endpoint) throw new Error("Add an image enhancer API endpoint in Settings first");
+
+  const dir = dishUploadDir(id);
+  const files = await readdir(dir).catch(() => [] as string[]);
+  const filename = files.find((f) => f.startsWith("dish."));
+  if (!filename) throw new Error("Add a dish photo before enhancing it");
+
+  const buffer = await readFile(path.join(dir, filename));
+  const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+  const mime = Object.entries(IMAGE_EXTENSIONS).find(([, e]) => e === ext)?.[0] ?? "image/jpeg";
+
+  const body = new FormData();
+  body.set("image", new Blob([buffer], { type: mime }), `dish.${ext}`);
+  body.set("count", String(cleanEnhanceCount(count)));
+
+  let res: Response;
+  try {
+    res = await fetch(endpoint, { method: "POST", body });
+  } catch {
+    throw new Error("Couldn't reach the image enhancer API");
+  }
+  if (!res.ok) throw new Error(`Image enhancer API returned an error (${res.status})`);
+
+  const data = await res.json().catch(() => null);
+  const raw = Array.isArray(data) ? data : Array.isArray(data?.images) ? data.images : [];
+  const images = raw.filter((u: unknown): u is string => typeof u === "string" && u.length > 0);
+  if (images.length === 0) throw new Error("Image enhancer API didn't return any images");
+
+  return { images };
+}
+
+/** Downloads an enhancer-generated variant and stores it as the dish's photo, like a normal upload. */
+export async function applyEnhancedDishImage(itemId: string, imageUrl: string): Promise<{ url: string }> {
+  const id = await ownedItemId(itemId);
+
+  const remoteUrl = cleanUrl(imageUrl, 2000);
+  if (!remoteUrl) throw new Error("Invalid image URL");
+
+  let res: Response;
+  try {
+    res = await fetch(remoteUrl);
+  } catch {
+    throw new Error("Couldn't download the enhanced image");
+  }
+  if (!res.ok) throw new Error("Couldn't download the enhanced image");
+
+  const buffer = Buffer.from(await res.arrayBuffer());
+  if (buffer.byteLength > MAX_IMAGE_BYTES) throw new Error("Image must be under 5MB");
+
+  const contentType = res.headers.get("content-type")?.split(";")[0]?.trim() ?? "";
+  const pathExt = path.extname(new URL(remoteUrl).pathname).slice(1).toLowerCase();
+  const ext = IMAGE_EXTENSIONS[contentType] || pathExt || "jpg";
+
+  const dir = dishUploadDir(id);
+  await mkdir(dir, { recursive: true });
+  await clearDishImage(id);
+
+  const filename = `dish.${ext}`;
+  await writeFile(path.join(dir, filename), buffer);
+
+  const url = `/uploads/dishes/${id}/${filename}`;
+  await prisma.menuItem.update({ where: { id }, data: { imageUrl: url } });
+
+  return { url };
 }
 
 export async function deleteMenuItem(itemId: string): Promise<{ id: string }> {

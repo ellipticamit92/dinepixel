@@ -14,6 +14,7 @@ export interface MenuForSession {
   swiggyRating: number | null;
   whatsappNumber: string | null;
   tableCount: number | null;
+  imageEnhancerUrl: string | null;
   dishes: Dish[];
 }
 
@@ -77,6 +78,7 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     swiggyRating: menu.swiggyRating,
     whatsappNumber: menu.whatsappNumber,
     tableCount: menu.tableCount,
+    imageEnhancerUrl: menu.imageEnhancerUrl,
     dishes: menu.items.map(toDish),
   };
 }
@@ -102,6 +104,7 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     swiggyRating: menu.swiggyRating,
     whatsappNumber: menu.whatsappNumber,
     tableCount: menu.tableCount,
+    imageEnhancerUrl: menu.imageEnhancerUrl,
     dishes: menu.items.map(toDish),
   };
 }

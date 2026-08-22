@@ -37,8 +37,10 @@ import {
   setPricingMode,
 } from "@/lib/builder-state";
 import {
+  applyEnhancedDishImage,
   createMenuItem,
   deleteMenuItem,
+  enhanceDishImage,
   removeDishImage,
   updateMenuItem,
   uploadDishImage,
@@ -210,6 +212,17 @@ export function AdminDashboardPage({
       setItems(before);
       toast.error(`Couldn't remove photo for ${dish.name}`);
     }
+  };
+
+  const generateDishVariants = async (dish: Dish, count: number): Promise<string[]> => {
+    const { images } = await enhanceDishImage(dish.id, count);
+    return images;
+  };
+
+  const applyDishVariant = async (dish: Dish, url: string): Promise<void> => {
+    const { url: savedUrl } = await applyEnhancedDishImage(dish.id, url);
+    setItems((prev) => prev.map((d) => (d.id === dish.id ? { ...d, imageUrl: savedUrl } : d)));
+    toast.success(`${dish.name} photo updated`);
   };
 
   const submitNewDish = async () => {
@@ -565,6 +578,14 @@ export function AdminDashboardPage({
                             }
                             onImageSelect={(file) => selectDishImage(dish, file)}
                             onImageRemove={() => removeDishPhoto(dish)}
+                            onEnhanceGenerate={
+                              menu?.imageEnhancerUrl
+                                ? (count) => generateDishVariants(dish, count)
+                                : undefined
+                            }
+                            onEnhanceApply={
+                              menu?.imageEnhancerUrl ? (url) => applyDishVariant(dish, url) : undefined
+                            }
                             onSave={() => saveDish(dish.id)}
                             onDelete={() => deleteDish(dish.id)}
                           />

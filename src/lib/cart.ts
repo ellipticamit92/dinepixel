@@ -84,5 +84,10 @@ export function useCart(slug: string) {
     [slug]
   );
 
-  return { items, add, setQty };
+  const clear = useCallback(() => {
+    writeCart(slug, []);
+    setItems([]);
+  }, [slug]);
+
+  return { items, add, setQty, clear };
 }

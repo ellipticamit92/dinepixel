@@ -12,6 +12,7 @@ import { RAISED_SM, INSET_SM } from "@/lib/neu-shadows";
 import {
   removeMenuImage,
   updateDeliveryLinks,
+  updateImageEnhancerUrl,
   updateWhatsappNumber,
   uploadMenuImage,
 } from "@/lib/menu-actions";
@@ -35,6 +36,8 @@ export function AdminSettingsPage({
   const [savingLinks, setSavingLinks] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState(menu?.whatsappNumber ?? "");
   const [savingWhatsapp, setSavingWhatsapp] = useState(false);
+  const [imageEnhancerUrl, setImageEnhancerUrl] = useState(menu?.imageEnhancerUrl ?? "");
+  const [savingEnhancer, setSavingEnhancer] = useState(false);
 
   const selectImage = async (kind: "logo" | "banner", file: File) => {
     if (!menu) {
@@ -111,6 +114,23 @@ export function AdminSettingsPage({
       toast.error("Couldn't save order number");
     } finally {
       setSavingWhatsapp(false);
+    }
+  };
+
+  const saveImageEnhancerUrl = async () => {
+    if (!menu) {
+      toast.error("Build a menu first, then add an enhancer endpoint here");
+      return;
+    }
+    setSavingEnhancer(true);
+    try {
+      const saved = await updateImageEnhancerUrl(menu.id, imageEnhancerUrl);
+      setImageEnhancerUrl(saved.imageEnhancerUrl ?? "");
+      toast.success(saved.imageEnhancerUrl ? "Enhancer endpoint updated" : "Enhancer endpoint removed");
+    } catch {
+      toast.error("Couldn't save enhancer endpoint");
+    } finally {
+      setSavingEnhancer(false);
     }
   };
 
@@ -220,6 +240,42 @@ export function AdminSettingsPage({
               style={{ boxShadow: RAISED_SM }}
             >
               {savingWhatsapp ? "Saving…" : "Save number"}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
+          <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+            Image enhancer API
+          </div>
+          <p className="mt-1.5 text-[13px] text-muted-foreground">
+            Plug in your own image-enhancer API endpoint. It should accept a POST with the dish
+            photo and a variant count, and return a list of generated image URLs. Once set, an
+            &ldquo;Enhance&rdquo; option appears when editing a dish photo, letting you pick one
+            of the generated variants — in different angles and a more aesthetic look — as the
+            dish&apos;s photo.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            <div
+              className="flex min-w-[240px] flex-1 items-center rounded-[11px] px-3.5 py-3"
+              style={{ boxShadow: INSET_SM }}
+            >
+              <input
+                type="url"
+                value={imageEnhancerUrl}
+                onChange={(e) => setImageEnhancerUrl(e.target.value)}
+                placeholder="https://api.example.com/enhance"
+                className="w-full border-none bg-transparent text-sm font-semibold text-[oklch(0.32_0.02_60)] outline-none"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={saveImageEnhancerUrl}
+              disabled={savingEnhancer}
+              className="shrink-0 rounded-[11px] px-5 py-2.5 font-condensed text-[13px] font-bold text-[oklch(0.35_0.02_60)] disabled:opacity-60"
+              style={{ boxShadow: RAISED_SM }}
+            >
+              {savingEnhancer ? "Saving…" : "Save endpoint"}
             </button>
           </div>
         </div>

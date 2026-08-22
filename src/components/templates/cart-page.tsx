@@ -26,7 +26,7 @@ export function CartPage({
   bannerUrl?: string | null;
   whatsappNumber?: string | null;
 }) {
-  const { items, setQty } = useCart(slug);
+  const { items, setQty, clear } = useCart(slug);
   const table = useStoredTable(slug);
   const storedPhone = useStoredPhone(slug);
   const total = cartTotal(items);
@@ -66,14 +66,29 @@ export function CartPage({
           <ChevronLeft className="size-4" strokeWidth={2.5} />
         </Link>
         <h1 className="font-display text-xl text-[oklch(0.24_0.02_60)]">Your cart</h1>
-        {table ? (
-          <span
-            className="ml-auto shrink-0 rounded-full px-3 py-1 font-condensed text-xs font-bold tracking-[0.3px] text-[oklch(0.35_0.02_60)]"
-            style={{ boxShadow: INSET_SM }}
-          >
-            Table {table}
-          </span>
-        ) : null}
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          {table ? (
+            <span
+              className="shrink-0 rounded-full px-3 py-1 font-condensed text-xs font-bold tracking-[0.3px] text-[oklch(0.35_0.02_60)]"
+              style={{ boxShadow: INSET_SM }}
+            >
+              Table {table}
+            </span>
+          ) : null}
+          {items.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm("Remove all items from your cart?")) clear();
+              }}
+              className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-condensed text-xs font-bold tracking-[0.3px] text-[oklch(0.5_0.03_60)]"
+              style={{ boxShadow: RAISED_SM }}
+            >
+              <Trash2 className="size-3" strokeWidth={2} style={{ color: "var(--nonveg)" }} />
+              Empty cart
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {items.length === 0 ? (
