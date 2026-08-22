@@ -102,6 +102,8 @@
   --shadow-dark: oklch(0.85 0.02 72);
   --shadow-dark-deep: oklch(0.82 0.04 72);
   --shadow-light: oklch(0.99 0.008 88);
+  --primary-glow: oklch(0.62 0.17 42 / 0.4);
+  --success-glow: oklch(0.62 0.14 150 / 0.35);
 
   --sidebar: oklch(0.93 0.014 82);
   --sidebar-foreground: oklch(0.24 0.02 60);
@@ -154,6 +156,8 @@
   --shadow-dark: oklch(0.14 0.01 60);
   --shadow-dark-deep: oklch(0.1 0.01 60);
   --shadow-light: oklch(0.3 0.02 60);
+  --primary-glow: oklch(0.66 0.17 42 / 0.4);
+  --success-glow: oklch(0.62 0.14 150 / 0.35);
 
   --sidebar: oklch(0.22 0.015 60);
   --sidebar-foreground: oklch(0.93 0.014 82);
@@ -170,6 +174,42 @@
   --shadow-neu-raised-xl: 14px 14px 34px var(--shadow-dark-deep), -14px -14px 34px var(--shadow-light);
   --shadow-neu-inset: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
   --shadow-neu-inset-lg: inset 6px 6px 16px var(--shadow-dark), inset -6px -6px 16px var(--shadow-light);
+}
+
+/*
+ * Public menu themes — scoped to a `[data-menu-theme]` wrapper (the /[slug] menu and cart
+ * pages), so admin/dashboard pages are unaffected. "plate" is the default look already set
+ * on :root above; these two blocks only override what makes each theme distinct: background
+ * tint, accent color, shadow tone, and the display font used for `font-display` headings.
+ */
+[data-menu-theme="bistro"] {
+  --background: oklch(0.93 0.014 340);
+  --primary: oklch(0.42 0.14 340);
+  --primary-foreground: oklch(0.99 0.01 350);
+  --primary-glow: oklch(0.42 0.14 340 / 0.4);
+  --veg: oklch(0.5 0.13 150);
+  --nonveg: oklch(0.5 0.18 20);
+  --success: oklch(0.55 0.13 150);
+  --success-glow: oklch(0.55 0.13 150 / 0.35);
+  --shadow-dark: oklch(0.85 0.02 340);
+  --shadow-dark-deep: oklch(0.82 0.035 340);
+  --shadow-light: oklch(0.99 0.008 350);
+  --font-display: var(--font-fraunces);
+}
+
+[data-menu-theme="fresh"] {
+  --background: oklch(0.94 0.014 150);
+  --primary: oklch(0.55 0.13 165);
+  --primary-foreground: oklch(0.99 0.01 150);
+  --primary-glow: oklch(0.55 0.13 165 / 0.4);
+  --veg: oklch(0.5 0.14 145);
+  --nonveg: oklch(0.55 0.19 25);
+  --success: oklch(0.6 0.14 155);
+  --success-glow: oklch(0.6 0.14 155 / 0.35);
+  --shadow-dark: oklch(0.86 0.02 150);
+  --shadow-dark-deep: oklch(0.83 0.03 150);
+  --shadow-light: oklch(0.99 0.008 140);
+  --font-display: var(--font-barlow-condensed);
 }
 
 @layer base {

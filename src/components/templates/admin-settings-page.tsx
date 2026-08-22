@@ -8,15 +8,22 @@ import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { LogoUpload } from "@/components/molecules/logo-upload";
 import { BannerUpload } from "@/components/molecules/banner-upload";
 import { DeliveryLinkField } from "@/components/molecules/delivery-link-field";
-import { RAISED_SM, INSET_SM } from "@/lib/neu-shadows";
+import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
 import {
   removeMenuImage,
   updateDeliveryLinks,
   updateImageEnhancerUrl,
+  updateMenuTheme,
   updateWhatsappNumber,
   uploadMenuImage,
 } from "@/lib/menu-actions";
-import type { MenuForSession } from "@/lib/menu-repo";
+import type { MenuForSession, MenuTheme } from "@/lib/menu-repo";
+
+const THEME_OPTIONS: { id: MenuTheme; label: string; blurb: string }[] = [
+  { id: "plate", label: "Plate", blurb: "Warm & neumorphic" },
+  { id: "bistro", label: "Bistro", blurb: "Elegant plum & serif" },
+  { id: "fresh", label: "Fresh", blurb: "Clean sage-green" },
+];
 
 export function AdminSettingsPage({
   session,
@@ -38,6 +45,8 @@ export function AdminSettingsPage({
   const [savingWhatsapp, setSavingWhatsapp] = useState(false);
   const [imageEnhancerUrl, setImageEnhancerUrl] = useState(menu?.imageEnhancerUrl ?? "");
   const [savingEnhancer, setSavingEnhancer] = useState(false);
+  const [theme, setTheme] = useState<MenuTheme>(menu?.theme ?? "plate");
+  const [savingTheme, setSavingTheme] = useState(false);
 
   const selectImage = async (kind: "logo" | "banner", file: File) => {
     if (!menu) {
@@ -134,6 +143,26 @@ export function AdminSettingsPage({
     }
   };
 
+  const saveTheme = async (next: MenuTheme) => {
+    if (!menu) {
+      toast.error("Build a menu first, then pick a theme here");
+      return;
+    }
+    const before = theme;
+    setTheme(next);
+    setSavingTheme(true);
+    try {
+      const saved = await updateMenuTheme(menu.id, next);
+      setTheme(saved.theme);
+      toast.success("Menu theme updated");
+    } catch {
+      setTheme(before);
+      toast.error("Couldn't update menu theme");
+    } finally {
+      setSavingTheme(false);
+    }
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-background font-sans text-[oklch(0.28_0.02_60)]">
       <PlateNavbar session={session} />
@@ -153,6 +182,47 @@ export function AdminSettingsPage({
         <p className="mt-2 text-[14.5px] text-muted-foreground">
           Manage your cafe branding, delivery platform links, and order number.
         </p>
+
+        <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
+          <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
+            Menu theme
+          </div>
+          <p className="mt-1.5 text-[13px] text-muted-foreground">
+            Pick the look for your public menu and cart pages — choose whichever suits your logo
+            and branding best.
+          </p>
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {THEME_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                data-menu-theme={opt.id}
+                onClick={() => saveTheme(opt.id)}
+                disabled={savingTheme}
+                className="flex flex-col gap-3 rounded-2xl p-4 text-left disabled:opacity-60"
+                style={{ background: "var(--background)", boxShadow: theme === opt.id ? INSET : RAISED_SM }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="size-6 rounded-full" style={{ background: "var(--primary)", boxShadow: RAISED_SM }} />
+                  <span className="size-6 rounded-full" style={{ background: "var(--veg)" }} />
+                  <span className="size-6 rounded-full" style={{ background: "var(--nonveg)" }} />
+                </div>
+                <div>
+                  <div className="font-display text-base text-[oklch(0.26_0.02_60)]">{opt.label}</div>
+                  <div className="text-[12px] font-semibold text-muted-foreground">{opt.blurb}</div>
+                </div>
+                {theme === opt.id ? (
+                  <span
+                    className="self-start rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.4px] text-primary-foreground uppercase"
+                    style={{ background: "var(--primary)" }}
+                  >
+                    Selected
+                  </span>
+                ) : null}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
           <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">

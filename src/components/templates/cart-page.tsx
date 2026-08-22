@@ -10,6 +10,7 @@ import { storePhone, useStoredPhone } from "@/lib/customer";
 import { recordCustomerOrder } from "@/lib/menu-actions";
 import { priceStr } from "@/lib/menu-seed";
 import { RAISED_SM, INSET_SM, SUCCESS_GLOW } from "@/lib/neu-shadows";
+import type { MenuTheme } from "@/lib/menu-repo";
 
 export function CartPage({
   slug,
@@ -18,6 +19,7 @@ export function CartPage({
   logoUrl,
   bannerUrl,
   whatsappNumber,
+  theme = "plate",
 }: {
   slug: string;
   menuId: string;
@@ -25,6 +27,7 @@ export function CartPage({
   logoUrl?: string | null;
   bannerUrl?: string | null;
   whatsappNumber?: string | null;
+  theme?: MenuTheme;
 }) {
   const { items, setQty, clear } = useCart(slug);
   const table = useStoredTable(slug);
@@ -54,7 +57,10 @@ export function CartPage({
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]">
+    <div
+      data-menu-theme={theme}
+      className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]"
+    >
       <PhoneHero height={190} logoSize={64} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
 
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">

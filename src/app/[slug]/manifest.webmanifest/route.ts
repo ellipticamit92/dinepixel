@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMenuBySlug } from "@/lib/menu-repo";
+import { getMenuBySlug, MENU_THEME_BACKGROUND } from "@/lib/menu-repo";
 
 function iconType(url: string): string {
   const ext = url.split(".").pop()?.toLowerCase();
@@ -30,6 +30,7 @@ export async function GET(
 
   const icon = menu.logoUrl ?? menu.bannerUrl ?? "/favicon.ico";
   const type = iconType(icon);
+  const themeColor = MENU_THEME_BACKGROUND[menu.theme];
 
   return NextResponse.json(
     {
@@ -38,8 +39,8 @@ export async function GET(
       start_url: `/${slug}`,
       scope: `/${slug}`,
       display: "standalone",
-      background_color: "#f4eee1",
-      theme_color: "#f4eee1",
+      background_color: themeColor,
+      theme_color: themeColor,
       icons: [
         { src: icon, sizes: "192x192", type, purpose: "any" },
         { src: icon, sizes: "512x512", type, purpose: "any" },

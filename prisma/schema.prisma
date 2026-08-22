@@ -28,6 +28,12 @@ enum DishCategory {
   nonveg
 }
 
+enum MenuTheme {
+  plate
+  bistro
+  fresh
+}
+
 model Menu {
   id               String     @id @default(cuid())
   slug             String
@@ -41,6 +47,7 @@ model Menu {
   whatsappNumber   String?
   tableCount       Int?
   imageEnhancerUrl String?
+  theme            MenuTheme  @default(plate)
   sourceFileName   String?
   sourceNotes      String?
   ownerId          String

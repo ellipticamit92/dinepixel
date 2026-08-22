@@ -2,6 +2,16 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { Dish } from "@/lib/menu-seed";
 
+export const MENU_THEMES = ["plate", "bistro", "fresh"] as const;
+export type MenuTheme = (typeof MENU_THEMES)[number];
+
+/** Approximate hex of each theme's --background, for PWA manifest/viewport colors (which can't read CSS vars). */
+export const MENU_THEME_BACKGROUND: Record<MenuTheme, string> = {
+  plate: "#f4eee1",
+  bistro: "#f5eae9",
+  fresh: "#eef1e9",
+};
+
 export interface MenuForSession {
   id: string;
   slug: string;
@@ -15,6 +25,7 @@ export interface MenuForSession {
   whatsappNumber: string | null;
   tableCount: number | null;
   imageEnhancerUrl: string | null;
+  theme: MenuTheme;
   dishes: Dish[];
 }
 
@@ -79,6 +90,7 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     whatsappNumber: menu.whatsappNumber,
     tableCount: menu.tableCount,
     imageEnhancerUrl: menu.imageEnhancerUrl,
+    theme: menu.theme,
     dishes: menu.items.map(toDish),
   };
 }
@@ -105,6 +117,7 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     whatsappNumber: menu.whatsappNumber,
     tableCount: menu.tableCount,
     imageEnhancerUrl: menu.imageEnhancerUrl,
+    theme: menu.theme,
     dishes: menu.items.map(toDish),
   };
 }

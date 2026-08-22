@@ -4,7 +4,7 @@ import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { toDish } from "@/lib/menu-repo";
+import { MENU_THEMES, toDish, type MenuTheme } from "@/lib/menu-repo";
 import type { Dish, DishCategory } from "@/lib/menu-seed";
 
 export interface SaveMenuInput {
@@ -316,6 +316,17 @@ export async function updateImageEnhancerUrl(
   await prisma.menu.update({ where: { id }, data: { imageEnhancerUrl: cleaned } });
 
   return { imageEnhancerUrl: cleaned };
+}
+
+/** Visual theme (colors, shadows, headline font) shown on the public menu and cart pages. */
+export async function updateMenuTheme(menuId: string, theme: string): Promise<{ theme: MenuTheme }> {
+  const id = await ownedMenuId(menuId);
+
+  const cleaned = (MENU_THEMES as readonly string[]).includes(theme) ? (theme as MenuTheme) : "plate";
+
+  await prisma.menu.update({ where: { id }, data: { theme: cleaned } });
+
+  return { theme: cleaned };
 }
 
 const MENU_IMAGE_KINDS = ["logo", "banner"] as const;

@@ -22,6 +22,7 @@ export default async function Cart(props: PageProps<"/[slug]/cart">) {
       logoUrl={menu.logoUrl}
       bannerUrl={menu.bannerUrl}
       whatsappNumber={menu.whatsappNumber}
+      theme={menu.theme}
     />
   );
 }

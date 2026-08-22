@@ -1,5 +1,6 @@
 import { MenuContent } from "@/components/organisms/menu-content";
 import type { Dish } from "@/lib/menu-seed";
+import type { MenuTheme } from "@/lib/menu-repo";
 
 export function MenuPage({
   slug,
@@ -12,6 +13,7 @@ export function MenuPage({
   swiggyRating,
   dishes,
   table,
+  theme,
 }: {
   slug: string;
   restaurantName: string;
@@ -23,6 +25,7 @@ export function MenuPage({
   swiggyRating?: number | null;
   dishes: Dish[];
   table?: string;
+  theme?: MenuTheme;
 }) {
   return (
     <MenuContent
@@ -36,6 +39,7 @@ export function MenuPage({
       swiggyRating={swiggyRating}
       dishes={dishes}
       table={table}
+      theme={theme}
     />
   );
 }

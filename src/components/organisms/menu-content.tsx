@@ -9,6 +9,7 @@ import { InstallHint } from "@/components/molecules/install-hint";
 import { RAISED_SM, INSET, INSET_SM, ACCENT_GLOW } from "@/lib/neu-shadows";
 import { cartCount, cartTotal, useCart } from "@/lib/cart";
 import { storeTable } from "@/lib/table";
+import type { MenuTheme } from "@/lib/menu-repo";
 import {
   dishPriceLabel,
   ingredientSummary,
@@ -33,6 +34,7 @@ export function MenuContent({
   swiggyRating,
   dishes,
   table,
+  theme = "plate",
 }: {
   slug: string;
   restaurantName: string;
@@ -44,6 +46,7 @@ export function MenuContent({
   swiggyRating?: number | null;
   dishes: Dish[];
   table?: string;
+  theme?: MenuTheme;
 }) {
   const [tab, setTab] = useState<DishCategory>("veg");
   const [section, setSection] = useState<SectionFilter>("all");
@@ -71,7 +74,10 @@ export function MenuContent({
     .filter((g) => g.dishes.length > 0);
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-28 font-sans text-[oklch(0.28_0.02_60)]">
+    <div
+      data-menu-theme={theme}
+      className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-28 font-sans text-[oklch(0.28_0.02_60)]"
+    >
       <PhoneHero
         height={190}
         logoSize={64}
@@ -167,7 +173,7 @@ export function MenuContent({
             {section === "all" ? (
               <div className="flex items-center gap-1.5 px-0.5 text-[11px] font-bold tracking-[0.6px] text-[oklch(0.52_0.03_60)] uppercase">
                 {s}
-                <span className="h-px flex-1" style={{ background: "oklch(0.85 0.02 72)" }} />
+                <span className="h-px flex-1" style={{ background: "var(--shadow-dark)" }} />
               </div>
             ) : null}
             {sectionDishes.map((d) => (

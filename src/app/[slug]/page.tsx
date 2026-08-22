@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { MenuPage } from "@/components/templates/menu-page";
-import { getMenuBySlug } from "@/lib/menu-repo";
+import { getMenuBySlug, MENU_THEME_BACKGROUND } from "@/lib/menu-repo";
 
-export const viewport: Viewport = {
-  themeColor: "#f4eee1",
-};
+export async function generateViewport(props: PageProps<"/[slug]">): Promise<Viewport> {
+  const { slug } = await props.params;
+  const menu = await getMenuBySlug(slug);
+  return { themeColor: MENU_THEME_BACKGROUND[menu?.theme ?? "plate"] };
+}
 
 export async function generateMetadata(props: PageProps<"/[slug]">): Promise<Metadata> {
   const { slug } = await props.params;
@@ -44,6 +46,7 @@ export default async function Menu(props: PageProps<"/[slug]">) {
       swiggyRating={menu.swiggyRating}
       dishes={menu.dishes}
       table={typeof table === "string" ? table : undefined}
+      theme={menu.theme}
     />
   );
 }
