@@ -25,7 +25,7 @@ echo "$LOG_PREFIX → Building Next.js..."
 npm run build
 
 echo "$LOG_PREFIX → Restarting PM2..."
-pm2 restart dinepixel-web --update-env
+pm2 restart dinepixel --update-env
 pm2 save
 
 echo "$LOG_PREFIX ✓ Deploy complete"
