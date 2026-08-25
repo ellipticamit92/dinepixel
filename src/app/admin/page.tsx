@@ -13,6 +13,7 @@ export default async function Admin() {
   if (!session) redirect("/login?next=/admin");
 
   const menu = await getMenuForSession();
+  
   const regularCustomers = menu ? await getRegularCustomers(menu.id) : [];
 
   return <AdminDashboardPage session={session} menu={menu} regularCustomers={regularCustomers} />;
