@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { SESSION_COOKIE, type Session } from "@/lib/auth";
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
@@ -49,5 +50,6 @@ export async function register(formData: FormData) {
 
 export async function logout() {
   (await cookies()).delete(SESSION_COOKIE);
+  revalidatePath("/", "layout");
   redirect("/login");
 }
