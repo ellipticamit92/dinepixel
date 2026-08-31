@@ -29,17 +29,31 @@ import { createExtractionJob, dishesFromMenu, pollExtractionJob } from "@/lib/me
 import { saveExtractedMenu } from "@/lib/menu-actions";
 import type { Dish, DishCategory } from "@/lib/menu-seed";
 
-const SLUG = "bloom-cafe";
+function toSlug(name: string | null): string {
+  if (!name) return "my-menu";
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "") || "my-menu";
+}
 
-export function BuilderPage({ session }: { session: { name: string } }) {
+interface BuilderPageProps {
+  session: { name: string };
+  plan: string;
+  menuCount: number;
+  menuLimit: number;
+}
+
+export function BuilderPage({ session, plan, menuCount, menuLimit }: BuilderPageProps) {
   const [step, setStep] = useState<BuilderStep>("upload");
   const [items, setItems] = useState<Dish[]>([]);
-  const [previewTab, setPreviewTab] = useState<DishCategory>("veg");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [status, setStatus] = useState<ProcessingStatus>("uploading");
+  const [slug, setSlug] = useState<string>("my-menu");
+  const [restaurantName, setRestaurantName] = useState<string | null>(null);
 
   const handleFileSelected = (selected: File) => {
     setFile(selected);
@@ -63,12 +77,15 @@ export function BuilderPage({ session }: { session: { name: string } }) {
         setStep("upload");
         return;
       }
+      const derivedSlug = toSlug(menu.restaurant_name);
+      setSlug(derivedSlug);
+      setRestaurantName(menu.restaurant_name ?? null);
       setItems(dishes);
       setStep("review");
 
       try {
         await saveExtractedMenu({
-          slug: SLUG,
+          slug: derivedSlug,
           restaurantName: menu.restaurant_name,
           sourceFileName: file.name,
           sourceNotes: menu.source_notes,
@@ -78,7 +95,15 @@ export function BuilderPage({ session }: { session: { name: string } }) {
         toast.error("Menu extracted, but couldn't be saved to your account");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't read that menu");
+      const msg = err instanceof Error ? err.message : "Couldn't read that menu";
+      if (msg.startsWith("PLAN_LIMIT:")) {
+        const [, userPlan, limit] = msg.split(":");
+        toast.error(
+          `You've reached the ${limit}-menu limit on the ${userPlan} plan. Upgrade to add more menus.`
+        );
+      } else {
+        toast.error(msg);
+      }
       setStep("upload");
     }
   };
@@ -89,14 +114,28 @@ export function BuilderPage({ session }: { session: { name: string } }) {
     setStep("upload");
     setItems([]);
     setEditingId(null);
-    setPreviewTab("veg");
     setFile(null);
     setFileName(null);
+    setSlug("my-menu");
+    setRestaurantName(null);
   };
 
   return (
     <div className="flex flex-1 flex-col bg-background font-sans text-[oklch(0.28_0.02_60)]">
       <PlateNavbar session={session} />
+      <div className="flex items-center justify-end gap-2 px-6 pt-3 sm:px-10">
+        <span className="rounded-full border border-[oklch(0.82_0.04_60)] bg-[oklch(0.97_0.01_60)] px-3 py-1 text-[12px] font-semibold capitalize text-[oklch(0.45_0.05_60)]">
+          {plan}
+        </span>
+        <span className="text-[12px] text-muted-foreground">
+          {menuCount}/{menuLimit} {menuCount === 1 ? "menu" : "menus"}
+        </span>
+        {menuCount >= menuLimit && plan === "free" && (
+          <span className="rounded-full bg-[oklch(0.62_0.17_42)] px-3 py-1 text-[11px] font-bold text-white">
+            Upgrade for more
+          </span>
+        )}
+      </div>
       <StepIndicator step={step} />
 
       <div className="mx-auto grid w-full max-w-[1180px] items-start gap-8 px-6 py-6 pb-16 sm:px-10 lg:grid-cols-[1fr_380px]">
@@ -165,15 +204,14 @@ export function BuilderPage({ session }: { session: { name: string } }) {
           ) : null}
 
           {step === "published" ? (
-            <BuilderStepPublished slug={SLUG} onBackToReview={backToReview} />
+            <BuilderStepPublished slug={slug} onBackToReview={backToReview} />
           ) : null}
         </div>
 
         <LivePreviewPhone
           items={items}
-          tab={previewTab}
-          onTabChange={setPreviewTab}
           empty={step === "upload"}
+          cafeName={restaurantName}
         />
       </div>
     </div>

@@ -16,6 +16,7 @@ export interface MenuForSession {
   id: string;
   slug: string;
   restaurantName: string;
+  description: string | null;
   logoUrl: string | null;
   bannerUrl: string | null;
   zomatoUrl: string | null;
@@ -27,6 +28,16 @@ export interface MenuForSession {
   imageEnhancerUrl: string | null;
   theme: MenuTheme;
   dishes: Dish[];
+}
+
+/** Lightweight summary used in the admin menu switcher. */
+export interface MenuSummary {
+  id: string;
+  slug: string;
+  restaurantName: string;
+  description: string | null;
+  dishCount: number;
+  updatedAt: Date;
 }
 
 interface MenuItemRow {
@@ -44,6 +55,8 @@ interface MenuItemRow {
   imageUrl: string | null;
   ingredients: string[];
   section: string;
+  available: boolean;
+  featured: boolean;
 }
 
 export function toDish(item: MenuItemRow): Dish {
@@ -62,16 +75,22 @@ export function toDish(item: MenuItemRow): Dish {
     imageUrl: item.imageUrl,
     ingredients: item.ingredients,
     section: item.section,
+    available: item.available,
+    featured: item.featured,
   };
 }
 
-/** The signed-in restaurant's most recently updated menu, or null if they haven't built one. */
-export async function getMenuForSession(): Promise<MenuForSession | null> {
+/** The signed-in restaurant's menu — by id if provided, otherwise most recently updated. */
+export async function getMenuForSession(menuId?: string): Promise<MenuForSession | null> {
   const session = await getSession();
   if (!session) return null;
 
+  const where = menuId
+    ? { id: menuId, owner: { email: session.email } }
+    : { owner: { email: session.email } };
+
   const menu = await prisma.menu.findFirst({
-    where: { owner: { email: session.email } },
+    where,
     orderBy: { updatedAt: "desc" },
     include: { items: { orderBy: { position: "asc" } } },
   });
@@ -81,6 +100,7 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     id: menu.id,
     slug: menu.slug,
     restaurantName: menu.restaurantName ?? session.name,
+    description: menu.description,
     logoUrl: menu.logoUrl,
     bannerUrl: menu.bannerUrl,
     zomatoUrl: menu.zomatoUrl,
@@ -93,6 +113,34 @@ export async function getMenuForSession(): Promise<MenuForSession | null> {
     theme: menu.theme,
     dishes: menu.items.map(toDish),
   };
+}
+
+/** All menus owned by the signed-in user, newest first — used for the admin menu switcher. */
+export async function getAllMenusForSession(): Promise<MenuSummary[]> {
+  const session = await getSession();
+  if (!session) return [];
+
+  const menus = await prisma.menu.findMany({
+    where: { owner: { email: session.email } },
+    orderBy: { updatedAt: "desc" },
+    select: {
+      id: true,
+      slug: true,
+      restaurantName: true,
+      description: true,
+      updatedAt: true,
+      _count: { select: { items: true } },
+    },
+  });
+
+  return menus.map((m) => ({
+    id: m.id,
+    slug: m.slug,
+    restaurantName: m.restaurantName ?? session.name,
+    description: m.description,
+    dishCount: m._count.items,
+    updatedAt: m.updatedAt,
+  }));
 }
 
 /** The public menu for a given slug, or null if no restaurant has published one. */
@@ -108,6 +156,7 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     id: menu.id,
     slug: menu.slug,
     restaurantName: menu.restaurantName ?? menu.owner.name ?? "Menu",
+    description: menu.description,
     logoUrl: menu.logoUrl,
     bannerUrl: menu.bannerUrl,
     zomatoUrl: menu.zomatoUrl,
@@ -118,7 +167,7 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     tableCount: menu.tableCount,
     imageEnhancerUrl: menu.imageEnhancerUrl,
     theme: menu.theme,
-    dishes: menu.items.map(toDish),
+    dishes: menu.items.filter((i) => i.available).map(toDish),
   };
 }
 

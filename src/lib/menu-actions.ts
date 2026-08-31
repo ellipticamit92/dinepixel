@@ -5,6 +5,7 @@ import path from "node:path";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { MENU_THEMES, toDish, type MenuTheme } from "@/lib/menu-repo";
+import { menuLimitFor } from "@/lib/plans";
 import type { Dish, DishCategory } from "@/lib/menu-seed";
 
 export interface SaveMenuInput {
@@ -61,7 +62,22 @@ export async function saveExtractedMenu(input: SaveMenuInput): Promise<{ menuId:
     where: { email: session.email },
     update: { name: session.name },
     create: { email: session.email, name: session.name },
+    select: { id: true, plan: true },
   });
+
+  // Check if this slug already exists for the owner (update = always allowed)
+  const existingMenu = await prisma.menu.findUnique({
+    where: { ownerId_slug: { ownerId: owner.id, slug } },
+    select: { id: true },
+  });
+
+  if (!existingMenu) {
+    const menuCount = await prisma.menu.count({ where: { ownerId: owner.id } });
+    const limit = menuLimitFor(owner.plan);
+    if (menuCount >= limit) {
+      throw new Error(`PLAN_LIMIT:${owner.plan}:${limit}`);
+    }
+  }
 
   const restaurantName = cleanText(input.restaurantName, 200) ?? session.name;
 
@@ -244,6 +260,60 @@ function cleanPhone(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const digits = value.replace(/[^0-9]/g, "").slice(0, 15);
   return digits.length >= 8 ? digits : null;
+}
+
+/**
+ * Changes the public URL slug for a menu (e.g. "bloom-cafe").
+ * Validates format, checks uniqueness within the owner's account, then updates.
+ */
+export async function updateMenuSlug(
+  menuId: string,
+  newSlug: string
+): Promise<{ slug: string }> {
+  const session = await getSession();
+  if (!session) throw new Error("Not signed in");
+
+  const id = await ownedMenuId(menuId);
+
+  const cleaned = (newSlug ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .slice(0, 80);
+
+  if (cleaned.length < 3) throw new Error("Slug must be at least 3 characters");
+
+  const owner = await prisma.user.findFirst({
+    where: { email: session.email },
+    select: { id: true },
+  });
+  if (!owner) throw new Error("Not signed in");
+
+  const conflict = await prisma.menu.findFirst({
+    where: { ownerId: owner.id, slug: cleaned, NOT: { id } },
+    select: { id: true },
+  });
+  if (conflict) throw new Error("You already have a menu with that URL slug");
+
+  await prisma.menu.update({ where: { id }, data: { slug: cleaned } });
+
+  return { slug: cleaned };
+}
+
+/** Short tagline/description shown under the restaurant name on the public menu. */
+export async function updateMenuDescription(
+  menuId: string,
+  description: string | null
+): Promise<{ description: string | null }> {
+  const id = await ownedMenuId(menuId);
+
+  const cleaned = description ? cleanText(description, 300) : null;
+
+  await prisma.menu.update({ where: { id }, data: { description: cleaned } });
+
+  return { description: cleaned };
 }
 
 /** Restaurant/menu display name shown on the public menu, cart, and dashboard pages. */
@@ -555,6 +625,51 @@ export async function applyEnhancedDishImage(itemId: string, imageUrl: string): 
   await prisma.menuItem.update({ where: { id }, data: { imageUrl: url } });
 
   return { url };
+}
+
+export async function toggleDishAvailability(
+  itemId: string,
+  available: boolean
+): Promise<{ available: boolean }> {
+  const id = await ownedItemId(itemId);
+  await prisma.menuItem.update({ where: { id }, data: { available } });
+  return { available };
+}
+
+/**
+ * Pins one dish as "Popular this week" for a menu (clears any existing pin first).
+ * Pass itemId = null to unpin without setting a new one.
+ */
+export async function setFeaturedDish(
+  menuId: string,
+  itemId: string | null
+): Promise<{ featuredId: string | null }> {
+  const id = await ownedMenuId(menuId);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.menuItem.updateMany({ where: { menuId: id }, data: { featured: false } });
+    if (itemId) {
+      const cleanId = cleanText(itemId, 60);
+      if (cleanId) {
+        const item = await tx.menuItem.findFirst({
+          where: { id: cleanId, menuId: id },
+          select: { id: true },
+        });
+        if (item) await tx.menuItem.update({ where: { id: cleanId }, data: { featured: true } });
+      }
+    }
+  });
+
+  return { featuredId: itemId };
+}
+
+export async function resetWeeklyAvailability(menuId: string): Promise<{ count: number }> {
+  const id = await ownedMenuId(menuId);
+  const { count } = await prisma.menuItem.updateMany({
+    where: { menuId: id, available: false },
+    data: { available: true },
+  });
+  return { count };
 }
 
 export async function deleteMenuItem(itemId: string): Promise<{ id: string }> {

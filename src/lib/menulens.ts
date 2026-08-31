@@ -48,11 +48,9 @@ export async function getExtractionJob(jobId: string): Promise<MenuLensJob> {
 export async function pollExtractionJob(
   jobId: string,
   {
-    intervalMs = 1500,
-    timeoutMs = 90_000,
+    timeoutMs = 300_000,
     onStatus,
   }: {
-    intervalMs?: number;
     timeoutMs?: number;
     onStatus?: (status: MenuLensJob["status"]) => void;
   } = {}
@@ -74,7 +72,7 @@ export async function pollExtractionJob(
       throw new Error("Extraction is taking too long, please try again");
     }
 
-    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    await new Promise((resolve) => setTimeout(resolve, 10_000));
   }
 }
 

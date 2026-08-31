@@ -70,6 +70,14 @@ export function setPricingMode(items: Dish[], id: string, mode: PricingMode): Di
   });
 }
 
+export function setDishName(items: Dish[], id: string, name: string): Dish[] {
+  return items.map((d) => (d.id === id ? { ...d, name } : d));
+}
+
+export function setDishDescription(items: Dish[], id: string, description: string | null): Dish[] {
+  return items.map((d) => (d.id === id ? { ...d, description } : d));
+}
+
 export function addIngredient(items: Dish[], id: string, value: string): Dish[] {
   const trimmed = value.trim();
   if (!trimmed) return items;

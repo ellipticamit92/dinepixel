@@ -14,10 +14,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserPlan {
+  starter
+  pro
+  premium
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String?
+  plan      UserPlan @default(starter)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   menus     Menu[]
@@ -46,6 +53,7 @@ model Menu {
   swiggyRating     Float?
   whatsappNumber   String?
   tableCount       Int?
+  description      String?
   imageEnhancerUrl String?
   theme            MenuTheme  @default(plate)
   sourceFileName   String?
@@ -95,6 +103,8 @@ model MenuItem {
   ingredients String[]
   section     String
   position    Int
+  available   Boolean      @default(true)
+  featured    Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 

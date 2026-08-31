@@ -12,7 +12,7 @@ import { RAISED_SM, INSET, INSET_SM } from "@/lib/neu-shadows";
 import {
   removeMenuImage,
   updateDeliveryLinks,
-  updateImageEnhancerUrl,
+  updateMenuSlug,
   updateMenuTheme,
   updateRestaurantName,
   updateWhatsappNumber,
@@ -46,8 +46,8 @@ export function AdminSettingsPage({
   const [savingLinks, setSavingLinks] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState(menu?.whatsappNumber ?? "");
   const [savingWhatsapp, setSavingWhatsapp] = useState(false);
-  const [imageEnhancerUrl, setImageEnhancerUrl] = useState(menu?.imageEnhancerUrl ?? "");
-  const [savingEnhancer, setSavingEnhancer] = useState(false);
+  const [slug, setSlug] = useState(menu?.slug ?? "");
+  const [savingSlug, setSavingSlug] = useState(false);
   const [theme, setTheme] = useState<MenuTheme>(menu?.theme ?? "plate");
   const [savingTheme, setSavingTheme] = useState(false);
 
@@ -151,20 +151,22 @@ export function AdminSettingsPage({
     }
   };
 
-  const saveImageEnhancerUrl = async () => {
+  const saveSlug = async () => {
     if (!menu) {
-      toast.error("Build a menu first, then add an enhancer endpoint here");
+      toast.error("Build a menu first, then change the URL here");
       return;
     }
-    setSavingEnhancer(true);
+    const trimmed = slug.trim();
+    if (!trimmed) { toast.error("URL slug can't be empty"); return; }
+    setSavingSlug(true);
     try {
-      const saved = await updateImageEnhancerUrl(menu.id, imageEnhancerUrl);
-      setImageEnhancerUrl(saved.imageEnhancerUrl ?? "");
-      toast.success(saved.imageEnhancerUrl ? "Enhancer endpoint updated" : "Enhancer endpoint removed");
-    } catch {
-      toast.error("Couldn't save enhancer endpoint");
+      const saved = await updateMenuSlug(menu.id, trimmed);
+      setSlug(saved.slug);
+      toast.success(`Menu URL updated — new link: dinepixel.cloud/${saved.slug}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't update URL slug");
     } finally {
-      setSavingEnhancer(false);
+      setSavingSlug(false);
     }
   };
 
@@ -374,36 +376,39 @@ export function AdminSettingsPage({
 
         <div className="mt-6 rounded-2xl bg-background p-[18px]" style={{ boxShadow: RAISED_SM }}>
           <div className="text-xs font-bold tracking-[0.6px] text-[oklch(0.56_0.03_60)] uppercase">
-            Image enhancer API
+            Menu URL slug
           </div>
           <p className="mt-1.5 text-[13px] text-muted-foreground">
-            Plug in your own image-enhancer API endpoint. It should accept a POST with the dish
-            photo and a variant count, and return a list of generated image URLs. Once set, an
-            &ldquo;Enhance&rdquo; option appears when editing a dish photo, letting you pick one
-            of the generated variants — in different angles and a more aesthetic look — as the
-            dish&apos;s photo.
+            Your public menu lives at <span className="font-semibold text-[oklch(0.38_0.02_60)]">dinepixel.cloud/</span>
+            <span className="font-semibold text-primary">{slug || "your-slug"}</span>. Use lowercase
+            letters, numbers, and hyphens only. Changing this will break any existing QR codes or
+            shared links pointing to the old URL.
           </p>
           <div className="mt-4 flex flex-wrap gap-2.5">
             <div
-              className="flex min-w-[240px] flex-1 items-center rounded-[11px] px-3.5 py-3"
+              className="flex min-w-[200px] flex-1 items-center gap-1.5 rounded-[11px] px-3.5 py-3"
               style={{ boxShadow: INSET_SM }}
             >
+              <span className="shrink-0 text-[13px] font-semibold text-[oklch(0.6_0.03_60)]">
+                dinepixel.cloud/
+              </span>
               <input
-                type="url"
-                value={imageEnhancerUrl}
-                onChange={(e) => setImageEnhancerUrl(e.target.value)}
-                placeholder="https://api.example.com/enhance"
-                className="w-full border-none bg-transparent text-sm font-semibold text-[oklch(0.32_0.02_60)] outline-none"
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+                placeholder="your-cafe-name"
+                maxLength={80}
+                className="min-w-0 flex-1 border-none bg-transparent text-sm font-semibold text-[oklch(0.32_0.02_60)] outline-none"
               />
             </div>
             <button
               type="button"
-              onClick={saveImageEnhancerUrl}
-              disabled={savingEnhancer}
+              onClick={saveSlug}
+              disabled={savingSlug}
               className="shrink-0 rounded-[11px] px-5 py-2.5 font-condensed text-[13px] font-bold text-[oklch(0.35_0.02_60)] disabled:opacity-60"
               style={{ boxShadow: RAISED_SM }}
             >
-              {savingEnhancer ? "Saving…" : "Save endpoint"}
+              {savingSlug ? "Saving…" : "Save URL"}
             </button>
           </div>
         </div>

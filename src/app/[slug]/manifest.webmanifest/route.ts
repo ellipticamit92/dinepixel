@@ -45,6 +45,20 @@ export async function GET(
         { src: icon, sizes: "192x192", type, purpose: "any" },
         { src: icon, sizes: "512x512", type, purpose: "any" },
       ],
+      shortcuts: [
+        {
+          name: "Saved Dishes",
+          short_name: "Saved",
+          url: `/${slug}/saved`,
+          description: "View your saved dishes",
+        },
+        {
+          name: "Cart",
+          short_name: "Cart",
+          url: `/${slug}/cart`,
+          description: "View your cart and place an order",
+        },
+      ],
     },
     { headers: { "content-type": "application/manifest+json" } }
   );

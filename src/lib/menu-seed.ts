@@ -17,6 +17,8 @@ export interface Dish {
   imageUrl?: string | null;
   ingredients: string[];
   section: MenuSection;
+  available?: boolean;
+  featured?: boolean;
 }
 
 /** Drinks aren't inherently veg/non-veg, so they show up under both tabs. */
@@ -154,3 +156,13 @@ export const LANDING_DEMO: Record<DishCategory, LandingCategoryData> = {
     ],
   },
 };
+
+/** Demo dishes used for the landing page phone preview */
+export const DEMO_DISHES: Dish[] = [
+  { id: "demo-1", name: "Truffle Margherita", type: "Pizza", cat: "veg", price: 380, ingredients: ["San Marzano", "Burrata", "Wild Basil", "Olive Oil"], section: "Signature", imageUrl: "/singature_dish.jpg" },
+  { id: "demo-2", name: "Paneer Tikka Burger", type: "Burger", cat: "veg", price: 320, ingredients: ["Paneer", "Mint Aioli", "Slaw"], section: "Signature", imageUrl: "/pizza.png" },
+  { id: "demo-3", name: "Garden Salad Bowl", type: "Salad", cat: "veg", price: 260, ingredients: ["Greens", "Cherry Tomato", "Vinaigrette"], section: "Sides", imageUrl: "/burger.png" },
+  { id: "demo-4", name: "Burrata & Prosciutto", type: "Starter", cat: "nonveg", price: 520, ingredients: ["Prosciutto", "Arugula", "Burrata"], section: "Signature", imageUrl: "/singature_dish.jpg" },
+  { id: "demo-5", name: "Truffle Umami Burger", type: "Burger", cat: "nonveg", price: 340, ingredients: ["Wagyu Patty", "Truffle Aioli", "Gruyère"], section: "Signature", imageUrl: "/burger.png" },
+  { id: "demo-6", name: "Spicy Crispy Chicken", type: "Main", cat: "nonveg", price: 300, ingredients: ["Buttermilk Chicken", "Spicy Slaw"], section: "Mains", imageUrl: "/pizza.png" },
+];

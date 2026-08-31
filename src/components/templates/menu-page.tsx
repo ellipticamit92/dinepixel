@@ -5,6 +5,7 @@ import type { MenuTheme } from "@/lib/menu-repo";
 export function MenuPage({
   slug,
   restaurantName,
+  description,
   logoUrl,
   bannerUrl,
   zomatoUrl,
@@ -17,6 +18,7 @@ export function MenuPage({
 }: {
   slug: string;
   restaurantName: string;
+  description?: string | null;
   logoUrl?: string | null;
   bannerUrl?: string | null;
   zomatoUrl?: string | null;
@@ -31,6 +33,7 @@ export function MenuPage({
     <MenuContent
       slug={slug}
       restaurantName={restaurantName}
+      description={description}
       logoUrl={logoUrl}
       bannerUrl={bannerUrl}
       zomatoUrl={zomatoUrl}
