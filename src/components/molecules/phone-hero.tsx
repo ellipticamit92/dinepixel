@@ -1,4 +1,4 @@
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, MoonStar } from "lucide-react";
 
 export function PhoneHero({
   height = 130,
@@ -12,6 +12,7 @@ export function PhoneHero({
   zomatoRating = null,
   swiggyUrl = null,
   swiggyRating = null,
+  isOpen = true,
 }: {
   height?: number;
   logoSize?: number;
@@ -24,6 +25,7 @@ export function PhoneHero({
   zomatoRating?: number | null;
   swiggyUrl?: string | null;
   swiggyRating?: number | null;
+  isOpen?: boolean;
 }) {
   const hasDeliveryBadges = Boolean(zomatoUrl || swiggyUrl);
   return (
@@ -98,6 +100,20 @@ export function PhoneHero({
                 {g}
               </div>
             ))}
+          </div>
+        )}
+        {!isOpen && (
+          <div
+            className="pointer-events-none absolute inset-0 flex items-center justify-center"
+            style={{ background: "oklch(0.1 0.01 60 / 0.55)" }}
+          >
+            <div
+              className="flex items-center gap-2 rounded-full px-5 py-2 backdrop-blur-[6px]"
+              style={{ background: "oklch(0.08 0.01 60 / 0.65)", border: "1px solid oklch(1 0 0 / 0.15)" }}
+            >
+              <MoonStar className="size-4 text-white" strokeWidth={2} />
+              <span className="font-display text-[17px] tracking-[0.5px] text-white">Closed</span>
+            </div>
           </div>
         )}
         <div className="pointer-events-none absolute right-[13px] bottom-[10px] left-[13px]">

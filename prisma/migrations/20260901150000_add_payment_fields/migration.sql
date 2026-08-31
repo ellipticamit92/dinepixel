@@ -1,0 +1,4 @@
+ALTER TABLE "Menu" ADD COLUMN "paymentQrUrl" TEXT;
+ALTER TABLE "Menu" ADD COLUMN "upiId" TEXT;
+ALTER TABLE "Menu" ADD COLUMN "paypalUrl" TEXT;
+ALTER TABLE "Menu" ADD COLUMN "stripeUrl" TEXT;

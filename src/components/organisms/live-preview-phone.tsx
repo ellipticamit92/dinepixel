@@ -12,6 +12,7 @@ interface LivePreviewPhoneProps {
   bannerUrl?: string | null;
   theme?: MenuTheme;
   menuId?: string;
+  isOpen?: boolean;
 }
 
 export function LivePreviewPhone({
@@ -22,6 +23,7 @@ export function LivePreviewPhone({
   bannerUrl,
   theme = "plate",
   menuId,
+  isOpen = true,
 }: LivePreviewPhoneProps) {
   return (
     <div className="sticky top-[92px]">
@@ -38,6 +40,7 @@ export function LivePreviewPhone({
           bannerUrl={bannerUrl}
           theme={theme}
           empty={empty}
+          isOpen={isOpen}
         />
       </div>
     </div>

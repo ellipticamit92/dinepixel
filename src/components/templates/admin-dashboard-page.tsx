@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Check, Pencil, Plus, QrCode, Search, Settings, X } from "lucide-react";
+import { Check, CreditCard, Pencil, Plus, QrCode, Search, Settings, X } from "lucide-react";
 import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { LivePreviewPhone } from "@/components/organisms/live-preview-phone";
 import { DishRow } from "@/components/molecules/dish-row";
 import { MenuSharePanel } from "@/components/organisms/menu-share-panel";
 import { AdminOfferNotifier } from "@/components/organisms/admin-offer-notifier";
+import { AdminInventoryTab } from "@/components/templates/admin-inventory-tab";
 import {
   Accordion,
   AccordionContent,
@@ -45,6 +46,7 @@ import {
   enhanceDishImage,
   removeDishImage,
   resetWeeklyAvailability,
+  setCafeOpen,
   setFeaturedDish,
   toggleDishAvailability,
   updateMenuDescription,
@@ -104,9 +106,10 @@ export function AdminDashboardPage({
   const [featuredId, setFeaturedId] = useState<string | null>(
     menu?.dishes.find((d) => d.featured)?.id ?? null
   );
+  const [cafeOpen, setCafeOpenState] = useState<boolean>(menu?.isOpen ?? true);
 
   // Tab
-  const [activeTab, setActiveTab] = useState<"overview" | "menu">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "menu" | "inventory">("overview");
 
   // Inline identity editing
   const [editingIdentity, setEditingIdentity] = useState(false);
@@ -395,19 +398,19 @@ export function AdminDashboardPage({
 
           {/* Tab switcher */}
           <div className="flex gap-[7px] rounded-[14px] p-1" style={{ boxShadow: INSET }}>
-            {(["overview", "menu"] as const).map((tab) => (
+            {(["overview", "menu", "inventory"] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className="flex-1 rounded-[10px] py-2.5 font-condensed text-[14px] font-bold tracking-[0.2px] capitalize"
+                className="flex-1 rounded-[10px] py-2.5 font-condensed text-[13px] font-bold tracking-[0.2px]"
                 style={{
                   background: "var(--background)",
                   color: activeTab === tab ? "oklch(0.26 0.02 60)" : "oklch(0.52 0.03 60)",
                   boxShadow: activeTab === tab ? RAISED_SM : "none",
                 }}
               >
-                {tab === "overview" ? "Overview" : "Menu"}
+                {tab === "overview" ? "Overview" : tab === "menu" ? "Menu" : "Inventory"}
               </button>
             ))}
           </div>
@@ -415,14 +418,41 @@ export function AdminDashboardPage({
           {/* ── OVERVIEW TAB ── */}
           {activeTab === "overview" ? (
             <div className="mt-5 flex flex-col gap-5">
-              {/* Live badge */}
+              {/* Live badge + open/closed toggle */}
               {menu ? (
-                <div
-                  className="inline-flex w-fit items-center gap-[9px] rounded-full bg-background px-4 py-[9px] text-[13px] font-bold tracking-[0.4px]"
-                  style={{ color: "oklch(0.42 0.12 150)", boxShadow: INSET }}
-                >
-                  <span className="size-[9px] rounded-full" style={{ background: "var(--success)" }} />
-                  Live &amp; published
+                <div className="flex items-center justify-between gap-3">
+                  <div
+                    className="inline-flex items-center gap-[9px] rounded-full bg-background px-4 py-[9px] text-[13px] font-bold tracking-[0.4px]"
+                    style={{ color: "oklch(0.42 0.12 150)", boxShadow: INSET }}
+                  >
+                    <span className="size-[9px] rounded-full" style={{ background: "var(--success)" }} />
+                    Live &amp; published
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const next = !cafeOpen;
+                      setCafeOpenState(next);
+                      try {
+                        await setCafeOpen(menu.id, next);
+                        toast.success(next ? "Cafe is now open" : "Cafe marked as closed");
+                      } catch {
+                        setCafeOpenState(!next);
+                        toast.error("Failed to update cafe status");
+                      }
+                    }}
+                    className="flex items-center gap-2 rounded-full px-4 py-[9px] text-[13px] font-bold tracking-[0.4px]"
+                    style={{
+                      boxShadow: INSET,
+                      color: cafeOpen ? "oklch(0.42 0.12 150)" : "oklch(0.52 0.03 60)",
+                    }}
+                  >
+                    <span
+                      className="size-[9px] rounded-full transition-colors"
+                      style={{ background: cafeOpen ? "var(--success)" : "oklch(0.65 0.03 60)" }}
+                    />
+                    {cafeOpen ? "Open" : "Closed"}
+                  </button>
                 </div>
               ) : null}
 
@@ -526,6 +556,14 @@ export function AdminDashboardPage({
                 >
                   <QrCode className="size-4" strokeWidth={2} />
                   Tables
+                </Link>
+                <Link
+                  href="/admin/payment"
+                  className="flex items-center gap-1.5 rounded-[11px] px-[15px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
+                  style={{ boxShadow: RAISED_SM }}
+                >
+                  <CreditCard className="size-4" strokeWidth={2} />
+                  Payment
                 </Link>
                 <Link
                   href="/admin/settings"
@@ -764,6 +802,17 @@ export function AdminDashboardPage({
               )}
             </div>
           ) : null}
+
+          {/* ── INVENTORY TAB ── */}
+          {activeTab === "inventory" ? (
+            menu ? (
+              <AdminInventoryTab menuId={menu.id} />
+            ) : (
+              <div className="mt-8 text-center text-sm font-semibold text-muted-foreground">
+                Create a menu first to track inventory.
+              </div>
+            )
+          ) : null}
         </div>
 
         <LivePreviewPhone
@@ -774,6 +823,7 @@ export function AdminDashboardPage({
           bannerUrl={menu?.bannerUrl ?? null}
           theme={menu?.theme}
           menuId={menu?.id}
+          isOpen={cafeOpen}
         />
       </div>
     </div>

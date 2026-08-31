@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleUserRound, Heart, ShoppingCart, Table2, UtensilsCrossed } from "lucide-react";
+import { CircleUserRound, CreditCard, Heart, ShoppingCart, UtensilsCrossed } from "lucide-react";
 import { PhoneFrame } from "@/components/molecules/phone-frame";
 import { MenuContent } from "@/components/organisms/menu-content";
 import { ACCENT_GLOW, INSET_SM, RAISED_LG, RAISED_SM } from "@/lib/neu-shadows";
@@ -21,6 +21,7 @@ interface PhoneMenuPreviewProps {
   theme?: MenuTheme;
   float?: boolean;
   empty?: boolean;
+  isOpen?: boolean;
 }
 
 export function PhoneMenuPreview({
@@ -37,6 +38,7 @@ export function PhoneMenuPreview({
   theme = "plate",
   float = false,
   empty = false,
+  isOpen = true,
 }: PhoneMenuPreviewProps) {
   return (
     <div data-menu-theme={theme}>
@@ -68,6 +70,7 @@ export function PhoneMenuPreview({
                 swiggyRating={swiggyRating}
                 dishes={dishes}
                 theme={theme}
+                isOpen={isOpen}
               />
             </div>
 
@@ -101,10 +104,10 @@ export function PhoneMenuPreview({
                   <ShoppingCart className="size-[16px]" strokeWidth={2} />
                 </button>
 
-                {/* Table */}
+                {/* Pay */}
                 <button type="button" className="flex flex-col items-center gap-[3px]">
-                  <Table2 className="size-[16px] text-muted-foreground" strokeWidth={2} />
-                  <span className="text-[8.5px] font-bold tracking-[0.2px] text-muted-foreground">Table</span>
+                  <CreditCard className="size-[16px] text-muted-foreground" strokeWidth={2} />
+                  <span className="text-[8.5px] font-bold tracking-[0.2px] text-muted-foreground">Pay</span>
                 </button>
 
                 {/* Profile */}

@@ -55,13 +55,19 @@ model Menu {
   tableCount       Int?
   description      String?
   imageEnhancerUrl String?
+  paymentQrUrl     String?
+  upiId            String?
+  paypalUrl        String?
+  stripeUrl        String?
   theme            MenuTheme  @default(plate)
   sourceFileName   String?
   sourceNotes      String?
+  isOpen           Boolean    @default(true)
   ownerId          String
   owner            User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   items            MenuItem[]
   customers        Customer[]
+  ingredients      Ingredient[]
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
@@ -107,6 +113,21 @@ model MenuItem {
   featured    Boolean      @default(false)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
+  @@index([menuId])
+}
+
+model Ingredient {
+  id           String   @id @default(cuid())
+  menuId       String
+  name         String
+  unit         String   @default("units")
+  currentStock Float    @default(0)
+  minStock     Float    @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
 
   @@index([menuId])
 }

@@ -26,7 +26,12 @@ export interface MenuForSession {
   whatsappNumber: string | null;
   tableCount: number | null;
   imageEnhancerUrl: string | null;
+  paymentQrUrl: string | null;
+  upiId: string | null;
+  paypalUrl: string | null;
+  stripeUrl: string | null;
   theme: MenuTheme;
+  isOpen: boolean;
   dishes: Dish[];
 }
 
@@ -110,7 +115,12 @@ export async function getMenuForSession(menuId?: string): Promise<MenuForSession
     whatsappNumber: menu.whatsappNumber,
     tableCount: menu.tableCount,
     imageEnhancerUrl: menu.imageEnhancerUrl,
+    paymentQrUrl: menu.paymentQrUrl,
+    upiId: menu.upiId,
+    paypalUrl: menu.paypalUrl,
+    stripeUrl: menu.stripeUrl,
     theme: menu.theme,
+    isOpen: menu.isOpen,
     dishes: menu.items.map(toDish),
   };
 }
@@ -166,7 +176,12 @@ export async function getMenuBySlug(slug: string): Promise<MenuForSession | null
     whatsappNumber: menu.whatsappNumber,
     tableCount: menu.tableCount,
     imageEnhancerUrl: menu.imageEnhancerUrl,
+    paymentQrUrl: menu.paymentQrUrl,
+    upiId: menu.upiId,
+    paypalUrl: menu.paypalUrl,
+    stripeUrl: menu.stripeUrl,
     theme: menu.theme,
+    isOpen: menu.isOpen,
     dishes: menu.items.filter((i) => i.available).map(toDish),
   };
 }

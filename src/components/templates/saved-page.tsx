@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, CircleUserRound, Heart, ImageIcon, ShoppingCart, Table2, Trash2, UtensilsCrossed } from "lucide-react";
+import { ChevronLeft, CircleUserRound, Heart, ShoppingCart, Table2, UtensilsCrossed } from "lucide-react";
 import { toast } from "sonner";
 import { cartCount, cartTotal, useCart } from "@/lib/cart";
 import { useSaved } from "@/lib/saved";
-import { dishPriceLabel, ingredientSummary, markColor, priceStr } from "@/lib/menu-seed";
-import { RAISED_SM, INSET_SM, ACCENT_GLOW, RAISED_LG } from "@/lib/neu-shadows";
+import { priceStr, type Dish } from "@/lib/menu-seed";
+import { ACCENT_GLOW, INSET_SM, RAISED_LG, RAISED_SM } from "@/lib/neu-shadows";
+import { DishCard } from "@/components/molecules/dish-card";
 import { PhoneHero } from "@/components/molecules/phone-hero";
 import type { MenuTheme } from "@/lib/menu-repo";
 
@@ -21,6 +22,7 @@ export function SavedPage({
   zomatoRating,
   swiggyUrl,
   swiggyRating,
+  isOpen = true,
 }: {
   slug: string;
   restaurantName: string;
@@ -32,6 +34,7 @@ export function SavedPage({
   zomatoRating?: number | null;
   swiggyUrl?: string | null;
   swiggyRating?: number | null;
+  isOpen?: boolean;
 }) {
   const { items: savedItems, remove } = useSaved(slug);
   const { items: cartItems, add: addToCart } = useCart(slug);
@@ -42,6 +45,7 @@ export function SavedPage({
     <div
       data-menu-theme={theme}
       className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background pb-28 font-sans text-[oklch(0.28_0.02_60)]"
+      style={!isOpen ? { filter: "grayscale(1)" } : undefined}
     >
       {/* Hero banner */}
       <div className="relative">
@@ -56,6 +60,7 @@ export function SavedPage({
           zomatoRating={zomatoRating}
           swiggyUrl={swiggyUrl}
           swiggyRating={swiggyRating}
+          isOpen={isOpen}
         />
         {/* Back button overlaid on top-left of banner */}
         <Link
@@ -95,75 +100,12 @@ export function SavedPage({
       ) : (
         <div className="flex flex-col gap-3 px-5 pt-1">
           {savedItems.map((dish) => (
-            <div
+            <DishCard
               key={dish.id}
-              className="flex gap-3 rounded-2xl bg-background p-3"
-              style={{ boxShadow: RAISED_SM }}
-            >
-              {/* 72px square thumbnail */}
-              <div className="size-[72px] shrink-0 overflow-hidden rounded-[14px]" style={{ boxShadow: RAISED_SM }}>
-                {dish.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={dish.imageUrl} alt="" className="size-full object-cover" />
-                ) : (
-                  <div className="flex size-full items-center justify-center bg-[oklch(0.87_0.02_74)] text-[oklch(0.68_0.03_74)]">
-                    <ImageIcon className="size-5" strokeWidth={1.3} />
-                  </div>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="flex min-w-0 flex-1 flex-col justify-between py-0.5">
-                <div>
-                  <div className="flex items-start justify-between gap-1.5">
-                    <span className="font-condensed text-[15px] font-bold leading-tight text-[oklch(0.26_0.02_60)]">
-                      {dish.name}
-                    </span>
-                    <span className="font-condensed text-[14.5px] font-bold whitespace-nowrap text-primary">
-                      {priceStr(dish.price)}
-                    </span>
-                  </div>
-                  <div className="mt-[3px] text-[11px] font-semibold leading-snug text-[oklch(0.6_0.03_60)]">
-                    {ingredientSummary(dish)}
-                  </div>
-                </div>
-                <div className="mt-2 flex items-center justify-between">
-                  <span
-                    className="inline-flex size-[16px] items-center justify-center rounded-[3px] border-[1.5px]"
-                    style={{ borderColor: markColor(dish.cat) }}
-                  >
-                    <span className="size-[7px] rounded-full" style={{ background: markColor(dish.cat) }} />
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    {/* Remove from saved */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        remove(dish.id);
-                        toast.success(`${dish.name} removed from saved`);
-                      }}
-                      aria-label="Remove from saved"
-                      className="flex size-[28px] shrink-0 items-center justify-center rounded-[9px]"
-                      style={{ boxShadow: RAISED_SM }}
-                    >
-                      <Trash2 className="size-3.5 text-[oklch(0.6_0.03_60)]" strokeWidth={2} />
-                    </button>
-                    {/* Add to cart */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        addToCart({ id: dish.id, name: dish.name, price: dish.price, imageUrl: dish.imageUrl });
-                        toast.success(`${dish.name} added to cart`);
-                      }}
-                      className="flex size-[28px] shrink-0 items-center justify-center rounded-[9px] text-base leading-none text-accent-foreground transition-transform duration-150 hover:scale-110 hover:text-primary active:scale-95"
-                      style={{ boxShadow: RAISED_SM }}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+              dish={dish as Dish}
+              onAdd={(item) => { addToCart(item); toast.success(`${dish.name} added to cart`); }}
+              onRemove={() => { remove(dish.id); toast.success(`${dish.name} removed from saved`); }}
+            />
           ))}
         </div>
       )}

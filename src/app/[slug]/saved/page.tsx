@@ -26,6 +26,7 @@ export default async function Saved(props: PageProps<"/[slug]/saved">) {
       zomatoRating={menu.zomatoRating}
       swiggyUrl={menu.swiggyUrl}
       swiggyRating={menu.swiggyRating}
+      isOpen={menu.isOpen}
     />
   );
 }

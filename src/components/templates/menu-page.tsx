@@ -15,6 +15,11 @@ export function MenuPage({
   dishes,
   table,
   theme,
+  isOpen = true,
+  paymentQrUrl,
+  upiId,
+  paypalUrl,
+  stripeUrl,
 }: {
   slug: string;
   restaurantName: string;
@@ -28,6 +33,11 @@ export function MenuPage({
   dishes: Dish[];
   table?: string;
   theme?: MenuTheme;
+  isOpen?: boolean;
+  paymentQrUrl?: string | null;
+  upiId?: string | null;
+  paypalUrl?: string | null;
+  stripeUrl?: string | null;
 }) {
   return (
     <MenuContent
@@ -43,6 +53,11 @@ export function MenuPage({
       dishes={dishes}
       table={table}
       theme={theme}
+      isOpen={isOpen}
+      paymentQrUrl={paymentQrUrl}
+      upiId={upiId}
+      paypalUrl={paypalUrl}
+      stripeUrl={stripeUrl}
     />
   );
 }

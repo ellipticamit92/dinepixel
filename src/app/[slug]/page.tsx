@@ -48,6 +48,11 @@ export default async function Menu(props: PageProps<"/[slug]">) {
       dishes={menu.dishes}
       table={typeof table === "string" ? table : undefined}
       theme={menu.theme}
+      isOpen={menu.isOpen}
+      paymentQrUrl={menu.paymentQrUrl}
+      upiId={menu.upiId}
+      paypalUrl={menu.paypalUrl}
+      stripeUrl={menu.stripeUrl}
     />
   );
 }

@@ -13,7 +13,7 @@ const CONTENT_TYPES: Record<string, string> = {
   svg: "image/svg+xml",
 };
 
-const FILENAME_PATTERN = /^(logo|banner)\.(png|jpg|jpeg|webp|gif|svg)$/;
+const FILENAME_PATTERN = /^(logo|banner|paymentQr)\.(png|jpg|jpeg|webp|gif|svg)$/;
 
 export async function GET(
   _request: Request,

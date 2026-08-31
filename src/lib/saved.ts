@@ -12,6 +12,11 @@ export interface SavedDish {
   section: string;
   type: string;
   ingredients: string[];
+  halfPrice?: number | null;
+  fullPrice?: number | null;
+  smallPrice?: number | null;
+  mediumPrice?: number | null;
+  largePrice?: number | null;
 }
 
 const SAVED_EVENT = "dinepixel-saved-changed";

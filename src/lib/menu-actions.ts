@@ -414,7 +414,7 @@ export async function updateMenuTheme(menuId: string, theme: string): Promise<{ 
   return { theme: cleaned };
 }
 
-const MENU_IMAGE_KINDS = ["logo", "banner"] as const;
+const MENU_IMAGE_KINDS = ["logo", "banner", "paymentQr"] as const;
 type MenuImageKind = (typeof MENU_IMAGE_KINDS)[number];
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -466,10 +466,11 @@ export async function uploadMenuImage(
   await writeFile(path.join(dir, filename), buffer);
 
   const url = `/uploads/menus/${id}/${filename}`;
-  await prisma.menu.update({
-    where: { id },
-    data: kind === "logo" ? { logoUrl: url } : { bannerUrl: url },
-  });
+  const urlField =
+    kind === "logo" ? { logoUrl: url } :
+    kind === "banner" ? { bannerUrl: url } :
+    { paymentQrUrl: url };
+  await prisma.menu.update({ where: { id }, data: urlField });
 
   return { url };
 }
@@ -482,7 +483,10 @@ export async function removeMenuImage(menuId: string, kind: MenuImageKind): Prom
   await clearMenuImage(id, kind);
   await prisma.menu.update({
     where: { id },
-    data: kind === "logo" ? { logoUrl: null } : { bannerUrl: null },
+    data:
+      kind === "logo" ? { logoUrl: null } :
+      kind === "banner" ? { bannerUrl: null } :
+      { paymentQrUrl: null },
   });
 
   return { ok: true };
@@ -723,4 +727,28 @@ export async function createMenuItem(input: CreateDishInput): Promise<Dish> {
   });
 
   return toDish(item);
+}
+
+export async function setCafeOpen(menuId: string, isOpen: boolean): Promise<void> {
+  const session = await getSession();
+  if (!session) throw new Error("Not signed in");
+  await prisma.menu.update({
+    where: { id: menuId, owner: { email: session.email } },
+    data: { isOpen },
+  });
+}
+
+export async function updatePaymentSettings(
+  menuId: string,
+  data: { upiId: string | null; paypalUrl: string | null; stripeUrl: string | null }
+): Promise<void> {
+  const id = await ownedMenuId(menuId);
+  await prisma.menu.update({
+    where: { id },
+    data: {
+      upiId: data.upiId || null,
+      paypalUrl: data.paypalUrl || null,
+      stripeUrl: data.stripeUrl || null,
+    },
+  });
 }
