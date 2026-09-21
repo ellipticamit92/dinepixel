@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Check, CreditCard, Pencil, Plus, QrCode, Search, Settings, X } from "lucide-react";
+import { Check, CreditCard, Pencil, Plus, Printer, QrCode, Search, Settings, X } from "lucide-react";
 import { PlateNavbar } from "@/components/organisms/plate-navbar";
 import { LivePreviewPhone } from "@/components/organisms/live-preview-phone";
 import { DishRow } from "@/components/molecules/dish-row";
@@ -572,6 +572,14 @@ export function AdminDashboardPage({
                 >
                   <Settings className="size-4" strokeWidth={2} />
                   Settings
+                </Link>
+                <Link
+                  href="/admin/print-menu"
+                  className="flex items-center gap-1.5 rounded-[11px] px-[15px] py-[11px] font-condensed text-sm font-bold text-[oklch(0.35_0.02_60)]"
+                  style={{ boxShadow: RAISED_SM }}
+                >
+                  <Printer className="size-4" strokeWidth={2} />
+                  Print Menu
                 </Link>
               </div>
 

@@ -59,7 +59,7 @@ export function CartPage({
   return (
     <div
       data-menu-theme={theme}
-      className="mx-auto flex min-h-dvh max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]"
+      className="mx-auto flex min-h-dvh w-full max-w-md flex-col bg-background pb-10 font-sans text-[oklch(0.28_0.02_60)]"
     >
       <PhoneHero height={190} logoSize={64} name={restaurantName} logoUrl={logoUrl} bannerUrl={bannerUrl} />
 
